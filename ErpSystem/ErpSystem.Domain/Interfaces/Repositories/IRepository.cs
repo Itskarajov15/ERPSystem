@@ -1,19 +1,17 @@
-﻿using ErpSystem.Domain.Entities.Common;
-using System.Linq.Expressions;
+﻿using ErpSystem.Domain.Abstractions;
 
 namespace ErpSystem.Domain.Interfaces.Repositories;
 
-public interface IRepository<T> where T : BaseEntity
+public interface IRepository<T>
+    where T : BaseEntity
 {
-    Task<T?> GetByIdAsync(int id);
+    Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<T>> GetAllAsync();
+    Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate);
+    void Add(T entity);
 
-    Task<T> AddAsync(T entity);
+    void Update(T entity);
 
-    Task UpdateAsync(T entity);
-
-    Task DeleteAsync(T entity);
+    void Delete(T entity);
 }

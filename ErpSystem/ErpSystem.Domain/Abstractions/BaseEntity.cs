@@ -1,4 +1,4 @@
-﻿namespace ErpSystem.Domain.Entities.Common;
+﻿namespace ErpSystem.Domain.Abstractions;
 
 public abstract class BaseEntity
 {
@@ -11,4 +11,6 @@ public abstract class BaseEntity
     public DateTime? LastModifiedAt { get; set; }
 
     public string? LastModifiedBy { get; set; }
+
+    public bool IsDeleted { get; set; }
 }

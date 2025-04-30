@@ -1,4 +1,4 @@
-﻿using ErpSystem.Domain.Entities.Common;
+﻿using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Inventory;
 
 namespace ErpSystem.Domain.Entities.Deliveries;

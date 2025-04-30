@@ -1,4 +1,4 @@
-﻿using ErpSystem.Domain.Entities.Common;
+﻿using ErpSystem.Domain.Abstractions;
 
 namespace ErpSystem.Domain.Entities.Sales;
 
