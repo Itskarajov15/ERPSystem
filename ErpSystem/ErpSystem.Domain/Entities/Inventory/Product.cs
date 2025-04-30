@@ -16,6 +16,8 @@ public class Product : BaseEntity
 
     public decimal Price { get; set; }
 
+    public decimal ReorderLevel { get; set; }
+
     public Guid UnitOfMeasureId { get; set; }
 
     public UnitOfMeasure UnitOfMeasure { get; set; } = null!;
