@@ -6,7 +6,7 @@ public class Supplier : BaseEntity
 {
     public string Name { get; set; } = null!;
 
-    public string ContactName { get; set; } = null!;
+    public string ContactPerson { get; set; } = null!;
 
     public string Phone { get; set; } = null!;
 

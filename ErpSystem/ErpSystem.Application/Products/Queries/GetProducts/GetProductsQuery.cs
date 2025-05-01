@@ -1,5 +1,5 @@
 ﻿using ErpSystem.Application.Common.Models;
-using ErpSystem.Application.Products.Queries.Common;
+using ErpSystem.Application.Products.DTOs;
 using MediatR;
 
 namespace ErpSystem.Application.Products.Queries.GetProducts;

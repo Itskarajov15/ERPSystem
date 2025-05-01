@@ -2,7 +2,7 @@
 using ErpSystem.Application.Common.Mappings;
 using ErpSystem.Domain.Entities.Inventory;
 
-namespace ErpSystem.Application.Products.Queries.Common;
+namespace ErpSystem.Application.Products.DTOs;
 
 public class ProductDto : IMapFrom<Product>
 {

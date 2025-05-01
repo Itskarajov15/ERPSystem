@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ErpSystem.Application.Common.Models;
-using ErpSystem.Application.Products.Queries.Common;
+using ErpSystem.Application.Products.DTOs;
 using ErpSystem.Domain.Interfaces.Repositories;
 using MediatR;
 

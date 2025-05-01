@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Application.Products.Queries.Common;
+using ErpSystem.Application.Products.DTOs;
 using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Interfaces.Repositories;
 using MediatR;
