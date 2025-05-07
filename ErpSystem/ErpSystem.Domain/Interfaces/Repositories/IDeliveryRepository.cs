@@ -1,4 +1,6 @@
-﻿using ErpSystem.Domain.Entities.Deliveries;
+﻿using ErpSystem.Domain.Common.Filters;
+using ErpSystem.Domain.Common.Pagination;
+using ErpSystem.Domain.Entities.Deliveries;
 
 namespace ErpSystem.Domain.Interfaces.Repositories;
 
@@ -17,11 +19,9 @@ public interface IDeliveryRepository : IRepository<Delivery>
         CancellationToken cancellationToken
     );
 
-    Task<IReadOnlyList<Delivery>> GetDeliveriesWithFiltersAsync(
-        Guid? supplierId = null,
-        DateTime? fromDate = null,
-        DateTime? toDate = null,
-        DeliveryStatus? status = null,
+    Task<IReadOnlyList<Delivery>> GetDeliveriesAsync(
+        DeliveryFilters? filters,
+        PaginationRequest paginationRequest,
         CancellationToken cancellationToken = default
     );
 }
