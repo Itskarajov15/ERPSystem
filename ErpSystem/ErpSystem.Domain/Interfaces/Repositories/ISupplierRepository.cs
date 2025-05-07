@@ -4,5 +4,8 @@ namespace ErpSystem.Domain.Interfaces.Repositories;
 
 public interface ISupplierRepository : IRepository<Supplier>
 {
-    IReadOnlyList<Supplier> GetSuppliersByName(string name, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Supplier>> GetSuppliersByNameAsync(
+        string name,
+        CancellationToken cancellationToken
+    );
 }

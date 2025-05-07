@@ -10,7 +10,11 @@ public class Delivery : BaseEntity
 
     public string? Notes { get; set; }
 
+    public DeliveryStatus DeliveryStatus { get; set; }
+
     public Supplier Supplier { get; set; } = null!;
 
     public ICollection<DeliveryItem> DeliveryItems { get; set; } = new HashSet<DeliveryItem>();
+
+    public bool CanBeDeleted() => DeliveryStatus == DeliveryStatus.Registered;
 }

@@ -23,7 +23,11 @@ internal class GetSuppliersByNameQueryHandler
         CancellationToken cancellationToken
     )
     {
-        var suppliers = _supplierRepository.GetSuppliersByName(request.Name, cancellationToken);
+        var suppliers = await _supplierRepository.GetSuppliersByNameAsync(
+            request.Name,
+            cancellationToken
+        );
+
         var suppliersDto = _mapper.Map<List<SupplierDto>>(suppliers);
 
         return new PaginatedList<SupplierDto>(suppliersDto, suppliersDto.Count, 1, 10);

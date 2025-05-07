@@ -13,4 +13,9 @@ public interface IProductRepository : IRepository<Product>
         int pageSize,
         CancellationToken cancellationToken
     );
+
+    Task<IReadOnlyList<Product>> GetByIdsAsync(
+        IEnumerable<Guid> ids,
+        CancellationToken cancellationToken
+    );
 }

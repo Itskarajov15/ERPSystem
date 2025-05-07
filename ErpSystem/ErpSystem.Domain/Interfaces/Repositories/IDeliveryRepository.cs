@@ -16,4 +16,12 @@ public interface IDeliveryRepository : IRepository<Delivery>
         DateTime endDate,
         CancellationToken cancellationToken
     );
+
+    Task<IReadOnlyList<Delivery>> GetDeliveriesWithFiltersAsync(
+        Guid? supplierId = null,
+        DateTime? fromDate = null,
+        DateTime? toDate = null,
+        DeliveryStatus? status = null,
+        CancellationToken cancellationToken = default
+    );
 }
