@@ -19,8 +19,4 @@
     <ProjectReference Include="..\ErpSystem.Domain\ErpSystem.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Orders\Queries\" />
-  </ItemGroup>
-
 </Project>

@@ -1,4 +1,6 @@
-﻿using ErpSystem.Domain.Entities.Sales;
+﻿using ErpSystem.Domain.Common.Filters;
+using ErpSystem.Domain.Common.Pagination;
+using ErpSystem.Domain.Entities.Sales;
 
 namespace ErpSystem.Domain.Interfaces.Repositories;
 
@@ -8,6 +10,7 @@ public interface IOrderRepository : IRepository<Order>
 
     Task<IReadOnlyList<Order>> GetByCustomerIdAsync(
         Guid customerId,
+        PaginationRequest paginationRequest,
         CancellationToken cancellationToken
     );
 
@@ -20,5 +23,11 @@ public interface IOrderRepository : IRepository<Order>
         DateTime startDate,
         DateTime endDate,
         CancellationToken cancellationToken
+    );
+
+    Task<IReadOnlyList<Order>> GetOrdersAsync(
+        OrderFilters? filters,
+        PaginationRequest paginationRequest,
+        CancellationToken cancellationToken = default
     );
 }

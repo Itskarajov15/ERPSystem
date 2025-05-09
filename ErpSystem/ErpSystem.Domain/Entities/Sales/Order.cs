@@ -12,6 +12,10 @@ public class Order : BaseEntity
 
     public OrderStatus Status { get; set; }
 
+    public string? Notes { get; set; }
+
+    public Customer Customer { get; set; } = null!;
+
     public PaymentMethod PaymentMethod { get; set; } = null!;
 
     public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
