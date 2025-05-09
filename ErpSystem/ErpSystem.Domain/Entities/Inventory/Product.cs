@@ -14,6 +14,8 @@ public class Product : BaseEntity
 
     public int Quantity { get; set; }
 
+    public int ReservedQuantity { get; set; }
+
     public decimal Price { get; set; }
 
     public decimal ReorderLevel { get; set; }

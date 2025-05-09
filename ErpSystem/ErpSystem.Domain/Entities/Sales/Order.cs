@@ -10,7 +10,7 @@ public class Order : BaseEntity
 
     public DateTime OrderDate { get; set; }
 
-    public OrderStatus OrderStatus { get; set; }
+    public OrderStatus Status { get; set; }
 
     public PaymentMethod PaymentMethod { get; set; } = null!;
 
