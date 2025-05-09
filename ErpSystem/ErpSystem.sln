@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystem.Domain", "ErpSyst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystem.Application", "ErpSystem.Application\ErpSystem.Application.csproj", "{36E0522D-0DE3-4993-A62D-D8C79D4C6C68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystem.Infrastructure", "ErpSystem.Infrastructure\ErpSystem.Infrastructure.csproj", "{D775A1EA-71FB-4A0A-BEC5-F448081F7A4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{36E0522D-0DE3-4993-A62D-D8C79D4C6C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36E0522D-0DE3-4993-A62D-D8C79D4C6C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36E0522D-0DE3-4993-A62D-D8C79D4C6C68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D775A1EA-71FB-4A0A-BEC5-F448081F7A4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D775A1EA-71FB-4A0A-BEC5-F448081F7A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D775A1EA-71FB-4A0A-BEC5-F448081F7A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D775A1EA-71FB-4A0A-BEC5-F448081F7A4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

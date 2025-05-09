@@ -14,17 +14,6 @@ public interface IOrderRepository : IRepository<Order>
         CancellationToken cancellationToken
     );
 
-    Task<IReadOnlyList<Order>> GetByStatusAsync(
-        OrderStatus status,
-        CancellationToken cancellationToken
-    );
-
-    Task<IReadOnlyList<Order>> GetByDateRangeAsync(
-        DateTime startDate,
-        DateTime endDate,
-        CancellationToken cancellationToken
-    );
-
     Task<IReadOnlyList<Order>> GetOrdersAsync(
         OrderFilters? filters,
         PaginationRequest paginationRequest,
