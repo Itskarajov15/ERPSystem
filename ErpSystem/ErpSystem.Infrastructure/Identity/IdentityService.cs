@@ -15,16 +15,19 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly IConfiguration _configuration;
+    private readonly IPermissionService _permissionService;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IPermissionService permissionService
     )
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _configuration = configuration;
+        _permissionService = permissionService;
     }
 
     public async Task AddToRoleAsync(string userId, string role)
@@ -152,6 +155,9 @@ public class IdentityService : IIdentityService
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
+
+        var permissionClaims = await _permissionService.GetPermissionClaimsAsync(user);
+        claims.AddRange(permissionClaims);
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -1,6 +1,7 @@
 ﻿using ErpSystem.Application.Common.Interfaces;
 using ErpSystem.Domain.Interfaces;
 using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Infrastructure.Identity;
 using ErpSystem.Infrastructure.Persistance;
 using ErpSystem.Infrastructure.Persistance.Repositories;
 using ErpSystem.Infrastructure.Services;
@@ -39,6 +40,9 @@ public static class DependencyInjection
         //services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDateTime, DateTimeService>();
         services.AddScoped<IInventoryService, InventoryService>();
+
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IPermissionService, PermissionService>();
 
         // Register current user service
         services.AddHttpContextAccessor();
