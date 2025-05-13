@@ -13,12 +13,6 @@ public interface IDeliveryRepository : IRepository<Delivery>
         CancellationToken cancellationToken
     );
 
-    Task<IReadOnlyList<Delivery>> GetByDateRangeAsync(
-        DateTime startDate,
-        DateTime endDate,
-        CancellationToken cancellationToken
-    );
-
     Task<IReadOnlyList<Delivery>> GetDeliveriesAsync(
         DeliveryFilters? filters,
         PaginationRequest paginationRequest,

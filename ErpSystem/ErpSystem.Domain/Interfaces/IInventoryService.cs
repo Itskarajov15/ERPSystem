@@ -2,14 +2,26 @@
 
 public interface IInventoryService
 {
-    Task IncreaseStockAsync(int productId, decimal quantity);
+    Task IncreaseStockAsync(
+        Guid productId,
+        decimal quantity,
+        CancellationToken cancellationToken = default
+    );
 
     Task IncreaseStockOfMultipleItemsAsync(
         IEnumerable<(Guid productId, int quantity)> items,
         CancellationToken cancellationToken
     );
 
-    Task DecreaseStockAsync(int productId, decimal quantity);
+    Task DecreaseStockAsync(
+        Guid productId,
+        decimal quantity,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<bool> HasSufficientStockAsync(int productId, decimal quantity);
+    Task<bool> HasSufficientStockAsync(
+        Guid productId,
+        decimal quantity,
+        CancellationToken cancellationToken = default
+    );
 }
