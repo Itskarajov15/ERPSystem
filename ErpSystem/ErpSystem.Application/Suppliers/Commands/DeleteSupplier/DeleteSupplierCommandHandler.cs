@@ -1,35 +1,29 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Deliveries;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
 
 namespace ErpSystem.Application.Suppliers.Commands.DeleteSupplier;
 
 internal class DeleteSupplierCommandHandler : IRequestHandler<DeleteSupplierCommand>
 {
-    private readonly ISupplierRepository _supplierRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
 
-    public DeleteSupplierCommandHandler(
-        ISupplierRepository supplierRepository,
-        IUnitOfWork unitOfWork
-    )
+    public DeleteSupplierCommandHandler(IRepository repository)
     {
-        _supplierRepository = supplierRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
     public async Task Handle(DeleteSupplierCommand request, CancellationToken cancellationToken)
     {
-        var supplier = await _supplierRepository.GetByIdAsync(request.Id, cancellationToken);
+        var supplier = await _repository.GetByIdAsync<Supplier>(request.Id);
 
         if (supplier is null)
         {
             throw new NotFoundException(nameof(Supplier), request.Id);
         }
 
-        _supplierRepository.Delete(supplier);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _repository.SoftDelete<Supplier>(supplier);
+        await _repository.SaveChangesAsync();
     }
 }

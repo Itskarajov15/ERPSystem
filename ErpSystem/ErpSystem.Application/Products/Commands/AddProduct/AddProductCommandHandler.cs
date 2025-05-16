@@ -1,34 +1,22 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Inventory;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
 
 namespace ErpSystem.Application.Products.Commands.AddProduct;
 
 internal class AddProductCommandHandler : IRequestHandler<AddProductCommand, Guid>
 {
-    private readonly IProductRepository _productRepository;
-    private readonly IUnitOfMeasureRepository _unitOfMeasureRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
 
-    public AddProductCommandHandler(
-        IProductRepository productRepository,
-        IUnitOfMeasureRepository unitOfMeasureRepository,
-        IUnitOfWork unitOfWork
-    )
+    public AddProductCommandHandler(IRepository repository)
     {
-        _productRepository = productRepository;
-        _unitOfMeasureRepository = unitOfMeasureRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
     public async Task<Guid> Handle(AddProductCommand request, CancellationToken cancellationToken)
     {
-        var unitOfMeasure = await _unitOfMeasureRepository.GetByIdAsync(
-            request.UnitOfMeasureId,
-            cancellationToken
-        );
+        var unitOfMeasure = await _repository.GetByIdAsync<UnitOfMeasure>(request.UnitOfMeasureId);
 
         if (unitOfMeasure is null)
         {
@@ -45,8 +33,8 @@ internal class AddProductCommandHandler : IRequestHandler<AddProductCommand, Gui
             ReorderLevel = request.ReorderLevel,
         };
 
-        _productRepository.Add(product);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.AddAsync<Product>(product);
+        await _repository.SaveChangesAsync();
 
         return product.Id;
     }

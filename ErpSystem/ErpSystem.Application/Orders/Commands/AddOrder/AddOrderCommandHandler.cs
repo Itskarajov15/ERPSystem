@@ -1,54 +1,32 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
+using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Entities.Sales;
 using ErpSystem.Domain.Interfaces;
-using ErpSystem.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace ErpSystem.Application.Orders.Commands.AddOrder;
 
 internal class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Guid>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly ICustomerRepository _customerRepository;
-    private readonly IPaymentMethodRepository _paymentMethodRepository;
-    private readonly IProductRepository _productRepository;
+    private readonly IRepository _repository;
     private readonly IInventoryService _inventoryService;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public AddOrderCommandHandler(
-        IOrderRepository orderRepository,
-        ICustomerRepository customerRepository,
-        IPaymentMethodRepository paymentMethodRepository,
-        IProductRepository productRepository,
-        IInventoryService inventoryService,
-        IUnitOfWork unitOfWork
-    )
+    public AddOrderCommandHandler(IRepository orderRepository, IInventoryService inventoryService)
     {
-        _orderRepository = orderRepository;
-        _customerRepository = customerRepository;
-        _paymentMethodRepository = paymentMethodRepository;
-        _productRepository = productRepository;
+        _repository = orderRepository;
         _inventoryService = inventoryService;
-        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> Handle(AddOrderCommand request, CancellationToken cancellationToken)
     {
-        var customer = await _customerRepository.GetByIdAsync(
-            request.CustomerId,
-            cancellationToken
-        );
+        var customer = await _repository.GetByIdAsync<Customer>(request.CustomerId);
 
         if (customer == null)
         {
             throw new NotFoundException(nameof(Customer), request.CustomerId);
         }
 
-        var paymentMethod = await _paymentMethodRepository.GetByIdAsync(
-            request.PaymentMethodId,
-            cancellationToken
-        );
+        var paymentMethod = await _repository.GetByIdAsync<PaymentMethod>(request.PaymentMethodId);
 
         if (paymentMethod == null)
         {
@@ -56,9 +34,9 @@ internal class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Guid>
         }
 
         var productIds = request.Items.Select(i => i.ProductId).ToList();
-        var products = await _productRepository.GetByIdsAsync(productIds, cancellationToken);
+        var products = await _repository.GetByIdsAsync<Product>(productIds);
 
-        if (products.Count != productIds.Count)
+        if (products.Count() != productIds.Count)
         {
             throw new NotFoundException("One or more products not found.");
         }
@@ -92,16 +70,15 @@ internal class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Guid>
                 .ToList(),
         };
 
-        _orderRepository.Add(order);
+        await _repository.AddAsync<Order>(order);
 
         foreach (var item in request.Items)
         {
             var product = products.First(p => p.Id == item.ProductId);
             product.ReservedQuantity += item.Quantity;
-            _productRepository.Update(product);
         }
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
 
         return order.Id;
     }

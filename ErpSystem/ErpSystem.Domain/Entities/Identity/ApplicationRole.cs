@@ -4,5 +4,8 @@ namespace ErpSystem.Domain.Entities.Identity;
 
 public class ApplicationRole : IdentityRole<Guid>
 {
-    public ICollection<RoleRoutePermission> RoleRoutePermissions { get; set; } = new List<RoleRoutePermission>();
+    public string Description { get; set; } = null!;
+
+    public ICollection<RoleRoutePermission> RoleRoutePermissions { get; set; } =
+        new List<RoleRoutePermission>();
 }

@@ -1,28 +1,22 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Deliveries;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
 
 namespace ErpSystem.Application.Suppliers.Commands.UpdateSupplier;
 
 internal class UpdateSupplierCommandHandler : IRequestHandler<UpdateSupplierCommand>
 {
-    private readonly ISupplierRepository _supplierRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
 
-    public UpdateSupplierCommandHandler(
-        ISupplierRepository supplierRepository,
-        IUnitOfWork unitOfWork
-    )
+    public UpdateSupplierCommandHandler(IRepository repository)
     {
-        _supplierRepository = supplierRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
     public async Task Handle(UpdateSupplierCommand request, CancellationToken cancellationToken)
     {
-        var supplier = await _supplierRepository.GetByIdAsync(request.Id, cancellationToken);
+        var supplier = await _repository.GetByIdAsync<Supplier>(request.Id);
 
         if (supplier is null)
         {
@@ -35,7 +29,6 @@ internal class UpdateSupplierCommandHandler : IRequestHandler<UpdateSupplierComm
         supplier.Email = request.Email;
         supplier.ContactPerson = request.ContactPerson;
 
-        _supplierRepository.Update(supplier);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
     }
 }

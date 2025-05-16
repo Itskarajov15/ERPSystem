@@ -1,24 +1,17 @@
-﻿using ErpSystem.Domain.Abstractions;
+﻿using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Interfaces;
-using ErpSystem.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace ErpSystem.Infrastructure.Services;
 
 public class InventoryService : IInventoryService
 {
-    private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
     private readonly ILogger<InventoryService> _logger;
 
-    public InventoryService(
-        IProductRepository productRepository,
-        IUnitOfWork unitOfWork,
-        ILogger<InventoryService> logger
-    )
+    public InventoryService(IRepository repository, ILogger<InventoryService> logger)
     {
-        _productRepository = productRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
         _logger = logger;
     }
 
@@ -28,7 +21,7 @@ public class InventoryService : IInventoryService
         CancellationToken cancellationToken = default
     )
     {
-        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+        var product = await _repository.GetByIdAsync<Product>(productId);
 
         if (product == null)
         {
@@ -43,9 +36,8 @@ public class InventoryService : IInventoryService
         }
 
         product.Quantity += (int)quantity;
-        _productRepository.Update(product);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation(
             "Increased stock for product {ProductId} by {Quantity}",
@@ -66,9 +58,9 @@ public class InventoryService : IInventoryService
         }
 
         var productIds = items.Select(i => i.productId).ToList();
-        var products = await _productRepository.GetByIdsAsync(productIds, cancellationToken);
+        var products = await _repository.GetByIdsAsync<Product>(productIds);
 
-        if (products.Count != productIds.Count)
+        if (products.Count() != productIds.Count)
         {
             var missingProductIds = productIds.Except(products.Select(p => p.Id)).ToList();
             _logger.LogWarning(
@@ -93,7 +85,6 @@ public class InventoryService : IInventoryService
             if (product != null)
             {
                 product.Quantity += quantity;
-                _productRepository.Update(product);
 
                 _logger.LogInformation(
                     "Increased stock for product {ProductId} by {Quantity}",
@@ -110,7 +101,7 @@ public class InventoryService : IInventoryService
             }
         }
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
     }
 
     public async Task DecreaseStockAsync(
@@ -119,7 +110,7 @@ public class InventoryService : IInventoryService
         CancellationToken cancellationToken = default
     )
     {
-        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+        var product = await _repository.GetByIdAsync<Product>(productId);
 
         if (product == null)
         {
@@ -147,9 +138,8 @@ public class InventoryService : IInventoryService
         }
 
         product.Quantity -= quantityInt;
-        _productRepository.Update(product);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation(
             "Decreased stock for product {ProductId} by {Quantity}",
@@ -170,7 +160,7 @@ public class InventoryService : IInventoryService
             throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
         }
 
-        var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+        var product = await _repository.GetByIdAsync<Product>(productId);
 
         if (product == null)
         {

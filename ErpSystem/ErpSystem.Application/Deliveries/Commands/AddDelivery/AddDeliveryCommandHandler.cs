@@ -1,41 +1,25 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Deliveries;
+using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Interfaces;
-using ErpSystem.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace ErpSystem.Application.Deliveries.Commands.AddDelivery;
 
 internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, Guid>
 {
-    private readonly IDeliveryRepository _deliveryRepository;
-    private readonly ISupplierRepository _supplierRepository;
-    private readonly IProductRepository _productRepository;
+    private readonly IRepository _repository;
     private readonly IInventoryService _inventoryService;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public AddDeliveryCommandHandler(
-        IDeliveryRepository deliveryRepository,
-        ISupplierRepository supplierRepository,
-        IProductRepository productRepository,
-        IInventoryService inventoryService,
-        IUnitOfWork unitOfWork
-    )
+    public AddDeliveryCommandHandler(IRepository repository, IInventoryService inventoryService)
     {
-        _deliveryRepository = deliveryRepository;
-        _supplierRepository = supplierRepository;
-        _productRepository = productRepository;
+        _repository = repository;
         _inventoryService = inventoryService;
-        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> Handle(AddDeliveryCommand request, CancellationToken cancellationToken)
     {
-        var supplier = await _supplierRepository.GetByIdAsync(
-            request.SupplierId,
-            cancellationToken
-        );
+        var supplier = await _repository.GetByIdAsync<Supplier>(request.SupplierId);
 
         if (supplier == null)
         {
@@ -43,9 +27,9 @@ internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, G
         }
 
         var productIds = request.Items.Select(i => i.ProductId).ToList();
-        var products = await _productRepository.GetByIdsAsync(productIds, cancellationToken);
+        var products = await _repository.GetByIdsAsync<Product>(productIds);
 
-        if (products.Count != productIds.Count)
+        if (products.Count() != productIds.Count)
         {
             throw new NotFoundException("One or more products not found.");
         }
@@ -66,8 +50,8 @@ internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, G
             DeliveryStatus = DeliveryStatus.Registered,
         };
 
-        _deliveryRepository.Add(delivery);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.AddAsync<Delivery>(delivery);
+        await _repository.SaveChangesAsync();
 
         return delivery.Id;
     }

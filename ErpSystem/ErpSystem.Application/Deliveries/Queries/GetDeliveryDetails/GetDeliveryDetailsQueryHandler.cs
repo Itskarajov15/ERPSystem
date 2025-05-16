@@ -1,43 +1,55 @@
-﻿using AutoMapper;
-using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Application.Deliveries.DTOs;
-using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Deliveries;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Deliveries.Queries.GetDeliveryDetails;
 
 internal class GetDeliveryDetailsQueryHandler
-    : IRequestHandler<GetDeliveryDetailsQuery, DeliveryDto>
+    : IRequestHandler<GetDeliveryDetailsQuery, DeliveryDetailDto>
 {
-    private readonly IDeliveryRepository _deliveryRepository;
-    private readonly IMapper _mapper;
-    private readonly IUnitOfWork _unitOfWork;
+    private IRepository _repository;
 
-    public GetDeliveryDetailsQueryHandler(
-        IDeliveryRepository deliveryRepository,
-        IMapper mapper,
-        IUnitOfWork unitOfWork
-    )
+    public GetDeliveryDetailsQueryHandler(IRepository repository)
     {
-        _deliveryRepository = deliveryRepository;
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
-    public async Task<DeliveryDto> Handle(
+    public async Task<DeliveryDetailDto> Handle(
         GetDeliveryDetailsQuery request,
         CancellationToken cancellationToken
     )
     {
-        var delivery = await _deliveryRepository.GetByIdAsync(request.Id, cancellationToken);
+        var delivery = await _repository
+            .AllReadOnly<Delivery>()
+            .Include(d => d.Supplier)
+            .Include(d => d.DeliveryItems)
+            .ThenInclude(i => i.Product)
+            .FirstOrDefaultAsync(d => d.Id == request.Id);
 
         if (delivery == null)
         {
             throw new NotFoundException(nameof(Delivery), request.Id);
         }
 
-        return _mapper.Map<DeliveryDto>(delivery);
+        return new DeliveryDetailDto()
+        {
+            Id = delivery.Id,
+            DeliveryDate = delivery.DeliveryDate,
+            StatusName = delivery.DeliveryStatus.ToString(),
+            SupplierName = delivery.Supplier.Name,
+            Items = delivery
+                .DeliveryItems.Select(i => new DeliveryItemDetailDto()
+                {
+                    Id = i.Id,
+                    ProductName = i.Product.Name,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice,
+                    Sku = i.Product.Sku,
+                })
+                .ToList(),
+        };
     }
 }

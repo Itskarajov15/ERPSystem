@@ -1,34 +1,95 @@
 ﻿using ErpSystem.Domain.Abstractions;
-using ErpSystem.Domain.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore;
+using ErpSystem.Domain.Common.Pagination;
+using ErpSystem.Domain.Interfaces;
 
 namespace ErpSystem.Infrastructure.Persistance.Repositories;
 
-public class Repository<T> : IRepository<T>
-    where T : BaseEntity
+public class Repository : IRepository
 {
-    protected readonly ApplicationDbContext _context;
-
-    public Repository(ApplicationDbContext context)
+    public Task AddAsync<T>(T entity)
+        where T : class
     {
-        _context = context;
+        throw new NotImplementedException();
     }
 
-    public void Add(T entity) => _context.Set<T>().Add(entity);
-
-    public void Delete(T entity)
+    public Task AddRangeAsync<T>(IEnumerable<T> entities)
+        where T : class
     {
-        entity.IsDeleted = true;
-        Update(entity);
+        throw new NotImplementedException();
     }
 
-    public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken) =>
-        await _context.Set<T>().Where(e => !e.IsDeleted).ToListAsync(cancellationToken);
+    public IQueryable<T> All<T>()
+        where T : class
+    {
+        throw new NotImplementedException();
+    }
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-        await _context
-            .Set<T>()
-            .FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted, cancellationToken);
+    public IQueryable<T> AllReadOnly<T>()
+        where T : class
+    {
+        throw new NotImplementedException();
+    }
 
-    public void Update(T entity) => _context.Entry(entity).State = EntityState.Modified;
+    public void Delete<T>(T entity)
+        where T : class
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteById<T>(Guid id)
+        where T : class
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteRange<T>(IEnumerable<T> entities)
+        where T : class
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<T?> GetByIdAsync<T>(Guid id)
+        where T : class
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<T>> GetByIdsAsync<T>(IEnumerable<Guid> ids)
+        where T : BaseEntity
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PageResult<TDto>> GetPaginatedAsync<TEntity, TDto>(
+        PaginationParams pageParams,
+        Func<IQueryable<TEntity>, IQueryable<TDto>> selector,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? filterBy = null
+    )
+        where TEntity : class
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<int> SaveChangesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SoftDelete<T>(T entity)
+        where T : BaseEntity
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SoftDeleteById<T>(object id)
+        where T : BaseEntity
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UnDelete<T>(T entity)
+        where T : BaseEntity
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,31 +1,23 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
+using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Entities.Sales;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
 
 namespace ErpSystem.Application.Orders.Commands.DeleteOrder;
 
 internal class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
 
-    public DeleteOrderCommandHandler(
-        IOrderRepository orderRepository,
-        IProductRepository productRepository,
-        IUnitOfWork unitOfWork
-    )
+    public DeleteOrderCommandHandler(IRepository repository)
     {
-        _orderRepository = orderRepository;
-        _productRepository = productRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
     public async Task Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(request.Id, cancellationToken);
+        var order = await _repository.GetByIdAsync<Order>(request.Id);
 
         if (order is null)
         {
@@ -39,9 +31,8 @@ internal class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
             );
         }
 
-        var products = await _productRepository.GetByIdsAsync(
-            order.OrderItems.Select(i => i.Id).ToHashSet(),
-            cancellationToken
+        var products = await _repository.GetByIdsAsync<Product>(
+            order.OrderItems.Select(i => i.Id).ToHashSet()
         );
 
         foreach (var product in products)
@@ -56,11 +47,8 @@ internal class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
             }
 
             product.ReservedQuantity -= orderItem.Quantity;
-
-            _productRepository.Update(product);
         }
 
-        _orderRepository.Delete(order);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
     }
 }

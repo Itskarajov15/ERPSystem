@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ErpSystem.Application.Deliveries.Queries.GetDeliveryDetails;
 
-public record GetDeliveryDetailsQuery(Guid Id) : IRequest<DeliveryDto>;
+public record GetDeliveryDetailsQuery(Guid Id) : IRequest<DeliveryDetailDto>;

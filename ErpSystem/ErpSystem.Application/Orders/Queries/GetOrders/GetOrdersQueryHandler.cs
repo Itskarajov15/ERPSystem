@@ -1,40 +1,77 @@
-﻿using AutoMapper;
-using ErpSystem.Application.Common.Models;
-using ErpSystem.Application.Orders.DTOs;
-using ErpSystem.Domain.Interfaces.Repositories;
+﻿using ErpSystem.Application.Orders.DTOs;
+using ErpSystem.Domain.Common.Filters;
+using ErpSystem.Domain.Common.Pagination;
+using ErpSystem.Domain.Entities.Sales;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Orders.Queries.GetOrders;
 
-internal class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, PaginatedList<OrderDto>>
+internal class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, PageResult<OrderDto>>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IMapper _mapper;
+    private readonly IRepository _repository;
 
-    public GetOrdersQueryHandler(IOrderRepository orderRepository, IMapper mapper)
+    public GetOrdersQueryHandler(IRepository repository)
     {
-        _orderRepository = orderRepository;
-        _mapper = mapper;
+        _repository = repository;
     }
 
-    public async Task<PaginatedList<OrderDto>> Handle(
+    public async Task<PageResult<OrderDto>> Handle(
         GetOrdersQuery request,
         CancellationToken cancellationToken
     )
     {
-        var orders = await _orderRepository.GetOrdersAsync(
-            request.Filters,
-            request.PaginationRequest,
-            cancellationToken
+        var filterBy = ComposeFilterBy(request.Filters);
+
+        var result = await _repository.GetPaginatedAsync(
+            request.PaginationParams,
+            x =>
+                x.Select(o => new OrderDto()
+                {
+                    Id = o.Id,
+                    OrderDate = o.OrderDate,
+                    StatusName = o.Status.ToString(),
+                    CustomerName = o.Customer.Name,
+                    PaymentMethodName = o.PaymentMethod.Name,
+                    TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity),
+                }),
+            filterBy
         );
 
-        var orderDtos = _mapper.Map<List<OrderDto>>(orders);
-
-        return new PaginatedList<OrderDto>(
-            orderDtos,
-            orders.Count,
-            request.PaginationRequest.Page,
-            request.PaginationRequest.PageSize
-        );
+        return result;
     }
+
+    private Func<IQueryable<Order>, IQueryable<Order>> ComposeFilterBy(OrderFilters? filters) =>
+        query =>
+        {
+            query = query
+                .Include(o => o.Customer)
+                .Include(o => o.OrderItems)
+                .ThenInclude(i => i.Product)
+                .Include(o => o.PaymentMethod);
+
+            if (filters == null)
+            {
+                return query;
+            }
+            if (filters.CustomerId.HasValue)
+            {
+                query = query.Where(o => o.CustomerId == filters.CustomerId);
+            }
+            if (filters.Status.HasValue)
+            {
+                query = query.Where(o => o.Status == filters.Status);
+            }
+            if (filters.FromDate.HasValue)
+            {
+                query = query.Where(o => o.OrderDate >= filters.FromDate);
+            }
+            if (filters.ToDate.HasValue)
+            {
+                query = query.Where(o => o.OrderDate <= filters.ToDate);
+            }
+
+            return query;
+        };
 }

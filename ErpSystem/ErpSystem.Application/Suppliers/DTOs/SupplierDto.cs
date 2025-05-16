@@ -1,10 +1,6 @@
-﻿using AutoMapper;
-using ErpSystem.Application.Common.Mappings;
-using ErpSystem.Domain.Entities.Deliveries;
+﻿namespace ErpSystem.Application.Suppliers.DTOs;
 
-namespace ErpSystem.Application.Suppliers.DTOs;
-
-public class SupplierDto : IMapFrom<Supplier>
+public class SupplierDto
 {
     public Guid Id { get; set; }
 
@@ -18,12 +14,7 @@ public class SupplierDto : IMapFrom<Supplier>
 
     public string ContactName { get; set; } = null!;
 
-    public DateTime CreatedAt { get; set; }
+    public string CreatedAt { get; set; } = null!;
 
-    public DateTime UpdatedAt { get; set; }
-
-    public void Mapping(Profile profile)
-    {
-        profile.CreateMap<Supplier, SupplierDto>();
-    }
+    public string? UpdatedAt { get; set; }
 }

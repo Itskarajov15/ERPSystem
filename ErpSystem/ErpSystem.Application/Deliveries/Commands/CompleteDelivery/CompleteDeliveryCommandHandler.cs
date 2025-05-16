@@ -1,32 +1,27 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Deliveries;
 using ErpSystem.Domain.Interfaces;
-using ErpSystem.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace ErpSystem.Application.Deliveries.Commands.CompleteDelivery;
 
 internal class CompleteDeliveryCommandHandler : IRequestHandler<CompleteDeliveryCommand>
 {
-    private readonly IDeliveryRepository _deliveryRepository;
+    private readonly IRepository _repository;
     private readonly IInventoryService _inventoryService;
-    private readonly IUnitOfWork _unitOfWork;
 
     public CompleteDeliveryCommandHandler(
-        IDeliveryRepository deliveryRepository,
-        IInventoryService inventoryService,
-        IUnitOfWork unitOfWork
+        IRepository repository,
+        IInventoryService inventoryService
     )
     {
-        _deliveryRepository = deliveryRepository;
+        _repository = repository;
         _inventoryService = inventoryService;
-        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(CompleteDeliveryCommand request, CancellationToken cancellationToken)
     {
-        var delivery = await _deliveryRepository.GetByIdAsync(request.Id, cancellationToken);
+        var delivery = await _repository.GetByIdAsync<Delivery>(request.Id);
         if (delivery == null)
         {
             throw new NotFoundException(nameof(Delivery), request.Id);
@@ -44,6 +39,6 @@ internal class CompleteDeliveryCommandHandler : IRequestHandler<CompleteDelivery
             cancellationToken
         );
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
     }
 }

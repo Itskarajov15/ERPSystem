@@ -1,19 +1,16 @@
-﻿using ErpSystem.Domain.Abstractions;
-using ErpSystem.Domain.Entities.Deliveries;
-using ErpSystem.Domain.Interfaces.Repositories;
+﻿using ErpSystem.Domain.Entities.Deliveries;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
 
 namespace ErpSystem.Application.Suppliers.Commands.AddSupplier;
 
 internal class AddSupplierCommandHandler : IRequestHandler<AddSupplierCommand, Guid>
 {
-    private readonly ISupplierRepository _supplierRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
 
-    public AddSupplierCommandHandler(ISupplierRepository supplierRepository, IUnitOfWork unitOfWork)
+    public AddSupplierCommandHandler(IRepository repository)
     {
-        _supplierRepository = supplierRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
     public async Task<Guid> Handle(AddSupplierCommand request, CancellationToken cancellationToken)
@@ -27,8 +24,8 @@ internal class AddSupplierCommandHandler : IRequestHandler<AddSupplierCommand, G
             ContactPerson = request.ContactPerson,
         };
 
-        _supplierRepository.Add(supplier);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.AddAsync<Supplier>(supplier);
+        await _repository.SaveChangesAsync();
 
         return supplier.Id;
     }

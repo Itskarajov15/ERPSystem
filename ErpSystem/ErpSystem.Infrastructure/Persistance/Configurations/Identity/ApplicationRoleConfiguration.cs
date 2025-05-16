@@ -8,6 +8,8 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
 {
     public void Configure(EntityTypeBuilder<ApplicationRole> builder)
     {
+        builder.Property(r => r.Description).HasMaxLength(250).IsRequired();
+
         builder
             .HasMany(r => r.RoleRoutePermissions)
             .WithOne(rp => rp.ApplicationRole)

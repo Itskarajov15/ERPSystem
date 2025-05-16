@@ -1,10 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using ErpSystem.Application.Authentication.DTOs;
 using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Application.Common.Interfaces;
+using ErpSystem.Application.Common.Models;
 using ErpSystem.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -30,9 +33,9 @@ public class IdentityService : IIdentityService
         _permissionService = permissionService;
     }
 
-    public async Task AddToRoleAsync(string userId, string role)
+    public async Task AddToRoleAsync(Guid userId, string role)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
 
         if (user == null)
         {
@@ -52,7 +55,7 @@ public class IdentityService : IIdentityService
         }
     }
 
-    public async Task<string> AuthenticateAsync(string userName, string password)
+    public async Task<AuthenticationResult> AuthenticateAsync(string userName, string password)
     {
         var user = await _userManager.FindByNameAsync(userName);
 
@@ -73,19 +76,56 @@ public class IdentityService : IIdentityService
         user.LastLogin = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
 
-        return token;
+        return new AuthenticationResult()
+        {
+            UserId = user.Id.ToString(),
+            UserName = user.UserName,
+            AccessToken = token,
+        };
     }
 
-    public async Task<string> CreateUserAsync(string userName, string password)
+    public async Task<RoleDto> CreateRoleAsync(string name, string description)
+    {
+        if (await _roleManager.RoleExistsAsync(name))
+        {
+            throw new Exception("Role already exists");
+        }
+
+        var role = new ApplicationRole { Name = name, Description = description };
+
+        var result = await _roleManager.CreateAsync(role);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception("Role creation failed");
+        }
+
+        return new RoleDto
+        {
+            Id = role.Id.ToString(),
+            Name = role.Name,
+            Description = role.Description,
+        };
+    }
+
+    public async Task<string> CreateUserAsync(
+        string userName,
+        string password,
+        string email,
+        string firstName,
+        string lastName
+    )
     {
         var user = new ApplicationUser
         {
             UserName = userName,
-            Email = userName,
+            Email = email,
             CreatedAt = DateTime.UtcNow,
             IsActive = true,
             EmailConfirmed = true,
             PhoneNumberConfirmed = true,
+            FirstName = firstName,
+            LastName = lastName,
         };
 
         var result = await _userManager.CreateAsync(user, password);
@@ -98,9 +138,26 @@ public class IdentityService : IIdentityService
         return user.Id.ToString();
     }
 
-    public async Task DeleteUserAsync(string userId)
+    public async Task DeleteRoleAsync(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var role = await _roleManager.FindByIdAsync(id.ToString());
+
+        if (role == null)
+        {
+            throw new NotFoundException("Role", id);
+        }
+
+        var result = await _roleManager.DeleteAsync(role);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception("Failed to delete role");
+        }
+    }
+
+    public async Task DeleteUserAsync(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
 
         if (user == null)
         {
@@ -115,6 +172,18 @@ public class IdentityService : IIdentityService
         }
     }
 
+    public async Task<IEnumerable<RoleDto>> GetAllRolesAsync()
+    {
+        var roles = await _roleManager.Roles.ToListAsync();
+
+        return roles.Select(role => new RoleDto
+        {
+            Id = role.Id.ToString(),
+            Name = role.Name!,
+            Description = role.Description,
+        });
+    }
+
     public async Task<string?> GetUserNameAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -127,9 +196,9 @@ public class IdentityService : IIdentityService
         return user.UserName;
     }
 
-    public async Task<bool> IsInRoleAsync(string userId, string role)
+    public async Task<bool> IsInRoleAsync(Guid userId, string role)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
 
         if (user == null)
         {
@@ -137,6 +206,23 @@ public class IdentityService : IIdentityService
         }
 
         return await _userManager.IsInRoleAsync(user, role);
+    }
+
+    public async Task RemoveRoleAsync(Guid userId, string roleName)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        if (user == null)
+        {
+            throw new NotFoundException("User", userId);
+        }
+
+        var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception("Failed to remove role from user");
+        }
     }
 
     private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)

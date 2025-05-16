@@ -1,41 +1,70 @@
-﻿using AutoMapper;
-using ErpSystem.Application.Common.Models;
+﻿using ErpSystem.Application.Common.Models;
 using ErpSystem.Application.Deliveries.DTOs;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Common.Filters;
+using ErpSystem.Domain.Common.Pagination;
+using ErpSystem.Domain.Entities.Deliveries;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Deliveries.Queries.GetDeliveries;
 
 internal class GetDeliveriesQueryHandler
-    : IRequestHandler<GetDeliveriesQuery, PaginatedList<DeliveryDto>>
+    : IRequestHandler<GetDeliveriesQuery, PageResult<DeliveryDto>>
 {
-    private readonly IDeliveryRepository _deliveryRepository;
-    private readonly IMapper _mapper;
+    private readonly IRepository _repository;
 
-    public GetDeliveriesQueryHandler(IDeliveryRepository deliveryRepository, IMapper mapper)
+    public GetDeliveriesQueryHandler(IRepository repository)
     {
-        _deliveryRepository = deliveryRepository;
-        _mapper = mapper;
+        _repository = repository;
     }
 
-    public async Task<PaginatedList<DeliveryDto>> Handle(
+    public async Task<PageResult<DeliveryDto>> Handle(
         GetDeliveriesQuery request,
         CancellationToken cancellationToken
     )
     {
-        var deliveries = await _deliveryRepository.GetDeliveriesAsync(
-            request.Filter,
-            request.PaginationRequest,
-            cancellationToken
+        var filterBy = ComposeFilterBy(request.Filter);
+
+        var result = await _repository.GetPaginatedAsync(
+            request.PaginationParams,
+            x => x.Select(o => new DeliveryDto() { Id = o.Id }),
+            filterBy
         );
 
-        var deliveryDtos = _mapper.Map<List<DeliveryDto>>(deliveries);
-
-        return new PaginatedList<DeliveryDto>(
-            deliveryDtos,
-            deliveryDtos.Count,
-            request.PaginationRequest.Page,
-            request.PaginationRequest.PageSize
-        );
+        return result;
     }
+
+    private Func<IQueryable<Delivery>, IQueryable<Delivery>> ComposeFilterBy(
+        DeliveryFilters? filters
+    ) =>
+        query =>
+        {
+            query = query
+                .Include(d => d.Supplier)
+                .Include(d => d.DeliveryItems)
+                .ThenInclude(i => i.Product);
+
+            if (filters == null)
+            {
+                return query;
+            }
+            if (filters.SupplierId.HasValue)
+            {
+                query = query.Where(d => d.SupplierId == filters.SupplierId);
+            }
+            if (filters.FromDate.HasValue)
+            {
+                query = query.Where(d => d.CreatedAt >= filters.FromDate);
+            }
+            if (filters.ToDate.HasValue)
+            {
+                query = query.Where(d => d.CreatedAt <= filters.ToDate);
+            }
+            if (filters.Status.HasValue)
+            {
+                query = query.Where(d => d.DeliveryStatus == filters.Status);
+            }
+            return query;
+        };
 }

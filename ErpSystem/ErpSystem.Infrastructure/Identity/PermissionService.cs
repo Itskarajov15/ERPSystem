@@ -1,8 +1,9 @@
 ﻿using System.Security.Claims;
 using ErpSystem.Application.Common.Interfaces;
 using ErpSystem.Domain.Entities.Identity;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Infrastructure.Identity;
 
@@ -10,17 +11,17 @@ public class PermissionService : IPermissionService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly IRoutePermissionRepository _routePermissionRepository;
+    private readonly IRepository _repository;
 
     public PermissionService(
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
-        IRoutePermissionRepository routePermissionRepository
+        IRepository repository
     )
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _routePermissionRepository = routePermissionRepository;
+        _repository = repository;
     }
 
     public async Task<List<Claim>> GetPermissionClaimsAsync(ApplicationUser user)
@@ -45,10 +46,12 @@ public class PermissionService : IPermissionService
         var permissions = new List<RoutePermission>();
         foreach (var roleId in roleIds)
         {
-            var rolePermissions = await _routePermissionRepository.GetByRoleIdAsync(
-                roleId,
-                CancellationToken.None
-            );
+            var rolePermissions = await _repository
+                .AllReadOnly<RoutePermission>()
+                .Include(rp => rp.RoleRoutePermissions)
+                .Where(rp => rp.RoleRoutePermissions.Any(rrp => rrp.RoleId == roleId))
+                .ToListAsync();
+
             permissions.AddRange(rolePermissions);
         }
 

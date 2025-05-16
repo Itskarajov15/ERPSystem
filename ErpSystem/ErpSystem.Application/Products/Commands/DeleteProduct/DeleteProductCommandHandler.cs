@@ -1,32 +1,28 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Inventory;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
 
 namespace ErpSystem.Application.Products.Commands.DeleteProduct;
 
 internal class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
 {
-    private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
 
-    public DeleteProductCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    public DeleteProductCommandHandler(IRepository repository)
     {
-        _productRepository = productRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
     public async Task Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await _productRepository.GetByIdAsync(request.ProductId, cancellationToken);
+        var product = await _repository.GetByIdAsync<Product>(request.ProductId);
 
         if (product == null)
         {
             throw new NotFoundException(nameof(Product), request.ProductId);
         }
 
-        _productRepository.Delete(product);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
     }
 }

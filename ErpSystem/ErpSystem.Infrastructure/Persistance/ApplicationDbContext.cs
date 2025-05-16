@@ -11,9 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Infrastructure.Persistance;
 
-public class ApplicationDbContext
-    : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>,
-        IUnitOfWork
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly IDateTime _dateTime;

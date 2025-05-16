@@ -1,31 +1,23 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Abstractions;
+using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Entities.Sales;
-using ErpSystem.Domain.Interfaces.Repositories;
+using ErpSystem.Domain.Interfaces;
 using MediatR;
 
 namespace ErpSystem.Application.Orders.Commands.CompleteOrder;
 
 internal class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderCommand>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository _repository;
 
-    public CompleteOrderCommandHandler(
-        IOrderRepository orderRepository,
-        IProductRepository productRepository,
-        IUnitOfWork unitOfWork
-    )
+    public CompleteOrderCommandHandler(IRepository repository)
     {
-        _orderRepository = orderRepository;
-        _productRepository = productRepository;
-        _unitOfWork = unitOfWork;
+        _repository = repository;
     }
 
     public async Task Handle(CompleteOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(request.Id, cancellationToken);
+        var order = await _repository.GetByIdAsync<Order>(request.Id);
 
         if (order == null)
         {
@@ -39,9 +31,8 @@ internal class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderComman
             );
         }
 
-        var products = await _productRepository.GetByIdsAsync(
-            order.OrderItems.Select(p => p.Id).ToHashSet(),
-            cancellationToken
+        var products = await _repository.GetByIdsAsync<Product>(
+            order.OrderItems.Select(p => p.Id).ToHashSet()
         );
 
         foreach (var product in products)
@@ -64,13 +55,10 @@ internal class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderComman
                     $"Product with ID {product.Id} has insufficient stock."
                 );
             }
-
-            _productRepository.Update(product);
         }
 
         order.Status = OrderStatus.Completed;
 
-        _orderRepository.Update(order);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync();
     }
 }

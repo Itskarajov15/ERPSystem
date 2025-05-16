@@ -1,6 +1,5 @@
 ﻿using ErpSystem.Application.Common.Interfaces;
 using ErpSystem.Domain.Interfaces;
-using ErpSystem.Domain.Interfaces.Repositories;
 using ErpSystem.Infrastructure.Identity;
 using ErpSystem.Infrastructure.Persistance;
 using ErpSystem.Infrastructure.Persistance.Repositories;
@@ -25,16 +24,8 @@ public static class DependencyInjection
             )
         );
 
-        // Register repositories
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<ISupplierRepository, SupplierRepository>();
-        services.AddScoped<IDeliveryRepository, DeliveryRepository>();
-        services.AddScoped<ICustomerRepository, CustomerRepository>();
-        services.AddScoped<IOrderRepository, OrderRepository>();
-        services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
-        services.AddScoped<IUnitOfMeasureRepository, UnitOfMeasureRepository>();
-        services.AddScoped<IRoutePermissionRepository, RoutePermissionRepository>();
+        // Register repository
+        services.AddScoped<IRepository, Repository>();
 
         // Register services
         //services.AddScoped<IUnitOfWork, UnitOfWork>();
