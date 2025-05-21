@@ -12,5 +12,5 @@ public class NotFoundException : Exception
         : base(message, innerException) { }
 
     public NotFoundException(string name, object key)
-        : base($"Entity \"{name}\" ({key}) was not found.") { }
+        : base($"Entity '{name}' ({key}) was not found.") { }
 }

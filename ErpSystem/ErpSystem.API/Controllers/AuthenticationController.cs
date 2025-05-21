@@ -7,6 +7,7 @@ using ErpSystem.Application.Authentication.Commands.Register;
 using ErpSystem.Application.Authentication.Commands.RemoveRole;
 using ErpSystem.Application.Authentication.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ErpSystem.API.Controllers;
@@ -18,6 +19,7 @@ public class AuthenticationController : BaseController
         : base(mediator) { }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login(LoginCommand command)
     {
         var result = await _mediator.Send(command);
@@ -26,6 +28,7 @@ public class AuthenticationController : BaseController
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterCommand command)
     {
         await _mediator.Send(command);
