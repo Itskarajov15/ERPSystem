@@ -2,7 +2,6 @@
 using ErpSystem.Domain.Interfaces;
 using ErpSystem.Infrastructure.Identity;
 using ErpSystem.Infrastructure.Persistance;
-using ErpSystem.Infrastructure.Persistance.Repositories;
 using ErpSystem.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

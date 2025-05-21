@@ -34,7 +34,7 @@ public interface IRepository
     void SoftDelete<T>(T entity)
         where T : BaseEntity;
 
-    Task SoftDeleteById<T>(object id)
+    Task SoftDeleteById<T>(Guid id)
         where T : BaseEntity;
 
     void UnDelete<T>(T entity)
