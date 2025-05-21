@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpSystem.API.Controllers;
 
-public class OrderController : BaseController
+[Route("api/orders")]
+public class OrdersController : BaseController
 {
-    public OrderController(IMediator mediator)
+    public OrdersController(IMediator mediator)
         : base(mediator) { }
 
-    [HttpGet]
-    public async Task<IActionResult> GetOrders(
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] OrderFilters? filters = null
     )
@@ -28,8 +29,8 @@ public class OrderController : BaseController
         return Ok(result);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetOrderDetails(Guid id)
+    [HttpGet("get-by-id/{id}")]
+    public async Task<IActionResult> GetById(Guid id)
     {
         var query = new GetOrderDetailsQuery(id);
         var result = await _mediator.Send(query);
@@ -37,8 +38,8 @@ public class OrderController : BaseController
         return Ok(result);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddOrder(AddOrderCommand command)
+    [HttpPost("add")]
+    public async Task<IActionResult> ADd(AddOrderCommand command)
     {
         var orderId = await _mediator.Send(command);
 
@@ -46,7 +47,7 @@ public class OrderController : BaseController
     }
 
     [HttpPut("{id}/complete")]
-    public async Task<IActionResult> CompleteOrder(Guid id)
+    public async Task<IActionResult> Complete(Guid id)
     {
         await _mediator.Send(new CompleteOrderCommand(id));
 
@@ -54,15 +55,15 @@ public class OrderController : BaseController
     }
 
     [HttpPut("{id}/cancel")]
-    public async Task<IActionResult> CancelOrder(Guid id)
+    public async Task<IActionResult> Cancel(Guid id)
     {
         await _mediator.Send(new CancelOrderCommand(id));
 
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteOrder(Guid id)
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         await _mediator.Send(new DeleteOrderCommand(id));
 

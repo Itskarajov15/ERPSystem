@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpSystem.API.Controllers;
 
+[Route("api/authentication")]
 public class AuthenticationController : BaseController
 {
     public AuthenticationController(IMediator mediator)

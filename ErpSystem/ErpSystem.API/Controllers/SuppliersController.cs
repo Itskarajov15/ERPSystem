@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpSystem.API.Controllers;
 
-public class SupplierController : BaseController
+[Route("api/suppliers")]
+public class SuppliersController : BaseController
 {
-    public SupplierController(IMediator mediator)
+    public SuppliersController(IMediator mediator)
         : base(mediator) { }
 
-    [HttpGet]
-    public async Task<IActionResult> GetSuppliers(
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] SupplierFilters? filters = null
     )
@@ -27,8 +28,8 @@ public class SupplierController : BaseController
         return Ok(result);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetSupplierById(Guid id)
+    [HttpGet("get-by-id/{id}")]
+    public async Task<IActionResult> GetById(Guid id)
     {
         var query = new GetSupplierByIdQuery(id);
         var result = await _mediator.Send(query);
@@ -36,19 +37,16 @@ public class SupplierController : BaseController
         return Ok(result);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddSupplier(AddSupplierCommand command)
+    [HttpPost("add")]
+    public async Task<IActionResult> Add(AddSupplierCommand command)
     {
         var supplierId = await _mediator.Send(command);
 
         return Ok(supplierId);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSupplier(
-        Guid id,
-        [FromBody] UpdateSupplierCommand command
-    )
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSupplierCommand command)
     {
         if (id != command.Id)
         {
@@ -60,8 +58,8 @@ public class SupplierController : BaseController
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSupplier(Guid id)
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         await _mediator.Send(new DeleteSupplierCommand(id));
 

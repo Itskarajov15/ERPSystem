@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpSystem.API.Controllers;
 
-public class DeliveryController : BaseController
+[Route("api/deliveries")]
+public class DeliveriesController : BaseController
 {
-    public DeliveryController(IMediator mediator)
+    public DeliveriesController(IMediator mediator)
         : base(mediator) { }
 
-    [HttpGet]
-    public async Task<IActionResult> GetDeliveries(
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] DeliveryFilters? filters = null
     )
@@ -27,8 +28,8 @@ public class DeliveryController : BaseController
         return Ok(result);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetDeliveryDetails(Guid id)
+    [HttpGet("get-by-id/{id}")]
+    public async Task<IActionResult> GetById(Guid id)
     {
         var query = new GetDeliveryDetailsQuery(id);
         var result = await _mediator.Send(query);
@@ -36,8 +37,8 @@ public class DeliveryController : BaseController
         return Ok(result);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddDelivery(AddDeliveryCommand command)
+    [HttpPost("add")]
+    public async Task<IActionResult> Add(AddDeliveryCommand command)
     {
         var deliveryId = await _mediator.Send(command);
 
@@ -45,15 +46,15 @@ public class DeliveryController : BaseController
     }
 
     [HttpPut("{id}/complete")]
-    public async Task<IActionResult> CompleteDelivery(Guid id)
+    public async Task<IActionResult> Complete(Guid id)
     {
         await _mediator.Send(new CompleteDeliveryCommand(id));
 
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteDelivery(Guid id)
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         await _mediator.Send(new DeleteDeliveryCommand(id));
 

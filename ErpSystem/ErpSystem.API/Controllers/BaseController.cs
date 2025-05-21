@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ErpSystem.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
 public class BaseController : ControllerBase
 {
     protected readonly IMediator _mediator;
