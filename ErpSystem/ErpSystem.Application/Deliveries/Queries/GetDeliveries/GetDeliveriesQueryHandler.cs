@@ -28,7 +28,17 @@ internal class GetDeliveriesQueryHandler
 
         var result = await _repository.GetPaginatedAsync(
             request.PaginationParams,
-            x => x.Select(o => new DeliveryDto() { Id = o.Id }),
+            x =>
+                x.Select(d => new DeliveryDto()
+                {
+                    Id = d.Id,
+                    SupplierId = d.SupplierId,
+                    DeliveryDate = d.DeliveryDate,
+                    Notes = d.Notes,
+                    Status = d.DeliveryStatus,
+                    StatusName = d.DeliveryStatus.ToString(),
+                    SupplierName = d.Supplier.Name,
+                }),
             filterBy
         );
 
