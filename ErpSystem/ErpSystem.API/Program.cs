@@ -1,7 +1,9 @@
+using ErpSystem.API.Extensions;
+using ErpSystem.API.Middlewares;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -10,9 +12,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
+app.UseMiddleware<ExceptionHandlingMiddleware>()
+    .UseHttpsRedirection()
+    .UseCors("CorsPolicy")
+    .UseAuthorization();
 
 app.MapControllers();
 
