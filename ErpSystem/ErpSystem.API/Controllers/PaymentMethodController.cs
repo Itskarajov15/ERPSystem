@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ErpSystem.API.Controllers;
 
-public class PaymentMethodsController : BaseController
+public class PaymentMethodController : BaseController
 {
-    public PaymentMethodsController(IMediator mediator)
+    public PaymentMethodController(IMediator mediator)
         : base(mediator) { }
 
     [HttpGet]

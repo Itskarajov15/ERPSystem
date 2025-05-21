@@ -11,9 +11,9 @@ namespace ErpSystem.API.Controllers;
 
 [Route("api/unitsOfMeasure")]
 [ApiController]
-public class UnitsOfMeasureController : BaseController
+public class UnitOfMeasureController : BaseController
 {
-    public UnitsOfMeasureController(IMediator mediator)
+    public UnitOfMeasureController(IMediator mediator)
         : base(mediator) { }
 
     [HttpGet]
