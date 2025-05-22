@@ -101,7 +101,6 @@ namespace ErpSystem.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ActionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ControllerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Endpoint = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),

@@ -47,6 +47,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
     public DbSet<RoutePermission> RoutePermissions => Set<RoutePermission>();
 
+    public DbSet<RoleRoutePermission> RoleRoutePermission => Set<RoleRoutePermission>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

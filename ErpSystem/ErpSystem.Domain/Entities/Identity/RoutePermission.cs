@@ -8,8 +8,6 @@ public class RoutePermission : BaseEntity
 
     public string ControllerName { get; set; } = null!;
 
-    public string Endpoint { get; set; } = null!;
-
     public ICollection<RoleRoutePermission> RoleRoutePermissions { get; set; } =
         new HashSet<RoleRoutePermission>();
 }

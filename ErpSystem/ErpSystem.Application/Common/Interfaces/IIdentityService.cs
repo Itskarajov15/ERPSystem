@@ -30,4 +30,6 @@ public interface IIdentityService
     Task<IEnumerable<RoleDto>> GetAllRolesAsync();
 
     Task RemoveRoleAsync(Guid userId, string roleName);
+
+    Task<bool> CheckRoleAccessAsync(string roleName, string action, string controller);
 }

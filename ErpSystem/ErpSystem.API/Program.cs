@@ -47,11 +47,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+await app.MigrateDbAsync();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>()
     .UseHttpsRedirection()
     .UseCors("CorsPolicy")
     .UseAuthorization();
 
 app.MapControllers();
+
+await app.UpdateRoutePermissions();
+await app.SeedAdminRole();
+await app.SeedAdminUser();
 
 app.Run();

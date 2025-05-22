@@ -6,6 +6,7 @@ using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Application.Common.Interfaces;
 using ErpSystem.Application.Common.Models;
 using ErpSystem.Domain.Entities.Identity;
+using ErpSystem.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,18 +20,21 @@ public class IdentityService : IIdentityService
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly IConfiguration _configuration;
     private readonly IPermissionService _permissionService;
+    private readonly IRepository _repository;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         IConfiguration configuration,
-        IPermissionService permissionService
+        IPermissionService permissionService,
+        IRepository repository
     )
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _configuration = configuration;
         _permissionService = permissionService;
+        _repository = repository;
     }
 
     public async Task AddToRoleAsync(Guid userId, string role)
@@ -153,6 +157,24 @@ public class IdentityService : IIdentityService
         {
             throw new Exception("Failed to delete role");
         }
+    }
+
+    public async Task<bool> CheckRoleAccessAsync(string roleName, string action, string controller)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName);
+
+        if (role == null)
+        {
+            throw new ArgumentException("Role with this name does not exist.");
+        }
+
+        return _repository
+            .All<RoleRoutePermission>()
+            .Any(rrp =>
+                rrp.RoleId == role.Id
+                && rrp.RoutePermission.ActionName == action
+                && rrp.RoutePermission.ControllerName == controller
+            );
     }
 
     public async Task DeleteUserAsync(Guid userId)

@@ -24,6 +24,9 @@ public class PermissionService : IPermissionService
         _repository = repository;
     }
 
+    public async Task<ApplicationUser?> GetUserById(Guid id) =>
+        await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+
     public async Task<List<Claim>> GetPermissionClaimsAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);

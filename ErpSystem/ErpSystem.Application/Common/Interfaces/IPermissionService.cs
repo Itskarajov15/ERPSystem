@@ -6,4 +6,6 @@ namespace ErpSystem.Application.Common.Interfaces;
 public interface IPermissionService
 {
     Task<List<Claim>> GetPermissionClaimsAsync(ApplicationUser user);
+
+    Task<ApplicationUser?> GetUserById(Guid id);
 }

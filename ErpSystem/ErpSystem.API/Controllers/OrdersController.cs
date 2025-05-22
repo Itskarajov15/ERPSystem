@@ -39,7 +39,7 @@ public class OrdersController : BaseController
     }
 
     [HttpPost("add")]
-    public async Task<IActionResult> ADd(AddOrderCommand command)
+    public async Task<IActionResult> Add(AddOrderCommand command)
     {
         var orderId = await _mediator.Send(command);
 

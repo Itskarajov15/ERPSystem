@@ -1,10 +1,10 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using ErpSystem.API.Attributes;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ErpSystem.API.Controllers;
 
-[Authorize]
+[SecureRoute]
 [ApiController]
 public class BaseController : ControllerBase
 {
