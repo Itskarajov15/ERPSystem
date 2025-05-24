@@ -70,7 +70,14 @@ internal class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, PageR
 
             if (filters.OnlyLowStock.HasValue)
             {
-                query = query.Where(p => p.Quantity <= p.ReorderLevel);
+                if (filters.OnlyLowStock.Value)
+                {
+                    query = query.Where(p => p.Quantity <= p.ReorderLevel);
+                }
+                else
+                {
+                    query = query.Where(p => p.Quantity > p.ReorderLevel);
+                }
             }
 
             return query;

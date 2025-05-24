@@ -16,7 +16,7 @@ public class UnitsOfMeasureController : BaseController
     public UnitsOfMeasureController(IMediator mediator)
         : base(mediator) { }
 
-    [HttpGet]
+    [HttpGet("get-all")]
     public async Task<IActionResult> GetAll([FromQuery] PaginationParams paginationParams)
     {
         var units = await _mediator.Send(new GetUnitsOfMeasureQuery(paginationParams));
@@ -24,7 +24,7 @@ public class UnitsOfMeasureController : BaseController
         return Ok(units);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("get-by-id/{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var unit = await _mediator.Send(new GetUnitOfMeasureByIdQuery(id));
@@ -32,15 +32,15 @@ public class UnitsOfMeasureController : BaseController
         return Ok(unit);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateUnitOfMeasureCommand command)
+    [HttpPost("add")]
+    public async Task<IActionResult> Add([FromBody] CreateUnitOfMeasureCommand command)
     {
         var id = await _mediator.Send(command);
 
         return Ok(id);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("update/{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUnitOfMeasureCommand command)
     {
         if (id != command.Id)
@@ -49,10 +49,11 @@ public class UnitsOfMeasureController : BaseController
         }
 
         await _mediator.Send(command);
+
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _mediator.Send(new DeleteUnitOfMeasureCommand(id));

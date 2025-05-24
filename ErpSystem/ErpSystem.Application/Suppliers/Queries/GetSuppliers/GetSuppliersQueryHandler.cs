@@ -32,13 +32,9 @@ internal class GetSuppliersQueryHandler
                     Id = s.Id,
                     Address = s.Address,
                     ContactName = s.ContactPerson,
-                    CreatedAt = s.CreatedAt.ToString("dd/MM/yyyy"),
                     Email = s.Email,
                     Name = s.Name,
                     PhoneNumber = s.Phone,
-                    UpdatedAt = s.LastModifiedAt.HasValue
-                        ? s.LastModifiedAt.Value.ToString("dd/MM/yyyy")
-                        : null,
                 }),
             filterBy
         );

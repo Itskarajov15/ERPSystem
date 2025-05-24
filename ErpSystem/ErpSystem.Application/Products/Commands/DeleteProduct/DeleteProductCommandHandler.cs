@@ -1,5 +1,4 @@
-﻿using ErpSystem.Application.Common.Exceptions;
-using ErpSystem.Domain.Entities.Inventory;
+﻿using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
 
@@ -16,13 +15,7 @@ internal class DeleteProductCommandHandler : IRequestHandler<DeleteProductComman
 
     public async Task Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await _repository.GetByIdAsync<Product>(request.ProductId);
-
-        if (product == null)
-        {
-            throw new NotFoundException(nameof(Product), request.ProductId);
-        }
-
+        await _repository.SoftDeleteById<Product>(request.ProductId);
         await _repository.SaveChangesAsync();
     }
 }

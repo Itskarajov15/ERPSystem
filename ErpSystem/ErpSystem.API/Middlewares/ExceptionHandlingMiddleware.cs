@@ -62,6 +62,11 @@ public class ExceptionHandlingMiddleware
                 response = new { status = statusCode, message = notFoundEx.Message };
                 break;
 
+            case KeyNotFoundException keyNotFoundEx:
+                statusCode = StatusCodes.Status404NotFound;
+                response = new { status = statusCode, message = keyNotFoundEx.Message };
+                break;
+
             case UnauthorizedAccessException unauthorizedEx:
                 statusCode = StatusCodes.Status401Unauthorized;
                 response = new { status = statusCode, message = unauthorizedEx.Message };

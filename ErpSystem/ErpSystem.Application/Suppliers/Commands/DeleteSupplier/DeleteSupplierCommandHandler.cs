@@ -16,14 +16,7 @@ internal class DeleteSupplierCommandHandler : IRequestHandler<DeleteSupplierComm
 
     public async Task Handle(DeleteSupplierCommand request, CancellationToken cancellationToken)
     {
-        var supplier = await _repository.GetByIdAsync<Supplier>(request.Id);
-
-        if (supplier is null)
-        {
-            throw new NotFoundException(nameof(Supplier), request.Id);
-        }
-
-        _repository.SoftDelete<Supplier>(supplier);
+        await _repository.SoftDeleteById<Supplier>(request.Id);
         await _repository.SaveChangesAsync();
     }
 }

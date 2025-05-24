@@ -13,8 +13,4 @@ public class SupplierDto
     public string Email { get; set; } = null!;
 
     public string ContactName { get; set; } = null!;
-
-    public string CreatedAt { get; set; } = null!;
-
-    public string? UpdatedAt { get; set; }
 }

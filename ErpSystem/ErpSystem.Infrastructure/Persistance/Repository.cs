@@ -124,7 +124,7 @@ public class Repository : IRepository
 
         if (entity == null)
         {
-            throw new KeyNotFoundException($"{nameof(T)} with ID '{id}' was not found.");
+            throw new KeyNotFoundException($"{typeof(T).Name} with ID '{id}' was not found.");
         }
 
         entity.IsDeleted = true;
