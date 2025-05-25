@@ -9,12 +9,10 @@ namespace ErpSystem.Application.Deliveries.Commands.AddDelivery;
 internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, Guid>
 {
     private readonly IRepository _repository;
-    private readonly IInventoryService _inventoryService;
 
-    public AddDeliveryCommandHandler(IRepository repository, IInventoryService inventoryService)
+    public AddDeliveryCommandHandler(IRepository repository)
     {
         _repository = repository;
-        _inventoryService = inventoryService;
     }
 
     public async Task<Guid> Handle(AddDeliveryCommand request, CancellationToken cancellationToken)
@@ -40,17 +38,17 @@ internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, G
             DeliveryDate = request.DeliveryDate,
             Notes = request.Notes,
             DeliveryItems = request
-                .Items.Select(i => new DeliveryItem
+                .Items.Select(item => new DeliveryItem
                 {
-                    ProductId = i.ProductId,
-                    Quantity = i.Quantity,
-                    UnitPrice = products.First(p => p.Id == i.ProductId).Price,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
                 })
-                .ToList(),
+                .ToHashSet(),
             DeliveryStatus = DeliveryStatus.Registered,
         };
 
-        await _repository.AddAsync<Delivery>(delivery);
+        await _repository.AddAsync(delivery);
         await _repository.SaveChangesAsync();
 
         return delivery.Id;

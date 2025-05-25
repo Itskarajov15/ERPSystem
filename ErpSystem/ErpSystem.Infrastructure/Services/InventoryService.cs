@@ -15,11 +15,7 @@ public class InventoryService : IInventoryService
         _logger = logger;
     }
 
-    public async Task IncreaseStockAsync(
-        Guid productId,
-        decimal quantity,
-        CancellationToken cancellationToken = default
-    )
+    public async Task IncreaseStockAsync(Guid productId, decimal quantity)
     {
         var product = await _repository.GetByIdAsync<Product>(productId);
 
@@ -47,8 +43,7 @@ public class InventoryService : IInventoryService
     }
 
     public async Task IncreaseStockOfMultipleItemsAsync(
-        IEnumerable<(Guid productId, int quantity)> items,
-        CancellationToken cancellationToken
+        IEnumerable<(Guid productId, int quantity)> items
     )
     {
         if (!items.Any())
@@ -104,11 +99,7 @@ public class InventoryService : IInventoryService
         await _repository.SaveChangesAsync();
     }
 
-    public async Task DecreaseStockAsync(
-        Guid productId,
-        decimal quantity,
-        CancellationToken cancellationToken = default
-    )
+    public async Task DecreaseStockAsync(Guid productId, decimal quantity)
     {
         var product = await _repository.GetByIdAsync<Product>(productId);
 
@@ -148,11 +139,7 @@ public class InventoryService : IInventoryService
         );
     }
 
-    public async Task<bool> HasSufficientStockAsync(
-        Guid productId,
-        decimal quantity,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<bool> HasSufficientStockAsync(Guid productId, decimal quantity)
     {
         if (quantity <= 0)
         {

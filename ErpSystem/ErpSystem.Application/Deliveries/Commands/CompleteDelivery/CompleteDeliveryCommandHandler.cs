@@ -2,6 +2,7 @@
 using ErpSystem.Domain.Entities.Deliveries;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Deliveries.Commands.CompleteDelivery;
 
@@ -21,7 +22,11 @@ internal class CompleteDeliveryCommandHandler : IRequestHandler<CompleteDelivery
 
     public async Task Handle(CompleteDeliveryCommand request, CancellationToken cancellationToken)
     {
-        var delivery = await _repository.GetByIdAsync<Delivery>(request.Id);
+        var delivery = await _repository
+            .AllReadOnly<Delivery>()
+            .Include(d => d.DeliveryItems)
+            .FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
+
         if (delivery == null)
         {
             throw new NotFoundException(nameof(Delivery), request.Id);
@@ -35,8 +40,7 @@ internal class CompleteDeliveryCommandHandler : IRequestHandler<CompleteDelivery
         delivery.DeliveryStatus = DeliveryStatus.Completed;
 
         await _inventoryService.IncreaseStockOfMultipleItemsAsync(
-            delivery.DeliveryItems.Select(i => (i.ProductId, i.Quantity)).ToList(),
-            cancellationToken
+            delivery.DeliveryItems.Select(i => (i.ProductId, i.Quantity)).ToList()
         );
 
         await _repository.SaveChangesAsync();

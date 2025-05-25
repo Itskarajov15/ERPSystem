@@ -7,5 +7,5 @@ public record AddDeliveryCommand(
     Guid SupplierId,
     DateTime DeliveryDate,
     string? Notes,
-    List<DeliveryItemDto> Items
+    List<AddDeliveryItemDto> Items
 ) : IRequest<Guid>;

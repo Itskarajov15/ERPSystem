@@ -33,7 +33,7 @@ internal class GetDeliveriesQueryHandler
                 {
                     Id = d.Id,
                     SupplierId = d.SupplierId,
-                    DeliveryDate = d.DeliveryDate,
+                    DeliveryDate = d.DeliveryDate.ToString("dd/MM/yyyy"),
                     Notes = d.Notes,
                     Status = d.DeliveryStatus,
                     StatusName = d.DeliveryStatus.ToString(),

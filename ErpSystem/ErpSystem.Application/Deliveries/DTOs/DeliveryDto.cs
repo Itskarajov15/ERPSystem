@@ -10,7 +10,7 @@ public class DeliveryDto
 
     public string SupplierName { get; set; } = string.Empty;
 
-    public DateTime DeliveryDate { get; set; }
+    public string DeliveryDate { get; set; } = string.Empty;
 
     public string? Notes { get; set; }
 
