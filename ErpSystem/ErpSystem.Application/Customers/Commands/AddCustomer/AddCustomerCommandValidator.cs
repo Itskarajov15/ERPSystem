@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace ErpSystem.Application.Suppliers.Commands.AddSupplier;
+namespace ErpSystem.Application.Customers.Commands.AddCustomer;
 
-public class AddSupplierCommandValidator : AbstractValidator<AddSupplierCommand>
+public class AddCustomerCommandValidator : AbstractValidator<AddCustomerCommand>
 {
-    public AddSupplierCommandValidator()
+    public AddCustomerCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()
@@ -27,7 +27,7 @@ public class AddSupplierCommandValidator : AbstractValidator<AddSupplierCommand>
             .EmailAddress()
             .MaximumLength(100)
             .WithMessage("Invalid email format.");
-        RuleFor(x => x.ContactPerson)
+        RuleFor(x => x.ContactName)
             .NotEmpty()
             .WithMessage("Contact Name is required.")
             .MaximumLength(100)

@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace ErpSystem.Application.Suppliers.Commands.AddSupplier;
+namespace ErpSystem.Application.Customers.Commands.UpdateCustomer;
 
-public class AddSupplierCommandValidator : AbstractValidator<AddSupplierCommand>
+public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCommand>
 {
-    public AddSupplierCommandValidator()
+    public UpdateCustomerCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()
@@ -22,15 +22,14 @@ public class AddSupplierCommandValidator : AbstractValidator<AddSupplierCommand>
             .MaximumLength(15)
             .WithMessage("Phone must not exceed 15 characters.");
         RuleFor(x => x.Email)
-            .NotEmpty()
-            .WithMessage("Email is required.")
             .EmailAddress()
+            .WithMessage("Invalid email format.")
             .MaximumLength(100)
-            .WithMessage("Invalid email format.");
-        RuleFor(x => x.ContactPerson)
+            .WithMessage("Email must not exceed 100 characters.");
+        RuleFor(x => x.ContactName)
             .NotEmpty()
-            .WithMessage("Contact Name is required.")
+            .WithMessage("Contact name is required.")
             .MaximumLength(100)
-            .WithMessage("Contact Name must not exceed 100 characters.");
+            .WithMessage("Contact name must not exceed 100 characters.");
     }
 }

@@ -1,5 +1,4 @@
 ﻿using ErpSystem.Domain.Entities.Deliveries;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ErpSystem.Infrastructure.Persistance.Configurations.Deliveries;
