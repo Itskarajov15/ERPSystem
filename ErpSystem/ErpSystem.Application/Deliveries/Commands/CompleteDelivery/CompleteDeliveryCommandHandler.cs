@@ -32,9 +32,9 @@ internal class CompleteDeliveryCommandHandler : IRequestHandler<CompleteDelivery
             throw new NotFoundException(nameof(Delivery), request.Id);
         }
 
-        if (delivery.DeliveryStatus != DeliveryStatus.Registered)
+        if (delivery.DeliveryStatus != DeliveryStatus.InProgress)
         {
-            throw new InvalidOperationException("Only registered deliveries can be confirmed.");
+            throw new InvalidOperationException("Only in-progress deliveries can be completed.");
         }
 
         delivery.DeliveryStatus = DeliveryStatus.Completed;

@@ -1,6 +1,7 @@
 ﻿using ErpSystem.Application.Deliveries.Commands.AddDelivery;
 using ErpSystem.Application.Deliveries.Commands.CompleteDelivery;
 using ErpSystem.Application.Deliveries.Commands.DeleteDelivery;
+using ErpSystem.Application.Deliveries.Commands.StartDeliveryProgress;
 using ErpSystem.Application.Deliveries.Queries.GetDeliveries;
 using ErpSystem.Application.Deliveries.Queries.GetDeliveryDetails;
 using ErpSystem.Domain.Common.Filters;
@@ -43,6 +44,14 @@ public class DeliveriesController : BaseController
         var deliveryId = await _mediator.Send(command);
 
         return Ok(deliveryId);
+    }
+
+    [HttpPut("{id}/start-progress")]
+    public async Task<IActionResult> StartProgress(Guid id)
+    {
+        await _mediator.Send(new StartDeliveryProgressCommand(id));
+
+        return NoContent();
     }
 
     [HttpPut("{id}/complete")]

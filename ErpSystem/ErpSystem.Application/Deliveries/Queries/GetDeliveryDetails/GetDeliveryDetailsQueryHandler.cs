@@ -38,10 +38,11 @@ internal class GetDeliveryDetailsQueryHandler
         {
             Id = delivery.Id,
             DeliveryDate = delivery.DeliveryDate.ToString("dd/MM/yyyy"),
-            StatusName = delivery.DeliveryStatus.ToString(),
+            StatusName = delivery.DeliveryStatus.ToDisplayName(),
             SupplierId = delivery.SupplierId,
             SupplierName = delivery.Supplier.Name,
-            Notes = delivery.Notes,
+            DeliveryNumber = delivery.DeliveryNumber,
+            Comment = delivery.Comment,
             Status = delivery.DeliveryStatus,
             Items = delivery
                 .DeliveryItems.Select(i => new DeliveryItemDetailDto()

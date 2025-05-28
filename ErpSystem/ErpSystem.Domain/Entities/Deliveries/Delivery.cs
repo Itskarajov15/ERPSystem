@@ -8,7 +8,9 @@ public class Delivery : BaseEntity
 
     public Guid SupplierId { get; set; }
 
-    public string? Notes { get; set; }
+    public string DeliveryNumber { get; set; } = null!;
+
+    public string? Comment { get; set; }
 
     public DeliveryStatus DeliveryStatus { get; set; }
 

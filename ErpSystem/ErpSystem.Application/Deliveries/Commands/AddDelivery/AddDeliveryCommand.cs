@@ -6,6 +6,7 @@ namespace ErpSystem.Application.Deliveries.Commands.AddDelivery;
 public record AddDeliveryCommand(
     Guid SupplierId,
     DateTime DeliveryDate,
-    string? Notes,
+    string DeliveryNumber,
+    string? Comment,
     List<AddDeliveryItemDto> Items
 ) : IRequest<Guid>;

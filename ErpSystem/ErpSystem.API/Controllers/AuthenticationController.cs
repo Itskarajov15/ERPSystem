@@ -6,6 +6,10 @@ using ErpSystem.Application.Authentication.Commands.Login;
 using ErpSystem.Application.Authentication.Commands.Register;
 using ErpSystem.Application.Authentication.Commands.RemoveRole;
 using ErpSystem.Application.Authentication.DTOs;
+using ErpSystem.Application.Authentication.Queries.GetEndpoints;
+using ErpSystem.Application.Authentication.Queries.GetRoles;
+using ErpSystem.Application.Authentication.Queries.GetUsersWithRoles;
+using ErpSystem.Domain.Common.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +38,33 @@ public class AuthenticationController : BaseController
         await _mediator.Send(command);
 
         return NoContent();
+    }
+
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers([FromQuery] PaginationParams paginationParams)
+    {
+        var query = new GetUsersWithRolesQuery(paginationParams);
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
+    }
+
+    [HttpGet("roles")]
+    public async Task<IActionResult> GetRoles([FromQuery] PaginationParams paginationParams)
+    {
+        var query = new GetRolesQuery(paginationParams);
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
+    }
+
+    [HttpGet("endpoints")]
+    public async Task<IActionResult> GetEndpoints()
+    {
+        var query = new GetEndpointsQuery();
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
     }
 
     [HttpPost("roles")]

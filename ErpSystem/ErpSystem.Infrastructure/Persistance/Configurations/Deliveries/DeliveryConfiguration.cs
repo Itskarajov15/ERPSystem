@@ -12,7 +12,9 @@ public class DeliveryConfiguration : BaseEntityConfiguration<Delivery>
 
         builder.Property(d => d.DeliveryDate).IsRequired();
 
-        builder.Property(d => d.Notes).HasMaxLength(500);
+        builder.Property(d => d.DeliveryNumber).HasMaxLength(50).IsRequired();
+
+        builder.Property(d => d.Comment).HasMaxLength(200);
 
         builder.Property(d => d.DeliveryStatus).IsRequired();
 

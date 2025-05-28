@@ -36,7 +36,8 @@ internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, G
         {
             SupplierId = request.SupplierId,
             DeliveryDate = request.DeliveryDate,
-            Notes = request.Notes,
+            DeliveryNumber = request.DeliveryNumber,
+            Comment = request.Comment,
             DeliveryItems = request
                 .Items.Select(item => new DeliveryItem
                 {

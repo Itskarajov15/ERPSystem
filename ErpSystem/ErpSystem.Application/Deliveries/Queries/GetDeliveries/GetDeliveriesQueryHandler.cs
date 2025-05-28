@@ -34,9 +34,10 @@ internal class GetDeliveriesQueryHandler
                     Id = d.Id,
                     SupplierId = d.SupplierId,
                     DeliveryDate = d.DeliveryDate.ToString("dd/MM/yyyy"),
-                    Notes = d.Notes,
+                    DeliveryNumber = d.DeliveryNumber,
+                    Comment = d.Comment,
                     Status = d.DeliveryStatus,
-                    StatusName = d.DeliveryStatus.ToString(),
+                    StatusName = d.DeliveryStatus.ToDisplayName(),
                     SupplierName = d.Supplier.Name,
                 }),
             filterBy

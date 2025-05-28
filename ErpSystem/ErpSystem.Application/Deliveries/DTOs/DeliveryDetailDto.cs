@@ -12,7 +12,9 @@ public class DeliveryDetailDto
 
     public string DeliveryDate { get; set; } = string.Empty;
 
-    public string? Notes { get; set; }
+    public string DeliveryNumber { get; set; } = string.Empty;
+
+    public string? Comment { get; set; }
 
     public DeliveryStatus Status { get; set; }
 

@@ -3,5 +3,6 @@
 public enum DeliveryStatus
 {
     Registered = 1,
-    Completed = 2,
+    InProgress = 2,
+    Completed = 3,
 }
