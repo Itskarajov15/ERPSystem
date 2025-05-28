@@ -1,12 +1,10 @@
-using ErpSystem.Frontend.Web.Models.Deliveries;
-using ErpSystem.Frontend.Web.Models.Products;
-using ErpSystem.Frontend.Web.Models.Suppliers;
-using ErpSystem.Frontend.Web.Services;
+using ErpSystem.Frontend.Core.Interfaces;
+using ErpSystem.Frontend.Core.Models.Deliveries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ErpSystem.Frontend.Web.Controllers;
+namespace ErpSystem.Frontend.Controllers;
 
 [Authorize]
 public class DeliveriesController : Controller
@@ -32,13 +30,11 @@ public class DeliveriesController : Controller
 
         try
         {
-            // Get suppliers for dropdown
             var suppliers = await _supplierService.GetSuppliersAsync();
             viewModel.Suppliers = suppliers
                 .Items.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
                 .ToList();
 
-            // Get products for dropdown
             var products = await _productService.GetProductsAsync();
             viewModel.Products = products
                 .Items.Select(p => new SelectListItem
@@ -48,7 +44,6 @@ public class DeliveriesController : Controller
                 })
                 .ToList();
 
-            // Get deliveries
             var (items, totalCount) = await _deliveryService.GetDeliveriesAsync(filter);
             viewModel.Deliveries = items;
             viewModel.TotalCount = totalCount;

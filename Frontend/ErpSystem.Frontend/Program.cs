@@ -1,6 +1,8 @@
-using ErpSystem.Frontend.Web.Configuration;
-using ErpSystem.Frontend.Web.Extensions;
-using ErpSystem.Frontend.Web.Services;
+using ErpSystem.Frontend.Core.Configuration;
+using ErpSystem.Frontend.Core.Interfaces;
+using ErpSystem.Frontend.Core.Services;
+using ErpSystem.Frontend.Extensions;
+using ErpSystem.Frontend.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Configure authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder
+    .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
@@ -53,9 +56,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();

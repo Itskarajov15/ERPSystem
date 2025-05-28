@@ -1,6 +1,6 @@
-using ErpSystem.Frontend.Web.Middleware;
+using ErpSystem.Frontend.Middleware;
 
-namespace ErpSystem.Frontend.Web.Extensions;
+namespace ErpSystem.Frontend.Extensions;
 
 public static class MiddlewareExtensions
 {
@@ -8,4 +8,4 @@ public static class MiddlewareExtensions
     {
         return app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     }
-} 
+}

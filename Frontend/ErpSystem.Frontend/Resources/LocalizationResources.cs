@@ -1,4 +1,4 @@
-namespace ErpSystem.Frontend.Web.Resources;
+namespace ErpSystem.Frontend.Resources;
 
 public static class LocalizationResources
 {

@@ -1,9 +1,9 @@
-using ErpSystem.Frontend.Web.Models.Users;
-using ErpSystem.Frontend.Web.Services;
+using ErpSystem.Frontend.Core.Interfaces;
+using ErpSystem.Frontend.Core.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ErpSystem.Frontend.Web.Controllers;
+namespace ErpSystem.Frontend.Controllers;
 
 [Authorize(Roles = "Admin")]
 public class UsersController : Controller
@@ -26,7 +26,7 @@ public class UsersController : Controller
     {
         var model = new CreateUserViewModel
         {
-            AvailableRoles = await _userService.GetAvailableRolesAsync()
+            AvailableRoles = await _userService.GetAvailableRolesAsync(),
         };
         return View(model);
     }
@@ -69,7 +69,11 @@ public class UsersController : Controller
             return BadRequest("Role name is required.");
         }
 
-        var result = await _userService.CreateRoleAsync(request.Name, request.Description, request.PermissionIds);
+        var result = await _userService.CreateRoleAsync(
+            request.Name,
+            request.Description,
+            request.PermissionIds
+        );
         if (result)
         {
             return Ok();
@@ -90,11 +94,7 @@ public class UsersController : Controller
             return NotFound();
         }
 
-        return Json(new
-        {
-            availableRoles = roles,
-            userRoles = user.Roles.Select(r => r.Name)
-        });
+        return Json(new { availableRoles = roles, userRoles = user.Roles.Select(r => r.Name) });
     }
 
     [HttpPost]
@@ -116,7 +116,6 @@ public class UsersController : Controller
 
         var success = true;
 
-        // Remove roles that are no longer selected
         foreach (var role in currentUser.Roles)
         {
             if (!request.Roles.Contains(role.Name))
@@ -125,7 +124,6 @@ public class UsersController : Controller
             }
         }
 
-        // Add newly selected roles
         foreach (var role in request.Roles)
         {
             if (!currentUser.Roles.Any(r => r.Name == role))
@@ -146,7 +144,6 @@ public class UsersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string id)
     {
-        // Implement user deletion if needed
         return Ok();
     }
 }
@@ -154,12 +151,15 @@ public class UsersController : Controller
 public class CreateRoleRequest
 {
     public string Name { get; set; } = string.Empty;
+
     public string Description { get; set; } = string.Empty;
+
     public List<string> PermissionIds { get; set; } = new();
 }
 
 public class UpdateUserRolesRequest
 {
     public string UserId { get; set; } = string.Empty;
+
     public List<string> Roles { get; set; } = new();
-} 
+}

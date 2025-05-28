@@ -1,11 +1,8 @@
-using ErpSystem.Frontend.Web.Models.Authentication;
-using ErpSystem.Frontend.Web.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+using ErpSystem.Frontend.Core.Interfaces;
+using ErpSystem.Frontend.Core.Models.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ErpSystem.Frontend.Web.Controllers;
+namespace ErpSystem.Frontend.Controllers;
 
 public class AccountController : Controller
 {

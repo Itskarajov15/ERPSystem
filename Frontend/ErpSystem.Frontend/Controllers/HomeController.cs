@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using ErpSystem.Frontend.Web.Models;
+using ErpSystem.Frontend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ErpSystem.Frontend.Web.Controllers;
+namespace ErpSystem.Frontend.Controllers;
 
 [Authorize]
 public class HomeController : Controller

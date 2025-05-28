@@ -1,6 +1,6 @@
-using ErpSystem.Frontend.Web.Resources;
+using ErpSystem.Frontend.Resources;
 
-namespace ErpSystem.Frontend.Web.Services;
+namespace ErpSystem.Frontend.Services;
 
 public interface ILocalizationService
 {
@@ -21,7 +21,7 @@ public class LocalizationService : ILocalizationService
     {
         var translatedController = Translate(controllerName);
         var translatedAction = Translate(actionName);
-        
+
         return $"{translatedController}.{translatedAction}";
     }
-} 
+}

@@ -1,11 +1,10 @@
 using System.Net;
 using System.Text.Json;
-using ErpSystem.Frontend.Web.Models.Common;
-using ErpSystem.Frontend.Web.Services;
-using Microsoft.AspNetCore.Mvc;
+using ErpSystem.Frontend.Core.Models.Common;
+using ErpSystem.Frontend.Services;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace ErpSystem.Frontend.Web.Middleware;
+namespace ErpSystem.Frontend.Middleware;
 
 public class GlobalExceptionHandlingMiddleware
 {
@@ -16,7 +15,8 @@ public class GlobalExceptionHandlingMiddleware
     public GlobalExceptionHandlingMiddleware(
         RequestDelegate next,
         ILogger<GlobalExceptionHandlingMiddleware> logger,
-        ITempDataDictionaryFactory tempDataDictionaryFactory)
+        ITempDataDictionaryFactory tempDataDictionaryFactory
+    )
     {
         _next = next;
         _logger = logger;
@@ -51,7 +51,8 @@ public class GlobalExceptionHandlingMiddleware
         context.Response.ContentType = "text/html";
         var tempData = _tempDataDictionaryFactory.GetTempData(context);
 
-        var localizationService = context.RequestServices.GetRequiredService<ILocalizationService>();
+        var localizationService =
+            context.RequestServices.GetRequiredService<ILocalizationService>();
         var errorMessage = GetLocalizedErrorMessage(exception, localizationService);
         tempData["ErrorMessage"] = errorMessage;
 
@@ -62,7 +63,7 @@ public class GlobalExceptionHandlingMiddleware
             var response = new ErrorResponse
             {
                 Message = errorMessage,
-                StatusCode = GetStatusCode(exception)
+                StatusCode = GetStatusCode(exception),
             };
 
             var result = JsonSerializer.Serialize(response);
@@ -74,15 +75,21 @@ public class GlobalExceptionHandlingMiddleware
         context.Response.Redirect("/Home/Error");
     }
 
-    private string GetLocalizedErrorMessage(Exception exception, ILocalizationService localizationService)
+    private string GetLocalizedErrorMessage(
+        Exception exception,
+        ILocalizationService localizationService
+    )
     {
         var key = exception switch
         {
-            HttpRequestException ex when ex.StatusCode == HttpStatusCode.NotFound => "Resource not found",
-            HttpRequestException ex when ex.StatusCode == HttpStatusCode.Unauthorized => "Unauthorized access",
-            HttpRequestException ex when ex.StatusCode == HttpStatusCode.BadRequest => "Invalid request",
+            HttpRequestException ex when ex.StatusCode == HttpStatusCode.NotFound =>
+                "Resource not found",
+            HttpRequestException ex when ex.StatusCode == HttpStatusCode.Unauthorized =>
+                "Unauthorized access",
+            HttpRequestException ex when ex.StatusCode == HttpStatusCode.BadRequest =>
+                "Invalid request",
             UnauthorizedAccessException => "Unauthorized access",
-            _ => "An error occurred while processing your request"
+            _ => "An error occurred while processing your request",
         };
 
         return localizationService.Translate(key);
@@ -94,7 +101,7 @@ public class GlobalExceptionHandlingMiddleware
         {
             HttpRequestException ex when ex.StatusCode.HasValue => (int)ex.StatusCode.Value,
             UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
-            _ => StatusCodes.Status500InternalServerError
+            _ => StatusCodes.Status500InternalServerError,
         };
     }
-} 
+}

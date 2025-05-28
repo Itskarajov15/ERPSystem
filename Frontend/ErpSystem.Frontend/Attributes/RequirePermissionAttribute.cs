@@ -1,15 +1,14 @@
+using ErpSystem.Frontend.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using ErpSystem.Frontend.Web.Services;
 
-namespace ErpSystem.Frontend.Web.Attributes;
+namespace ErpSystem.Frontend.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class RequirePermissionAttribute : TypeFilterAttribute
 {
-    public RequirePermissionAttribute() : base(typeof(RequirePermissionFilter))
-    {
-    }
+    public RequirePermissionAttribute()
+        : base(typeof(RequirePermissionFilter)) { }
 
     private class RequirePermissionFilter : IAsyncAuthorizationFilter
     {
@@ -39,4 +38,4 @@ public class RequirePermissionAttribute : TypeFilterAttribute
             return Task.CompletedTask;
         }
     }
-} 
+}
