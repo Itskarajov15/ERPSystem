@@ -1,0 +1,47 @@
+@model ErpSystem.Frontend.Web.Models.Authentication.LoginViewModel
+
+@{
+    ViewData["Title"] = "Вход";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="~/images/logo.png" alt="Лого" class="mb-4">
+            <h4>Добре дошли отново!</h4>
+            <p class="text-muted">Моля, влезте в системата, за да продължите</p>
+        </div>
+
+        <div class="card-body">
+            <form method="post" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Username" class="form-control" placeholder="Потребителско име">
+                    <label asp-for="Username">Потребителско име</label>
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Password" class="form-control" placeholder="Парола">
+                    <label asp-for="Password">Парола</label>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="RememberMe" class="form-check-input">
+                    <label asp-for="RememberMe" class="form-check-label">Запомни ме</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mb-3">
+                    Вход
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ЕРП Система</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/deliveries.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="main-sidebar" id="sidebar">
+        <div class="d-flex flex-column h-100">
+            <div class="border-bottom">
+                <h4>ЕРП Система</h4>
+            </div>
+            <button class="btn btn-link" id="sidebarToggle" onclick="toggleSidebar()">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            
+            <nav class="flex-grow-1 py-2">
+                <div class="nav flex-column">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
+                       asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-house-door"></i>
+                        <span class="nav-text">Начало</span>
+                    </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" ? "active" : "")"
+                       asp-controller="Products" asp-action="Index">
+                        <i class="bi bi-box me-2"></i>
+                        <span class="nav-text">Продукти</span>
+                    </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active" : "")"
+                       asp-controller="Customers" asp-action="Index">
+                        <i class="bi bi-people me-2"></i>
+                        <span class="nav-text">Клиенти</span>
+                    </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Suppliers" ? "active" : "")"
+                       asp-controller="Suppliers" asp-action="Index">
+                        <i class="bi bi-truck me-2"></i>
+                        <span class="nav-text">Доставчици</span>
+                    </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Orders" ? "active" : "")"
+                       asp-controller="Orders" asp-action="Index">
+                        <i class="bi bi-cart me-2"></i>
+                        <span class="nav-text">Поръчки</span>
+                    </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Deliveries" ? "active" : "")"
+                       asp-controller="Deliveries" asp-action="Index">
+                        <i class="bi bi-truck-flatbed me-2"></i>
+                        <span class="nav-text">Доставки</span>
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")"
+                           asp-controller="Users" asp-action="Index">
+                            <i class="bi bi-people me-2"></i>
+                            <span class="nav-text">Потребители</span>
+                        </a>
+                    }
+                </div>
+            </nav>
+            
+            <div class="border-top p-3">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="user-info">
+                            <small class="d-block text-muted">Влезли сте като</small>
+                            <span class="fw-medium">@User.Identity?.Name</span>
+                        </div>
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-link text-danger p-0">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-primary w-100" asp-controller="Account" asp-action="Login">Вход</a>
+                        <a class="btn btn-outline-primary w-100" asp-controller="Account" asp-action="Register">Регистрация</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner-overlay d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Зареждане...</span>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Configure Toastr
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            timeOut: 5000,
+            preventDuplicates: true,
+            newestOnTop: true,
+            showDuration: "300",
+            hideDuration: "1000",
+            extendedTimeOut: 1000,
+            showEasing: "swing",
+            hideEasing: "linear",
+            showMethod: "fadeIn",
+            hideMethod: "fadeOut",
+            maxOpened: 3,
+            toastClass: 'toast-small'
+        };
+
+        // Global loading spinner functions
+        window.showLoading = function() {
+            document.getElementById('loadingSpinner').classList.remove('d-none');
+        };
+
+        window.hideLoading = function() {
+            document.getElementById('loadingSpinner').classList.add('d-none');
+        };
+
+        // Global error handler for fetch requests
+        window.handleFetchError = async function(response) {
+            if (!response.ok) {
+                let errorMessage;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || 'Възникна грешка при обработката на заявката.';
+                } catch {
+                    errorMessage = 'Възникна грешка при обработката на заявката.';
+                }
+                throw new Error(errorMessage);
+            }
+            return response;
+        };
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const isCollapsed = sidebar.classList.toggle('collapsed');
+            
+            if (isCollapsed) {
+                sidebarToggle.innerHTML = '<i class="bi bi-chevron-right"></i>';
+            } else {
+                sidebarToggle.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            }
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
