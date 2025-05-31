@@ -36,7 +36,7 @@ internal class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, PageR
                     UnitOfMeasureName = p.UnitOfMeasure.Name,
                     Quantity = p.Quantity,
                     ReorderLevel = p.ReorderLevel,
-                    Price = p.Price,
+                    UnitPrice = p.Price,
                     UnitOfMeasureId = p.UnitOfMeasureId,
                 }),
             filterBy

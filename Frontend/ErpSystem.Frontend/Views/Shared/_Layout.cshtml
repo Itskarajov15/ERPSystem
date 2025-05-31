@@ -13,7 +13,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/deliveries.css" asp-append-version="true" />
 </head>
 <body>
     <div class="main-sidebar" id="sidebar">
@@ -36,6 +35,11 @@
                        asp-controller="Products" asp-action="Index">
                         <i class="bi bi-box me-2"></i>
                         <span class="nav-text">Продукти</span>
+                    </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "UnitsOfMeasure" ? "active" : "")"
+                       asp-controller="UnitsOfMeasure" asp-action="Index">
+                        <i class="bi bi-rulers me-2"></i>
+                        <span class="nav-text">Мерни единици</span>
                     </a>
                     <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active" : "")"
                        asp-controller="Customers" asp-action="Index">

@@ -24,9 +24,10 @@ public class UsersController : Controller
 
     public async Task<IActionResult> Create()
     {
+        var roles = await _userService.GetRolesAsync();
         var model = new CreateUserViewModel
         {
-            AvailableRoles = await _userService.GetAvailableRolesAsync(),
+            AvailableRoles = roles.Items.ToList()
         };
         return View(model);
     }
@@ -37,11 +38,12 @@ public class UsersController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.AvailableRoles = await _userService.GetAvailableRolesAsync();
+            var roles = await _userService.GetRolesAsync();
+            model.AvailableRoles = roles.Items.ToList();
             return View(model);
         }
 
-        var result = await _userService.CreateUserAsync(model);
+        var result = await _userService.RegisterUserAsync(model);
         if (result)
         {
             TempData["SuccessMessage"] = "User created successfully.";
@@ -49,7 +51,8 @@ public class UsersController : Controller
         }
 
         ModelState.AddModelError(string.Empty, "Failed to create user. Please try again.");
-        model.AvailableRoles = await _userService.GetAvailableRolesAsync();
+        var availableRoles = await _userService.GetRolesAsync();
+        model.AvailableRoles = availableRoles.Items.ToList();
         return View(model);
     }
 
@@ -74,6 +77,7 @@ public class UsersController : Controller
             request.Description,
             request.PermissionIds
         );
+
         if (result)
         {
             return Ok();
@@ -83,9 +87,16 @@ public class UsersController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> GetRoles()
+    {
+        var roles = await _userService.GetRolesAsync();
+        return Json(roles);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> GetUserRoles(string userId)
     {
-        var roles = await _userService.GetAvailableRolesAsync();
+        var roles = await _userService.GetRolesAsync();
         var users = await _userService.GetUsersAsync();
         var user = users.Items.FirstOrDefault(u => u.Id == userId);
 
@@ -94,72 +105,63 @@ public class UsersController : Controller
             return NotFound();
         }
 
-        return Json(new { availableRoles = roles, userRoles = user.Roles.Select(r => r.Name) });
+        return Json(new { availableRoles = roles.Items, userRoles = user.Roles.Select(r => r.Name) });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateUserRoles([FromBody] UpdateUserRolesRequest request)
+    public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest request)
     {
-        if (request.Roles == null)
+        if (string.IsNullOrWhiteSpace(request.RoleName))
         {
-            return BadRequest("Roles are required.");
+            return BadRequest("Role name is required.");
         }
 
-        var users = await _userService.GetUsersAsync();
-        var currentUser = users.Items.FirstOrDefault(u => u.Id == request.UserId);
-
-        if (currentUser == null)
-        {
-            return NotFound();
-        }
-
-        var success = true;
-
-        foreach (var role in currentUser.Roles)
-        {
-            if (!request.Roles.Contains(role.Name))
-            {
-                success &= await _userService.RemoveRoleAsync(request.UserId, role.Name);
-            }
-        }
-
-        foreach (var role in request.Roles)
-        {
-            if (!currentUser.Roles.Any(r => r.Name == role))
-            {
-                success &= await _userService.AssignRoleAsync(request.UserId, role);
-            }
-        }
-
-        if (success)
+        var result = await _userService.AssignRoleAsync(request.UserId, request.RoleName);
+        if (result)
         {
             return Ok();
         }
 
-        return BadRequest("Failed to update user roles.");
+        return BadRequest("Failed to assign role.");
     }
 
     [HttpDelete]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<IActionResult> RemoveRole(string userId, string roleName)
     {
-        return Ok();
+        var result = await _userService.RemoveRoleAsync(userId, roleName);
+        if (result)
+        {
+            return Ok();
+        }
+
+        return BadRequest("Failed to remove role.");
+    }
+
+    [HttpDelete]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteRole(string roleId)
+    {
+        var result = await _userService.DeleteRoleAsync(roleId);
+        if (result)
+        {
+            return Ok();
+        }
+
+        return BadRequest("Failed to delete role.");
     }
 }
 
 public class CreateRoleRequest
 {
     public string Name { get; set; } = string.Empty;
-
     public string Description { get; set; } = string.Empty;
-
     public List<string> PermissionIds { get; set; } = new();
 }
 
-public class UpdateUserRolesRequest
+public class AssignRoleRequest
 {
     public string UserId { get; set; } = string.Empty;
-
-    public List<string> Roles { get; set; } = new();
+    public string RoleName { get; set; } = string.Empty;
 }

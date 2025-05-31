@@ -21,7 +21,9 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
             .WithMessage("Description is required.")
             .MaximumLength(500)
             .WithMessage("Description must not exceed 500 characters.");
-        RuleFor(p => p.Price).GreaterThan(0).WithMessage("Unit price must be greater than zero.");
+        RuleFor(p => p.UnitPrice)
+            .GreaterThan(0)
+            .WithMessage("Unit price must be greater than zero.");
         RuleFor(p => p.ReorderLevel)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Reorder level must be greater than or equal to zero.");

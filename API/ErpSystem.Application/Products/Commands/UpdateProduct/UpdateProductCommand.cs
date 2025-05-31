@@ -6,7 +6,7 @@ public record UpdateProductCommand(
     Guid Id,
     string Name,
     string Description,
-    decimal Price,
+    decimal UnitPrice,
     string Sku,
     decimal ReorderLevel,
     Guid UnitOfMeasureId

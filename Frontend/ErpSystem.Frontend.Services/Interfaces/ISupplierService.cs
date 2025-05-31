@@ -5,5 +5,5 @@ namespace ErpSystem.Frontend.Core.Interfaces;
 
 public interface ISupplierService
 {
-    Task<PagedResponse<SupplierViewModel>> GetSuppliersAsync();
+    Task<PageResult<SupplierViewModel>> GetSuppliersAsync();
 }

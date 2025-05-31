@@ -2,10 +2,10 @@
 @using ErpSystem.Frontend.Core.Models.Users
 @using ErpSystem.Frontend.Services
 @inject ILocalizationService Localizer
-@model PagedResponse<UserViewModel>
+@model PageResult<UserViewModel>
 
 @{
-    ViewData["Title"] = Localizer.Translate("User Management");
+    ViewData["Title"] = "Users";
 }
 
 <div class="container-fluid px-4">
@@ -241,11 +241,20 @@
             const modal = new bootstrap.Modal(document.getElementById('manageRolesModal'));
             
             try {
-                const response = await fetch(`/Users/GetUserRoles/${userId}`);
-                const data = await response.json();
+                const [rolesResponse, userRolesResponse] = await Promise.all([
+                    fetch('/Users/GetRoles'),
+                    fetch(`/Users/GetUserRoles/${userId}`)
+                ]);
                 
-                availableRoles = data.availableRoles;
-                userRoles = data.userRoles;
+                if (!rolesResponse.ok || !userRolesResponse.ok) {
+                    throw new Error('Failed to fetch roles data');
+                }
+
+                const roles = await rolesResponse.json();
+                const userRoles = await userRolesResponse.json();
+                
+                availableRoles = roles.items;
+                userRoles = userRoles.map(r => r.name);
                 
                 const rolesList = document.getElementById('rolesList');
                 rolesList.innerHTML = availableRoles.map(role => `
@@ -262,7 +271,7 @@
                 modal.show();
             } catch (error) {
                 console.error('Error loading roles:', error);
-                alert('Failed to load roles. Please try again.');
+                alert(localizationService.translate('Failed to load roles. Please try again.'));
             }
         }
 
@@ -273,31 +282,28 @@
                 .map(cb => cb.value);
 
             try {
-                const response = await fetch('/Users/UpdateUserRoles', {
-                    method: 'POST',
+                const response = await fetch(`/Users/UpdateUserRoles/${currentUserId}`, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                     },
-                    body: JSON.stringify({
-                        userId: currentUserId,
-                        roles: selectedRoles
-                    })
+                    body: JSON.stringify(selectedRoles)
                 });
 
-                if (response.ok) {
-                    location.reload();
-                } else {
+                if (!response.ok) {
                     throw new Error('Failed to update roles');
                 }
+
+                location.reload();
             } catch (error) {
                 console.error('Error updating roles:', error);
-                alert('Failed to update roles. Please try again.');
+                alert(localizationService.translate('Failed to update roles. Please try again.'));
             }
         }
 
         async function deleteUser(userId, userName) {
-            if (confirm(`Are you sure you want to delete user ${userName}?`)) {
+            if (confirm(localizationService.translate('Are you sure you want to delete user {0}?').replace('{0}', userName))) {
                 try {
                     const response = await fetch(`/Users/Delete/${userId}`, {
                         method: 'DELETE',
@@ -306,14 +312,14 @@
                         }
                     });
 
-                    if (response.ok) {
-                        location.reload();
-                    } else {
+                    if (!response.ok) {
                         throw new Error('Failed to delete user');
                     }
+
+                    location.reload();
                 } catch (error) {
                     console.error('Error deleting user:', error);
-                    alert('Failed to delete user. Please try again.');
+                    alert(localizationService.translate('Failed to delete user. Please try again.'));
                 }
             }
         }

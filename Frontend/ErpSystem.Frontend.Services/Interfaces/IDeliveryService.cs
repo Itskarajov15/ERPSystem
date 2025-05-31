@@ -1,5 +1,4 @@
 using ErpSystem.Frontend.Core.Models.Deliveries;
-using Microsoft.AspNetCore.Http;
 
 namespace ErpSystem.Frontend.Core.Interfaces;
 
@@ -18,12 +17,4 @@ public interface IDeliveryService
     Task CompleteDeliveryAsync(Guid id);
 
     Task DeleteDeliveryAsync(Guid id);
-
-    Task<bool> UpdateDeliveryStatusAsync(int id, string status);
-
-    Task<bool> UpdateDeliveryCommentAsync(int id, string comment);
-
-    Task ExportDeliveriesAsync(DeliveryFilterModel filter);
-
-    Task ImportPrioritiesAsync(IFormFile file);
 }

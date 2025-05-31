@@ -39,7 +39,7 @@ internal class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery,
             Description = product.Description,
             UnitOfMeasureId = product.UnitOfMeasureId,
             UnitOfMeasureName = product.UnitOfMeasure.Name,
-            Price = product.Price,
+            UnitPrice = product.Price,
             Quantity = product.Quantity,
             ReorderLevel = product.ReorderLevel,
         };

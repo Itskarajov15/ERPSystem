@@ -33,7 +33,7 @@ internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductComman
         product.Name = request.Name;
         product.Sku = request.Sku;
         product.Description = request.Description;
-        product.Price = request.Price;
+        product.Price = request.UnitPrice;
         product.ReorderLevel = request.ReorderLevel;
         product.UnitOfMeasureId = request.UnitOfMeasureId;
 

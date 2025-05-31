@@ -10,7 +10,7 @@ public class ProductDto
 
     public string? Description { get; set; }
 
-    public decimal Price { get; set; }
+    public decimal UnitPrice { get; set; }
 
     public Guid UnitOfMeasureId { get; set; }
 

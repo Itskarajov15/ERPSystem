@@ -16,13 +16,13 @@ public class SupplierService : ISupplierService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<PagedResponse<SupplierViewModel>> GetSuppliersAsync()
+    public async Task<PageResult<SupplierViewModel>> GetSuppliersAsync()
     {
         var token = _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
-        var response = await _apiService.GetAsync<PagedResponse<SupplierViewModel>>(
+        var response = await _apiService.GetAsync<PageResult<SupplierViewModel>>(
             "/api/suppliers/get-all",
             token
         );
-        return response ?? new PagedResponse<SupplierViewModel>();
+        return response ?? new PageResult<SupplierViewModel>();
     }
 }

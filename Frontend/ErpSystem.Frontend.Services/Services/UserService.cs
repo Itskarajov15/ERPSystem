@@ -16,33 +16,38 @@ public class UserService : IUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<bool> CreateUserAsync(CreateUserViewModel model)
+    public async Task<UserViewModel?> GetUserByIdAsync(string id)
     {
+        var token = GetToken();
+        return await _apiService.GetAsync<UserViewModel>($"/api/users/get-by-id/{id}", token);
+    }
+
+    public async Task<PageResult<UserViewModel>> GetUsersAsync(int page = 1, int pageSize = 10)
+    {
+        var token = GetToken();
+        var response = await _apiService.GetAsync<PageResult<UserViewModel>>(
+            $"/api/authentication/users?page={page}&pageSize={pageSize}",
+            token
+        );
+        return response ?? new PageResult<UserViewModel>();
+    }
+
+    public async Task<PageResult<RoleViewModel>> GetRolesAsync()
+    {
+        var token = GetToken();
+        var response = await _apiService.GetAsync<PageResult<RoleViewModel>>(
+            "/api/authentication/roles",
+            token
+        );
+        return response ?? new PageResult<RoleViewModel>();
+    }
+
+    public async Task<bool> RegisterUserAsync(CreateUserViewModel model)
+    {
+        var token = GetToken();
         try
         {
-            var token = GetToken();
-            var userId = await _apiService.PostAsync<string>(
-                "/api/authentication/register",
-                new
-                {
-                    model.Username,
-                    model.Password,
-                    model.Email,
-                    model.FirstName,
-                    model.LastName,
-                },
-                token
-            );
-
-            if (string.IsNullOrEmpty(userId))
-                return false;
-
-            // Assign selected roles
-            foreach (var roleName in model.SelectedRoles)
-            {
-                await AssignRoleAsync(userId, roleName);
-            }
-
+            await _apiService.PostAsync<object>("/api/authentication/register", model, token);
             return true;
         }
         catch
@@ -51,41 +56,11 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<PagedResponse<UserViewModel>> GetUsersAsync(int page = 1, int pageSize = 10)
-    {
-        var token = GetToken();
-        var response = await _apiService.GetAsync<PagedResponse<UserViewModel>>(
-            $"/api/authentication/users?page={page}&pageSize={pageSize}",
-            token
-        );
-        return response ?? new PagedResponse<UserViewModel>();
-    }
-
-    public async Task<List<RoleViewModel>> GetAvailableRolesAsync(int page = 1, int pageSize = 100)
-    {
-        var token = GetToken();
-        var response = await _apiService.GetAsync<PagedResponse<RoleViewModel>>(
-            $"/api/authentication/roles?page={page}&pageSize={pageSize}",
-            token
-        );
-        return response?.Items ?? new List<RoleViewModel>();
-    }
-
-    public async Task<List<EndpointViewModel>> GetAvailableEndpointsAsync()
-    {
-        var token = GetToken();
-        var response = await _apiService.GetAsync<List<EndpointViewModel>>(
-            "/api/authentication/endpoints",
-            token
-        );
-        return response ?? new List<EndpointViewModel>();
-    }
-
     public async Task<bool> AssignRoleAsync(string userId, string roleName)
     {
+        var token = GetToken();
         try
         {
-            var token = GetToken();
             await _apiService.PostAsync<object>(
                 $"/api/authentication/users/{userId}/roles",
                 roleName,
@@ -101,9 +76,9 @@ public class UserService : IUserService
 
     public async Task<bool> RemoveRoleAsync(string userId, string roleName)
     {
+        var token = GetToken();
         try
         {
-            var token = GetToken();
             await _apiService.DeleteAsync(
                 $"/api/authentication/users/{userId}/roles/{roleName}",
                 token
@@ -122,11 +97,39 @@ public class UserService : IUserService
         List<string> permissionIds
     )
     {
+        var token = GetToken();
         try
         {
-            var token = GetToken();
-            await _apiService.PostAsync<string>(
+            await _apiService.PostAsync<object>(
                 "/api/authentication/roles",
+                new
+                {
+                    name,
+                    description,
+                    permissionIds,
+                },
+                token
+            );
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> EditRoleAsync(
+        string roleId,
+        string name,
+        string description,
+        List<string> permissionIds
+    )
+    {
+        var token = GetToken();
+        try
+        {
+            await _apiService.PutAsync<object>(
+                $"/api/authentication/roles/{roleId}",
                 new
                 {
                     name,
@@ -145,9 +148,9 @@ public class UserService : IUserService
 
     public async Task<bool> DeleteRoleAsync(string roleId)
     {
+        var token = GetToken();
         try
         {
-            var token = GetToken();
             await _apiService.DeleteAsync($"/api/authentication/roles/{roleId}", token);
             return true;
         }
@@ -157,6 +160,25 @@ public class UserService : IUserService
         }
     }
 
-    private string? GetToken() =>
-        _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
+    public async Task<List<EndpointViewModel>> GetAvailableEndpointsAsync()
+    {
+        var token = GetToken();
+        try
+        {
+            var response = await _apiService.GetAsync<List<EndpointViewModel>>(
+                "/api/authentication/endpoints",
+                token
+            );
+            return response ?? new List<EndpointViewModel>();
+        }
+        catch
+        {
+            return new List<EndpointViewModel>();
+        }
+    }
+
+    private string? GetToken()
+    {
+        return _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
+    }
 }
