@@ -1,0 +1,167 @@
+@model ErpSystem.Frontend.Core.Models.Common.PageResult<ErpSystem.Frontend.Core.Models.Customers.CustomerViewModel>
+
+@{
+    ViewData["Title"] = "Клиенти";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Управление на клиенти</h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Нов клиент
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-4" id="searchForm">
+            <input type="hidden" id="pageSize" name="pageSize" value="@Model.PageSize" />
+            <div class="col-md-4">
+                <label class="form-label">Търсене</label>
+                <input type="text" class="form-control" name="SearchTerm" value="@Context.Request.Query["SearchTerm"]"
+                       placeholder="Търси по име, имейл или адрес...">
+            </div>
+            <div class="col-md-8 d-flex align-items-end justify-content-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Търси
+                </button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Име</th>
+                        <th>Лице за контакт</th>
+                        <th>Имейл</th>
+                        <th>Телефон</th>
+                        <th>Адрес</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in Model.Items)
+                    {
+                        <tr>
+                            <td>@customer.Name</td>
+                            <td>@customer.ContactName</td>
+                            <td>@customer.Email</td>
+                            <td>@customer.Phone</td>
+                            <td>@customer.Address</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-link text-dark p-0" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-action="Details" asp-route-id="@customer.Id">Детайли</a></li>
+                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@customer.Id">Редактирай</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteCustomer('@customer.Id')">Изтрий</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center mt-3">
+            <div class="d-flex align-items-center">
+                <span class="me-2">Редове на страница:</span>
+                <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this)">
+                    <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                    <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                    <option value="100" selected="@(Model.PageSize == 100)">100</option>
+                </select>
+                <span class="mx-4" id="pageRange">@(((Model.CurrentPage - 1) * Model.PageSize) + 1)-@(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount)) от @Model.TotalCount</span>
+                <div class="btn-group">
+                    <a href="#" onclick="changePage(-1); return false;" 
+                       class="btn btn-outline-secondary @(!Model.HasPrevious ? "disabled" : "")" 
+                       aria-label="Previous">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    <a href="#" onclick="changePage(1); return false;" 
+                       class="btn btn-outline-secondary @(!Model.HasNext ? "disabled" : "")" 
+                       aria-label="Next">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Потвърждение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Сигурни ли сте, че искате да изтриете този клиент?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Изтрий</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let deleteModal;
+        let deleteId;
+        let currentPage = @Model.CurrentPage;
+        let pageSize = @Model.PageSize;
+        let totalItems = @Model.TotalCount;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        });
+
+        function deleteCustomer(id) {
+            deleteId = id;
+            deleteModal.show();
+        }
+
+        async function confirmDelete() {
+            try {
+                showLoading();
+                const response = await fetch(`@Url.Action("Delete")/${deleteId}`, {
+                    method: 'DELETE'
+                });
+                
+                await handleFetchError(response);
+                const result = await response.json();
+                
+                if (result.success) {
+                    toastr.success('Клиентът е изтрит успешно');
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            } catch (error) {
+                toastr.error(error.message);
+            } finally {
+                hideLoading();
+                deleteModal.hide();
+            }
+        }
+
+        function changePageSize(select) {
+            document.getElementById('pageSize').value = select.value;
+            document.getElementById('searchForm').submit();
+        }
+
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage < 1 || (newPage - 1) * pageSize >= totalItems) return;
+            
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', newPage);
+            window.location.href = url.toString();
+        }
+    </script>
+} 

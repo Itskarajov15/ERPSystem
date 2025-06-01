@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ErpSystem.Frontend.Core.Models.Suppliers;
+namespace ErpSystem.Frontend.Core.Models.Customers;
 
-public class SupplierViewModel
+public class CustomerViewModel
 {
     public Guid Id { get; set; }
 
@@ -16,8 +16,8 @@ public class SupplierViewModel
     public string Email { get; set; } = string.Empty;
 
     [Display(Name = "Телефон")]
-    public string PhoneNumber { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
 
     [Display(Name = "Адрес")]
     public string Address { get; set; } = string.Empty;
-}
+} 

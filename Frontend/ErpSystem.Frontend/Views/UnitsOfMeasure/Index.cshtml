@@ -76,9 +76,9 @@
                 <div class="d-flex align-items-center">
                     <span class="me-2">Редове на страница:</span>
                     <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this)">
-                        <option value="25" selected="@(Model?.PageSize == 25)">25</option>
-                        <option value="50" selected="@(Model?.PageSize == 50)">50</option>
-                        <option value="100" selected="@(Model?.PageSize == 100)">100</option>
+                        <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                        <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                        <option value="100" selected="@(Model.PageSize == 100)">100</option>
                     </select>
                     <span class="mx-4">@(((Model?.CurrentPage ?? 1) - 1) * (Model?.PageSize ?? 25) + 1) - @(Math.Min((Model?.CurrentPage ?? 1) * (Model?.PageSize ?? 25), Model?.TotalCount ?? 0)) от @(Model?.TotalCount ?? 0)</span>
                     <div class="btn-group">
