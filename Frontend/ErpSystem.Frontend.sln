@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystem.Frontend", "ErpSystem.Frontend\ErpSystem.Frontend.csproj", "{E90F4CE9-153C-4FE2-B6EC-F3E229C71B61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystem.Frontend.Core", "ErpSystem.Frontend.Services\ErpSystem.Frontend.Core.csproj", "{AFC381D0-610C-4DDF-B18B-AD9E44F8A6A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystem.Frontend.Core", "ErpSystem.Frontend.Core\ErpSystem.Frontend.Core.csproj", "{AFC381D0-610C-4DDF-B18B-AD9E44F8A6A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

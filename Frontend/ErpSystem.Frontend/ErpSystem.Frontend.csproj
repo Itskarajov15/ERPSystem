@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ErpSystem.Frontend.Services\ErpSystem.Frontend.Core.csproj" />
+    <ProjectReference Include="..\ErpSystem.Frontend.Core\ErpSystem.Frontend.Core.csproj" />
   </ItemGroup>
 
 </Project>
