@@ -1,0 +1,55 @@
+services:
+  # MSSQL Database Service
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: erpsystem-mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=!Password123
+      - MSSQL_USER=sa
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    restart: unless-stopped
+
+  # API Service
+  api:
+    build:
+      context: ./API
+      dockerfile: ErpSystem.API/Dockerfile
+    container_name: erpsystem-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "7061:8080"
+    depends_on:
+      - mssql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: ErpSystem.Frontend/Dockerfile
+    container_name: erpsystem-frontend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  mssql_data:
+    driver: local 
