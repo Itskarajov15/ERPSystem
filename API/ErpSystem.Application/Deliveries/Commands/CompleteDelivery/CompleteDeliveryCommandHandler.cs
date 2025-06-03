@@ -1,4 +1,5 @@
-﻿using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Domain.Entities.Deliveries;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
@@ -23,18 +24,18 @@ internal class CompleteDeliveryCommandHandler : IRequestHandler<CompleteDelivery
     public async Task Handle(CompleteDeliveryCommand request, CancellationToken cancellationToken)
     {
         var delivery = await _repository
-            .AllReadOnly<Delivery>()
+            .All<Delivery>()
             .Include(d => d.DeliveryItems)
             .FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
 
         if (delivery == null)
         {
-            throw new NotFoundException(nameof(Delivery), request.Id);
+            throw new NotFoundException(DeliveryErrorKeys.DeliveryNotFound, request.Id);
         }
 
         if (delivery.DeliveryStatus != DeliveryStatus.InProgress)
         {
-            throw new InvalidOperationException("Only in-progress deliveries can be completed.");
+            throw new InvalidOperationException(DeliveryErrorKeys.DeliveryCannotBeCompleted);
         }
 
         delivery.DeliveryStatus = DeliveryStatus.Completed;

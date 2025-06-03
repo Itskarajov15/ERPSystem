@@ -1,4 +1,5 @@
-﻿using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Entities.Sales;
 using ErpSystem.Domain.Interfaces;
@@ -23,14 +24,14 @@ internal class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Guid>
 
         if (customer == null)
         {
-            throw new NotFoundException(nameof(Customer), request.CustomerId);
+            throw new NotFoundException(CustomerErrorKeys.CustomerNotFound);
         }
 
         var paymentMethod = await _repository.GetByIdAsync<PaymentMethod>(request.PaymentMethodId);
 
         if (paymentMethod == null)
         {
-            throw new NotFoundException(nameof(PaymentMethod), request.PaymentMethodId);
+            throw new NotFoundException(PaymentMethodErrorKeys.PaymentMethodNotFound);
         }
 
         var productIds = request.Items.Select(i => i.ProductId).ToList();
@@ -38,7 +39,7 @@ internal class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Guid>
 
         if (products.Count() != productIds.Count)
         {
-            throw new NotFoundException("One or more products not found.");
+            throw new NotFoundException(ProductErrorKeys.ProductNotFound);
         }
 
         foreach (var item in request.Items)
@@ -48,9 +49,7 @@ internal class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Guid>
 
             if (availableQuantity < item.Quantity)
             {
-                throw new InvalidOperationException(
-                    $"Insufficient available inventory for product {product.Name}."
-                );
+                throw new InvalidOperationException(ProductErrorKeys.InsufficientStock);
             }
         }
 
@@ -60,6 +59,7 @@ internal class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Guid>
             PaymentMethodId = request.PaymentMethodId,
             OrderDate = DateTime.UtcNow,
             Status = OrderStatus.Pending,
+            Notes = request.Notes,
             OrderItems = request
                 .Items.Select(i => new OrderItem
                 {

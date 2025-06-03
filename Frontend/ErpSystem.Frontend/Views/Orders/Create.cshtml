@@ -1,0 +1,271 @@
+@model ErpSystem.Frontend.Core.Models.Orders.OrderCreateModel
+
+@{
+    ViewData["Title"] = "Създаване на поръчка";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+    </a>
+</div>
+
+<form asp-action="Create" method="post" id="orderForm">
+    @Html.AntiForgeryToken()
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Информация за поръчката</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CustomerId" class="form-label"></label>
+                                <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.Customers">
+                                    <option value="">Изберете клиент</option>
+                                </select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="PaymentMethodId" class="form-label"></label>
+                                <select asp-for="PaymentMethodId" class="form-select" asp-items="ViewBag.PaymentMethods">
+                                    <option value="">Изберете начин на плащане</option>
+                                </select>
+                                <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Въведете бележки (по избор)"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Артикули в поръчката</h5>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addOrderItem()">
+                        <i class="bi bi-plus-circle me-1"></i>Добави артикул
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="orderItems">
+                    </div>
+                    
+                    <div id="noItemsMessage" class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3">Няма добавени артикули</p>
+                        <button type="button" class="btn btn-primary" onclick="addOrderItem()">
+                            <i class="bi bi-plus-circle me-2"></i>Добави първия артикул
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Обобщение на поръчката</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">Общо артикули:</dt>
+                        <dd class="col-sm-6" id="totalItems">0</dd>
+                        
+                        <dt class="col-sm-6">Общо количество:</dt>
+                        <dd class="col-sm-6" id="totalQuantity">0</dd>
+                        
+                        <dt class="col-sm-6">Обща сума:</dt>
+                        <dd class="col-sm-6" id="totalAmount">0.00 лв.</dd>
+                    </dl>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                            <i class="bi bi-check-circle me-2"></i>Създай поръчка
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Отказ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        let orderItemIndex = 0;
+        let products = [];
+
+        $(document).ready(function() {
+            loadProducts();
+        });
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('@Url.Action("GetProducts")');
+                const data = await response.json();
+                
+                if (data.error) {
+                    toastr.error(data.error);
+                    return;
+                }
+                
+                products = data;
+            } catch (error) {
+                toastr.error('Грешка при зареждане на продуктите');
+                console.error(error);
+            }
+        }
+
+        function addOrderItem() {
+            const itemHtml = `
+                <div class="order-item border rounded p-3 mb-3" data-index="${orderItemIndex}">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h6 class="mb-0">Артикул #${orderItemIndex + 1}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOrderItem(${orderItemIndex})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Продукт</label>
+                                <select name="Items[${orderItemIndex}].ProductId" class="form-select product-select" data-index="${orderItemIndex}" onchange="onProductChange(${orderItemIndex})">
+                                    <option value="">Изберете продукт</option>
+                                    ${products.map(p => `<option value="${p.id}" data-price="${p.price}" data-quantity="${p.quantity}" data-name="${p.name}" data-sku="${p.sku}">${p.name} (${p.sku})</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Количество</label>
+                                <input type="number" name="Items[${orderItemIndex}].Quantity" class="form-control quantity-input" data-index="${orderItemIndex}" min="1" onchange="calculateItemTotal(${orderItemIndex})" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Единична цена</label>
+                                <input type="number" name="Items[${orderItemIndex}].UnitPrice" class="form-control price-input" data-index="${orderItemIndex}" step="0.01" min="0.01" onchange="calculateItemTotal(${orderItemIndex})" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Налично количество: <span class="available-quantity" data-index="${orderItemIndex}">-</span></small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <strong>Обща цена: <span class="item-total" data-index="${orderItemIndex}">0.00 лв.</span></strong>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="Items[${orderItemIndex}].ProductName" class="product-name-hidden" data-index="${orderItemIndex}" />
+                    <input type="hidden" name="Items[${orderItemIndex}].ProductSku" class="product-sku-hidden" data-index="${orderItemIndex}" />
+                </div>
+            `;
+
+            $('#orderItems').append(itemHtml);
+            $('#noItemsMessage').hide();
+            orderItemIndex++;
+            updateOrderSummary();
+        }
+
+        function removeOrderItem(index) {
+            $(`.order-item[data-index="${index}"]`).remove();
+            
+            if ($('.order-item').length === 0) {
+                $('#noItemsMessage').show();
+            }
+            
+            updateOrderSummary();
+        }
+
+        function onProductChange(index) {
+            const select = $(`.product-select[data-index="${index}"]`);
+            const selectedOption = select.find('option:selected');
+            
+            if (selectedOption.val()) {
+                const price = selectedOption.data('price');
+                const quantity = selectedOption.data('quantity');
+                const name = selectedOption.data('name');
+                const sku = selectedOption.data('sku');
+                
+                $(`.price-input[data-index="${index}"]`).val(price);
+                $(`.available-quantity[data-index="${index}"]`).text(quantity);
+                $(`.product-name-hidden[data-index="${index}"]`).val(name);
+                $(`.product-sku-hidden[data-index="${index}"]`).val(sku);
+                
+                calculateItemTotal(index);
+            } else {
+                $(`.price-input[data-index="${index}"]`).val('');
+                $(`.available-quantity[data-index="${index}"]`).text('-');
+                $(`.product-name-hidden[data-index="${index}"]`).val('');
+                $(`.product-sku-hidden[data-index="${index}"]`).val('');
+                $(`.item-total[data-index="${index}"]`).text('0.00 лв.');
+            }
+        }
+
+        function calculateItemTotal(index) {
+            const quantity = parseFloat($(`.quantity-input[data-index="${index}"]`).val()) || 0;
+            const price = parseFloat($(`.price-input[data-index="${index}"]`).val()) || 0;
+            const total = quantity * price;
+            
+            $(`.item-total[data-index="${index}"]`).text(total.toFixed(2) + ' лв.');
+            updateOrderSummary();
+        }
+
+        function updateOrderSummary() {
+            let totalItems = $('.order-item').length;
+            let totalQuantity = 0;
+            let totalAmount = 0;
+
+            $('.quantity-input').each(function() {
+                totalQuantity += parseFloat($(this).val()) || 0;
+            });
+
+            $('.order-item').each(function() {
+                const index = $(this).data('index');
+                const quantity = parseFloat($(`.quantity-input[data-index="${index}"]`).val()) || 0;
+                const price = parseFloat($(`.price-input[data-index="${index}"]`).val()) || 0;
+                totalAmount += quantity * price;
+            });
+
+            $('#totalItems').text(totalItems);
+            $('#totalQuantity').text(totalQuantity);
+            $('#totalAmount').text(totalAmount.toFixed(2) + ' лв.');
+            
+            const hasItems = totalItems > 0;
+            const hasValidItems = $('.product-select').filter(function() { return $(this).val() !== ''; }).length > 0;
+            $('#submitBtn').prop('disabled', !hasItems || !hasValidItems);
+        }
+
+        $('#orderForm').on('submit', function(e) {
+            const hasItems = $('.order-item').length > 0;
+            const hasValidItems = $('.product-select').filter(function() { return $(this).val() !== ''; }).length > 0;
+            
+            if (!hasItems || !hasValidItems) {
+                e.preventDefault();
+                toastr.error('Моля добавете поне един артикул в поръчката');
+                return false;
+            }
+        });
+    </script>
+} 

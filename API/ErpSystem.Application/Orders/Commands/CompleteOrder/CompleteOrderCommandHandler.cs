@@ -1,8 +1,10 @@
-﻿using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Entities.Sales;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Orders.Commands.CompleteOrder;
 
@@ -17,33 +19,32 @@ internal class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderComman
 
     public async Task Handle(CompleteOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await _repository.GetByIdAsync<Order>(request.Id);
+        var order = await _repository
+            .All<Order>()
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
 
         if (order == null)
         {
-            throw new NotFoundException(nameof(Order), request.Id);
+            throw new NotFoundException(OrderErrorKeys.OrderNotFound);
         }
 
         if (order.Status != OrderStatus.Pending)
         {
-            throw new InvalidOperationException(
-                $"Order with ID {request.Id} is not in a state that can be completed."
-            );
+            throw new InvalidOperationException(OrderErrorKeys.OrderCannotBeCompleted);
         }
 
-        var products = await _repository.GetByIdsAsync<Product>(
-            order.OrderItems.Select(p => p.Id).ToHashSet()
-        );
+        var productIds = order.OrderItems.Select(oi => oi.ProductId).ToHashSet();
+        var products = await _repository.GetByIdsAsync<Product>(productIds);
 
-        foreach (var product in products)
+        foreach (var orderItem in order.OrderItems)
         {
-            var orderItem = order.OrderItems.FirstOrDefault(i => i.Id == product.Id);
+            var product = products.FirstOrDefault(p => p.Id == orderItem.ProductId);
 
-            if (orderItem is null)
+            if (product is null)
             {
-                throw new InvalidOperationException(
-                    $"Order item with ID {product.Id} not found in order."
-                );
+                throw new InvalidOperationException(ProductErrorKeys.ProductNotFound);
             }
 
             product.Quantity -= orderItem.Quantity;
@@ -51,9 +52,7 @@ internal class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderComman
 
             if (product.Quantity < 0 || product.ReservedQuantity < 0)
             {
-                throw new InvalidOperationException(
-                    $"Product with ID {product.Id} has insufficient stock."
-                );
+                throw new InvalidOperationException(ProductErrorKeys.ProductStockInsufficient);
             }
         }
 

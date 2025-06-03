@@ -1,4 +1,5 @@
-﻿using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Application.Orders.DTOs;
 using ErpSystem.Domain.Entities.Sales;
 using ErpSystem.Domain.Interfaces;
@@ -32,7 +33,7 @@ internal class GetOrderDetailsQueryHandler : IRequestHandler<GetOrderDetailsQuer
 
         if (order == null)
         {
-            throw new NotFoundException(nameof(Order), request.Id);
+            throw new NotFoundException(OrderErrorKeys.OrderNotFound);
         }
 
         return new OrderDetailDto()

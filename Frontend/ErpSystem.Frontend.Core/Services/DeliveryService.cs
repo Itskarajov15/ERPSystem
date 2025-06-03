@@ -1,147 +1,154 @@
 using ErpSystem.Frontend.Core.Interfaces;
+using ErpSystem.Frontend.Core.Models.Common;
 using ErpSystem.Frontend.Core.Models.Deliveries;
 using Microsoft.AspNetCore.Http;
 
 namespace ErpSystem.Frontend.Core.Services;
 
-public partial class DeliveryService : IDeliveryService
+public class DeliveryService : IDeliveryService
 {
     private readonly IApiService _apiService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ErrorTranslationService _errorTranslationService;
 
-    public DeliveryService(IApiService apiService, IHttpContextAccessor httpContextAccessor)
+    public DeliveryService(
+        IApiService apiService,
+        IHttpContextAccessor httpContextAccessor,
+        ErrorTranslationService errorTranslationService
+    )
     {
         _apiService = apiService;
         _httpContextAccessor = httpContextAccessor;
+        _errorTranslationService = errorTranslationService;
     }
 
-    public async Task<(List<DeliveryViewModel> Items, int TotalCount)> GetDeliveriesAsync(
-        DeliveryFilterModel filter
+    public async Task<PageResult<DeliveryViewModel>> GetDeliveriesAsync(
+        DeliveryFilterModel? filter = null
     )
     {
         var token = GetToken();
-        var queryString = BuildQueryString(filter);
-        var response = await _apiService.GetAsync<PageResult>(
-            $"/api/deliveries/get-all{queryString}",
-            token
-        );
+        var endpoint = "/api/deliveries/get-all";
 
-        return response != null
-            ? (response.Items, response.TotalCount)
-            : (new List<DeliveryViewModel>(), 0);
+        if (filter != null)
+        {
+            var queryParams = new List<string>();
+
+            if (filter.SupplierId.HasValue)
+            {
+                queryParams.Add($"SupplierId={filter.SupplierId.Value}");
+            }
+            if (filter.FromDate.HasValue)
+            {
+                queryParams.Add($"FromDate={filter.FromDate.Value:yyyy-MM-dd}");
+            }
+            if (filter.ToDate.HasValue)
+            {
+                queryParams.Add($"ToDate={filter.ToDate.Value:yyyy-MM-dd}");
+            }
+            if (filter.Status.HasValue)
+            {
+                queryParams.Add($"Status={filter.Status.Value}");
+            }
+            queryParams.Add($"Page={filter.Page}");
+            queryParams.Add($"PageSize={filter.PageSize}");
+
+            if (queryParams.Any())
+            {
+                endpoint += "?" + string.Join("&", queryParams);
+            }
+        }
+
+        var response = await _apiService.GetAsync<PageResult<DeliveryViewModel>>(endpoint, token);
+        return response ?? new PageResult<DeliveryViewModel>();
     }
 
-    public async Task<DeliveryViewModel?> GetDeliveryByIdAsync(Guid id)
+    public async Task<DeliveryDetailViewModel?> GetDeliveryByIdAsync(Guid id)
     {
         var token = GetToken();
-        return await _apiService.GetAsync<DeliveryViewModel>(
+        return await _apiService.GetAsync<DeliveryDetailViewModel>(
             $"/api/deliveries/get-by-id/{id}",
             token
         );
     }
 
-    public async Task<Guid> CreateDeliveryAsync(DeliveryEditModel model)
+    public async Task<Guid> CreateDeliveryAsync(DeliveryCreateModel model)
     {
         var token = GetToken();
-        var response = await _apiService.PostAsync<Guid>("/api/deliveries/add", model, token);
-        return response;
-    }
 
-    public async Task CompleteDeliveryAsync(Guid id)
-    {
-        var token = GetToken();
-        await _apiService.PutAsync<object>($"/api/deliveries/{id}/complete", null, token);
-    }
+        var apiRequest = new DeliveryApiRequest
+        {
+            SupplierId = model.SupplierId,
+            DeliveryNumber = model.DeliveryNumber,
+            DeliveryDate = model.DeliveryDate,
+            Comment = model.Comment,
+            Items = model
+                .Items.Select(item => new DeliveryItemApiRequest
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                })
+                .ToList(),
+        };
 
-    public async Task DeleteDeliveryAsync(Guid id)
-    {
-        var token = GetToken();
-        await _apiService.DeleteAsync($"/api/deliveries/delete/{id}", token);
-    }
-
-    public async Task<bool> UpdateDeliveryStatusAsync(int id, string status)
-    {
-        var token = GetToken();
         try
         {
-            await _apiService.PutAsync<object>(
-                $"/api/deliveries/{id}/status",
-                new { status },
+            var response = await _apiService.PostAsync<Guid>(
+                "/api/deliveries/add",
+                apiRequest,
                 token
             );
-            return true;
+            return response;
         }
-        catch
+        catch (Exception ex)
         {
-            return false;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            throw new Exception(translatedMessage);
         }
-    }
-
-    public async Task<bool> UpdateDeliveryCommentAsync(int id, string comment)
-    {
-        var token = GetToken();
-        try
-        {
-            await _apiService.PutAsync<object>(
-                $"/api/deliveries/{id}/comment",
-                new { comment },
-                token
-            );
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    public async Task ExportDeliveriesAsync(DeliveryFilterModel filter)
-    {
-        var token = GetToken();
-        var queryString = BuildQueryString(filter);
-        await _apiService.GetAsync<object>($"/api/deliveries/export{queryString}", token);
-    }
-
-    public async Task ImportPrioritiesAsync(IFormFile file)
-    {
-        var token = GetToken();
-        var content = new MultipartFormDataContent();
-        var streamContent = new StreamContent(file.OpenReadStream());
-        content.Add(streamContent, "file", file.FileName);
-
-        await _apiService.PostAsync<object>("/api/deliveries/import-priorities", content, token);
     }
 
     public async Task StartDeliveryProgressAsync(Guid id)
     {
         var token = GetToken();
-        await _apiService.PutAsync<object>($"/api/deliveries/{id}/start-progress", null, token);
+        try
+        {
+            await _apiService.PutAsync<object>($"/api/deliveries/{id}/start-progress", null, token);
+        }
+        catch (Exception ex)
+        {
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            throw new Exception(translatedMessage);
+        }
     }
 
-    private string? GetToken()
+    public async Task CompleteDeliveryAsync(Guid id)
     {
-        return _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
+        var token = GetToken();
+        try
+        {
+            await _apiService.PutAsync<object>($"/api/deliveries/{id}/complete", null, token);
+        }
+        catch (Exception ex)
+        {
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            throw new Exception(translatedMessage);
+        }
     }
 
-    private string BuildQueryString(DeliveryFilterModel filter)
+    public async Task DeleteDeliveryAsync(Guid id)
     {
-        var query = new List<string>();
-
-        if (filter.SupplierId.HasValue)
-            query.Add($"supplierId={filter.SupplierId}");
-
-        if (filter.FromDate.HasValue)
-            query.Add($"fromDate={filter.FromDate.Value:yyyy-MM-dd}");
-
-        if (filter.ToDate.HasValue)
-            query.Add($"toDate={filter.ToDate.Value:yyyy-MM-dd}");
-
-        if (filter.Status.HasValue)
-            query.Add($"status={filter.Status.Value}");
-
-        query.Add($"pageNumber={filter.Page}");
-        query.Add($"pageSize={filter.PageSize}");
-
-        return query.Any() ? "?" + string.Join("&", query) : string.Empty;
+        var token = GetToken();
+        try
+        {
+            await _apiService.DeleteAsync($"/api/deliveries/delete/{id}", token);
+        }
+        catch (Exception ex)
+        {
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            throw new Exception(translatedMessage);
+        }
     }
+
+    private string? GetToken() =>
+        _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
 }

@@ -61,6 +61,11 @@
                         <i class="bi bi-truck-flatbed me-2"></i>
                         <span class="nav-text">Доставки</span>
                     </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PaymentMethods" ? "active" : "")"
+                       asp-controller="PaymentMethods" asp-action="Index">
+                        <i class="bi bi-credit-card me-2"></i>
+                        <span class="nav-text">Начини на плащане</span>
+                    </a>
                     @if (User.IsInRole("Admin"))
                     {
                         <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")"
@@ -111,7 +116,6 @@
         </div>
     </div>
 
-    <!-- Loading Spinner -->
     <div id="loadingSpinner" class="loading-spinner-overlay d-none">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Зареждане...</span>
@@ -127,7 +131,6 @@
     
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
-        // Configure Toastr
         toastr.options = {
             closeButton: true,
             progressBar: true,
@@ -146,7 +149,6 @@
             toastClass: 'toast-small'
         };
 
-        // Global loading spinner functions
         window.showLoading = function() {
             document.getElementById('loadingSpinner').classList.remove('d-none');
         };
@@ -155,7 +157,6 @@
             document.getElementById('loadingSpinner').classList.add('d-none');
         };
 
-        // Global error handler for fetch requests
         window.handleFetchError = async function(response) {
             if (!response.ok) {
                 let errorMessage;

@@ -1,4 +1,5 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
+using ErpSystem.Application.Common.Constants;
 using ErpSystem.Application.Deliveries.DTOs;
 using ErpSystem.Domain.Entities.Deliveries;
 using ErpSystem.Domain.Interfaces;
@@ -31,7 +32,7 @@ internal class GetDeliveryDetailsQueryHandler
 
         if (delivery == null)
         {
-            throw new NotFoundException(nameof(Delivery), request.Id);
+            throw new NotFoundException(DeliveryErrorKeys.DeliveryNotFound, request.Id);
         }
 
         return new DeliveryDetailDto()

@@ -1,8 +1,10 @@
-﻿using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Entities.Sales;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Orders.Commands.DeleteOrder;
 
@@ -17,37 +19,38 @@ internal class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
 
     public async Task Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await _repository.GetByIdAsync<Order>(request.Id);
+        var order = await _repository
+            .All<Order>()
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.Id == request.Id);
 
         if (order is null)
         {
-            throw new NotFoundException(nameof(Order), request.Id);
+            throw new NotFoundException(OrderErrorKeys.OrderNotFound);
         }
 
         if (order.Status != OrderStatus.Pending)
         {
-            throw new InvalidOperationException(
-                $"Cannot delete order with status {order.Status}. Only pending orders can be deleted."
-            );
+            throw new InvalidOperationException(OrderErrorKeys.OrderCannotBeDeleted);
         }
 
-        var products = await _repository.GetByIdsAsync<Product>(
-            order.OrderItems.Select(i => i.Id).ToHashSet()
-        );
+        var productIds = order.OrderItems.Select(oi => oi.ProductId).ToHashSet();
+        var products = await _repository.GetByIdsAsync<Product>(productIds);
 
-        foreach (var product in products)
+        foreach (var orderItem in order.OrderItems)
         {
-            var orderItem = order.OrderItems.FirstOrDefault(i => i.Id == product.Id);
+            var product = products.FirstOrDefault(p => p.Id == orderItem.ProductId);
 
-            if (orderItem is null)
+            if (product is null)
             {
-                throw new InvalidOperationException(
-                    $"Order item with ID {product.Id} not found in order."
-                );
+                throw new InvalidOperationException(ProductErrorKeys.ProductNotFound);
             }
 
             product.ReservedQuantity -= orderItem.Quantity;
         }
+
+        _repository.SoftDelete(order);
 
         await _repository.SaveChangesAsync();
     }

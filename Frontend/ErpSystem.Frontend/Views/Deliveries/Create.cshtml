@@ -1,0 +1,277 @@
+@using ErpSystem.Frontend.Core.Models.Deliveries
+@model DeliveryCreateModel
+
+@{
+    ViewData["Title"] = "Създаване на доставка";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+    </a>
+</div>
+
+<form asp-action="Create" method="post" id="deliveryForm">
+    @Html.AntiForgeryToken()
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Информация за доставката</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="SupplierId" class="form-label"></label>
+                                <select asp-for="SupplierId" class="form-select" asp-items="ViewBag.Suppliers">
+                                    <option value="">Изберете доставчик</option>
+                                </select>
+                                <span asp-validation-for="SupplierId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="DeliveryNumber" class="form-label"></label>
+                                <input asp-for="DeliveryNumber" type="text" class="form-control" placeholder="Въведете номер на доставка" />
+                                <span asp-validation-for="DeliveryNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="DeliveryDate" class="form-label"></label>
+                                <input asp-for="DeliveryDate" type="date" class="form-control" />
+                                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Comment" class="form-label"></label>
+                        <textarea asp-for="Comment" class="form-control" rows="3" placeholder="Въведете коментар (по избор)"></textarea>
+                        <span asp-validation-for="Comment" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Артикули в доставката</h5>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addDeliveryItem()">
+                        <i class="bi bi-plus-circle me-1"></i>Добави артикул
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="deliveryItems">
+                    </div>
+                    
+                    <div id="noItemsMessage" class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3">Няма добавени артикули</p>
+                        <button type="button" class="btn btn-primary" onclick="addDeliveryItem()">
+                            <i class="bi bi-plus-circle me-2"></i>Добави първия артикул
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Обобщение на доставката</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">Общо артикули:</dt>
+                        <dd class="col-sm-6" id="totalItems">0</dd>
+                        
+                        <dt class="col-sm-6">Общо количество:</dt>
+                        <dd class="col-sm-6" id="totalQuantity">0</dd>
+                        
+                        <dt class="col-sm-6">Обща сума:</dt>
+                        <dd class="col-sm-6" id="totalAmount">0.00 лв.</dd>
+                    </dl>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                            <i class="bi bi-check-circle me-2"></i>Създай доставка
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Отказ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        let deliveryItemIndex = 0;
+        let products = [];
+
+        $(document).ready(function() {
+            loadProducts();
+        });
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('@Url.Action("GetProducts")');
+                const data = await response.json();
+                
+                if (data.error) {
+                    toastr.error(data.error);
+                    return;
+                }
+                
+                products = data;
+            } catch (error) {
+                toastr.error('Грешка при зареждане на продуктите');
+                console.error(error);
+            }
+        }
+
+        function addDeliveryItem() {
+            const itemHtml = `
+                <div class="delivery-item border rounded p-3 mb-3" data-index="${deliveryItemIndex}">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h6 class="mb-0">Артикул #${deliveryItemIndex + 1}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDeliveryItem(${deliveryItemIndex})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Продукт</label>
+                                <select name="Items[${deliveryItemIndex}].ProductId" class="form-select product-select" data-index="${deliveryItemIndex}" onchange="onProductChange(${deliveryItemIndex})">
+                                    <option value="">Изберете продукт</option>
+                                    ${products.map(p => `<option value="${p.id}" data-price="${p.price}" data-name="${p.name}" data-sku="${p.sku}">${p.name} (${p.sku})</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Количество</label>
+                                <input type="number" name="Items[${deliveryItemIndex}].Quantity" class="form-control quantity-input" data-index="${deliveryItemIndex}" min="1" onchange="calculateItemTotal(${deliveryItemIndex})" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Единична цена</label>
+                                <input type="number" name="Items[${deliveryItemIndex}].UnitPrice" class="form-control price-input" data-index="${deliveryItemIndex}" step="0.01" min="0.01" onchange="calculateItemTotal(${deliveryItemIndex})" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Продукт: <span class="product-info" data-index="${deliveryItemIndex}">-</span></small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <strong>Обща цена: <span class="item-total" data-index="${deliveryItemIndex}">0.00 лв.</span></strong>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="Items[${deliveryItemIndex}].ProductName" class="product-name-hidden" data-index="${deliveryItemIndex}" />
+                    <input type="hidden" name="Items[${deliveryItemIndex}].ProductSku" class="product-sku-hidden" data-index="${deliveryItemIndex}" />
+                </div>
+            `;
+
+            $('#deliveryItems').append(itemHtml);
+            $('#noItemsMessage').hide();
+            deliveryItemIndex++;
+            updateDeliverySummary();
+        }
+
+        function removeDeliveryItem(index) {
+            $(`.delivery-item[data-index="${index}"]`).remove();
+            
+            if ($('.delivery-item').length === 0) {
+                $('#noItemsMessage').show();
+            }
+            
+            updateDeliverySummary();
+        }
+
+        function onProductChange(index) {
+            const select = $(`.product-select[data-index="${index}"]`);
+            const selectedOption = select.find('option:selected');
+            
+            if (selectedOption.val()) {
+                const price = selectedOption.data('price');
+                const name = selectedOption.data('name');
+                const sku = selectedOption.data('sku');
+                
+                $(`.price-input[data-index="${index}"]`).val(price);
+                $(`.product-info[data-index="${index}"]`).text(`${name} (${sku})`);
+                $(`.product-name-hidden[data-index="${index}"]`).val(name);
+                $(`.product-sku-hidden[data-index="${index}"]`).val(sku);
+                
+                calculateItemTotal(index);
+            } else {
+                $(`.price-input[data-index="${index}"]`).val('');
+                $(`.product-info[data-index="${index}"]`).text('-');
+                $(`.product-name-hidden[data-index="${index}"]`).val('');
+                $(`.product-sku-hidden[data-index="${index}"]`).val('');
+                $(`.item-total[data-index="${index}"]`).text('0.00 лв.');
+            }
+        }
+
+        function calculateItemTotal(index) {
+            const quantity = parseFloat($(`.quantity-input[data-index="${index}"]`).val()) || 0;
+            const price = parseFloat($(`.price-input[data-index="${index}"]`).val()) || 0;
+            const total = quantity * price;
+            
+            $(`.item-total[data-index="${index}"]`).text(total.toFixed(2) + ' лв.');
+            updateDeliverySummary();
+        }
+
+        function updateDeliverySummary() {
+            let totalItems = $('.delivery-item').length;
+            let totalQuantity = 0;
+            let totalAmount = 0;
+
+            $('.quantity-input').each(function() {
+                totalQuantity += parseFloat($(this).val()) || 0;
+            });
+
+            $('.delivery-item').each(function() {
+                const index = $(this).data('index');
+                const quantity = parseFloat($(`.quantity-input[data-index="${index}"]`).val()) || 0;
+                const price = parseFloat($(`.price-input[data-index="${index}"]`).val()) || 0;
+                totalAmount += quantity * price;
+            });
+
+            $('#totalItems').text(totalItems);
+            $('#totalQuantity').text(totalQuantity);
+            $('#totalAmount').text(totalAmount.toFixed(2) + ' лв.');
+            
+            const hasItems = totalItems > 0;
+            const hasValidItems = $('.product-select').filter(function() { return $(this).val() !== ''; }).length > 0;
+            $('#submitBtn').prop('disabled', !hasItems || !hasValidItems);
+        }
+
+        $('#deliveryForm').on('submit', function(e) {
+            const hasItems = $('.delivery-item').length > 0;
+            const hasValidItems = $('.product-select').filter(function() { return $(this).val() !== ''; }).length > 0;
+            
+            if (!hasItems || !hasValidItems) {
+                e.preventDefault();
+                toastr.error('Моля добавете поне един артикул в доставката');
+                return false;
+            }
+        });
+    </script>
+} 

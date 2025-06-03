@@ -1,4 +1,5 @@
 ﻿using ErpSystem.Application.Common.Exceptions;
+using ErpSystem.Application.Common.Constants;
 using ErpSystem.Domain.Entities.Deliveries;
 using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Interfaces;
@@ -21,7 +22,12 @@ internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, G
 
         if (supplier == null)
         {
-            throw new NotFoundException(nameof(Supplier), request.SupplierId);
+            throw new NotFoundException(SupplierErrorKeys.SupplierNotFound, request.SupplierId);
+        }
+
+        if (request.Items == null || !request.Items.Any())
+        {
+            throw new InvalidOperationException(DeliveryErrorKeys.DeliveryItemsRequired);
         }
 
         var productIds = request.Items.Select(i => i.ProductId).ToList();
@@ -29,7 +35,7 @@ internal class AddDeliveryCommandHandler : IRequestHandler<AddDeliveryCommand, G
 
         if (products.Count() != productIds.Count)
         {
-            throw new NotFoundException("One or more products not found.");
+            throw new NotFoundException(ProductErrorKeys.ProductRequired);
         }
 
         var delivery = new Delivery

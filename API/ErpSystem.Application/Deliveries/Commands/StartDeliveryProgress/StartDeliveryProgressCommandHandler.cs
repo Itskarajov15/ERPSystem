@@ -1,8 +1,8 @@
+using ErpSystem.Application.Common.Constants;
 using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Domain.Entities.Deliveries;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Deliveries.Commands.StartDeliveryProgress;
 
@@ -20,18 +20,16 @@ internal class StartDeliveryProgressCommandHandler : IRequestHandler<StartDelive
         CancellationToken cancellationToken
     )
     {
-        var delivery = await _repository
-            .AllReadOnly<Delivery>()
-            .FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
+        var delivery = await _repository.GetByIdAsync<Delivery>(request.Id);
 
         if (delivery == null)
         {
-            throw new NotFoundException(nameof(Delivery), request.Id);
+            throw new NotFoundException(DeliveryErrorKeys.DeliveryNotFound, request.Id);
         }
 
         if (delivery.DeliveryStatus != DeliveryStatus.Registered)
         {
-            throw new InvalidOperationException("Only registered deliveries can be started.");
+            throw new InvalidOperationException(DeliveryErrorKeys.DeliveryCannotBeStarted);
         }
 
         delivery.DeliveryStatus = DeliveryStatus.InProgress;

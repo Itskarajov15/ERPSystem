@@ -1,0 +1,272 @@
+@using ErpSystem.Frontend.Core.Models.Deliveries
+@model ErpSystem.Frontend.Core.Models.Deliveries.DeliveryDetailViewModel
+
+@{
+    ViewData["Title"] = $"Доставка {Model.DeliveryNumber}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <div class="d-flex gap-2" role="group">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+        </a>
+        
+        @if (Model.CanBeStarted)
+        {
+            <form asp-action="StartProgress" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-play me-2"></i>Започни доставка
+                </button>
+            </form>
+        }
+        
+        @if (Model.CanBeCompleted)
+        {
+            <form asp-action="Complete" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-info">
+                    <i class="bi bi-check me-2"></i>Завърши доставка
+                </button>
+            </form>
+        }
+        
+        @if (Model.CanBeDeleted)
+        {
+            <form asp-action="Delete" method="post" class="d-inline" 
+                  onsubmit="return confirm('Сигурни ли сте, че искате да изтриете тази доставка? Това действие не може да бъде отменено.')">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-2"></i>Изтрий доставка
+                </button>
+            </form>
+        }
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация за доставката</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Номер:</dt>
+                            <dd class="col-sm-7">@Model.DeliveryNumber</dd>
+                            
+                            <dt class="col-sm-5">Доставчик:</dt>
+                            <dd class="col-sm-7">@Model.SupplierName</dd>
+                            
+                            <dt class="col-sm-5">Дата на доставка:</dt>
+                            <dd class="col-sm-7">@Model.DeliveryDate.ToString("dd.MM.yyyy")</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Статус:</dt>
+                            <dd class="col-sm-7">
+                                <span class="badge @GetStatusBadgeClass(Model.Status)">
+                                    @Model.StatusName
+                                </span>
+                            </dd>
+                            
+                            <dt class="col-sm-5">Обща сума:</dt>
+                            <dd class="col-sm-7">
+                                <strong>@Model.TotalAmount.ToString("F2") лв.</strong>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.Comment))
+                {
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <dt>Коментар:</dt>
+                            <dd class="mt-2">
+                                <div class="p-3 bg-light rounded">
+                                    @Model.Comment
+                                </div>
+                            </dd>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Артикули в доставката</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Items.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Продукт</th>
+                                    <th>СКУ</th>
+                                    <th class="text-end">Количество</th>
+                                    <th class="text-end">Единична цена</th>
+                                    <th class="text-end">Обща цена</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-medium">@item.ProductName</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@item.Sku</span>
+                                        </td>
+                                        <td class="text-end">@item.Quantity</td>
+                                        <td class="text-end">@item.UnitPrice.ToString("F2") лв.</td>
+                                        <td class="text-end">
+                                            <strong>@item.TotalPrice.ToString("F2") лв.</strong>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-active">
+                                    <th colspan="4" class="text-end">Обща сума:</th>
+                                    <th class="text-end">
+                                        @Model.TotalAmount.ToString("F2") лв.
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3">Няма артикули в тази доставка</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Обобщение</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-7">Общо артикули:</dt>
+                    <dd class="col-sm-5 text-end">@Model.Items.Count</dd>
+                    
+                    <dt class="col-sm-7">Общо количество:</dt>
+                    <dd class="col-sm-5 text-end">@Model.Items.Sum(i => i.Quantity)</dd>
+                    
+                    <dt class="col-sm-7">Средна цена:</dt>
+                    <dd class="col-sm-5 text-end">
+                        @if (Model.Items.Any())
+                        {
+                            @((Model.TotalAmount / Model.Items.Sum(i => i.Quantity)).ToString("F2") + " лв.")
+                        }
+                        else
+                        {
+                            @(0.ToString("F2") + " лв.")
+                        }
+                    </dd>
+                </dl>
+                
+                <hr>
+                
+                <dl class="row">
+                    <dt class="col-sm-7">Обща сума:</dt>
+                    <dd class="col-sm-5 text-end">
+                        <strong class="fs-5">@Model.TotalAmount.ToString("F2") лв.</strong>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Действия</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.CanBeStarted)
+                    {
+                        <form asp-action="StartProgress" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-play me-2"></i>Започни доставка
+                            </button>
+                        </form>
+                    }
+                    
+                    @if (Model.CanBeCompleted)
+                    {
+                        <form asp-action="Complete" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-info">
+                                <i class="bi bi-check me-2"></i>Завърши доставка
+                            </button>
+                        </form>
+                    }
+                    
+                    @if (Model.CanBeDeleted)
+                    {
+                        <form asp-action="Delete" method="post" class="d-inline" 
+                              onsubmit="return confirm('Сигурни ли сте, че искате да изтриете тази доставка? Това действие не може да бъде отменено.')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-trash me-2"></i>Изтрий доставка
+                            </button>
+                        </form>
+                    }
+                    
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(DeliveryStatus status) => status switch
+    {
+        DeliveryStatus.Registered => "bg-warning",
+        DeliveryStatus.InProgress => "bg-info",
+        DeliveryStatus.Completed => "bg-success",
+        _ => "bg-secondary"
+    };
+} 

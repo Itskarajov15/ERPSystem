@@ -1,4 +1,6 @@
-@model ErpSystem.Frontend.Core.Models.Common.PageResult<ErpSystem.Frontend.Core.Models.Products.ProductViewModel>
+@using ErpSystem.Frontend.Core.Models.Common
+@using ErpSystem.Frontend.Core.Models.Products
+@model PageResult<ProductViewModel>
 
 @{
     ViewData["Title"] = "Продукти";
@@ -77,7 +79,7 @@
                                 <tr>
                                     <td>@item.Name</td>
                                     <td>@item.Sku</td>
-                                    <td>@item.UnitPrice.ToString("C")</td>
+                                    <td>@item.UnitPrice.ToString("F2") лв.</td>
                                     <td>@item.Quantity</td>
                                     <td>@item.UnitOfMeasureName</td>
                                     <td>
@@ -140,7 +142,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

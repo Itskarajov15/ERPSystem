@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ErpSystem.Application.Common.Constants;
+using FluentValidation;
 
 namespace ErpSystem.Application.Deliveries.Commands.AddDelivery;
 
@@ -6,30 +7,41 @@ public class AddDeliveryCommandValidator : AbstractValidator<AddDeliveryCommand>
 {
     public AddDeliveryCommandValidator()
     {
-        RuleFor(x => x.SupplierId).NotEmpty().WithMessage("Supplier ID is required.");
-        RuleFor(x => x.DeliveryDate)
+        RuleFor(x => x.SupplierId).NotEmpty().WithMessage(SupplierErrorKeys.SupplierRequired);
+
+        RuleFor(x => x.DeliveryNumber)
             .NotEmpty()
-            .WithMessage("Delivery date is required.")
-            .LessThanOrEqualTo(DateTime.UtcNow)
-            .WithMessage("Delivery date cannot be in the future.");
+            .WithMessage(DeliveryErrorKeys.DeliveryNumberRequired)
+            .MaximumLength(50)
+            .WithMessage(DeliveryErrorKeys.DeliveryNumberTooLong);
+
+        RuleFor(x => x.DeliveryDate).NotEmpty().WithMessage(DeliveryErrorKeys.DeliveryDateRequired);
+
         RuleFor(x => x.Items)
+            .NotNull()
+            .WithMessage(DeliveryErrorKeys.DeliveryItemsRequired)
             .NotEmpty()
-            .WithMessage("At least one delivery item is required.")
+            .WithMessage(DeliveryErrorKeys.DeliveryItemsRequired)
             .Must(items => items.All(item => item.Quantity > 0))
-            .WithMessage("All items must have a quantity greater than zero.");
+            .WithMessage(ProductErrorKeys.QuantityInvalid);
 
         RuleForEach(x => x.Items)
             .ChildRules(items =>
             {
-                items.RuleFor(i => i.ProductId).NotEmpty().WithMessage("Product ID is required.");
+                items
+                    .RuleFor(i => i.ProductId)
+                    .NotEmpty()
+                    .WithMessage(ProductErrorKeys.ProductRequired);
+
                 items
                     .RuleFor(i => i.Quantity)
                     .GreaterThan(0)
-                    .WithMessage("Quantity must be greater than zero.");
+                    .WithMessage(ProductErrorKeys.QuantityInvalid);
+
                 items
                     .RuleFor(i => i.UnitPrice)
                     .GreaterThan(0)
-                    .WithMessage("Unit price must be greater than zero.");
+                    .WithMessage(ProductErrorKeys.UnitPriceInvalid);
             });
     }
 }

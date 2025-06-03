@@ -1,0 +1,189 @@
+@model ErpSystem.Frontend.Core.Models.Orders.OrderDetailViewModel
+
+@{
+    ViewData["Title"] = "Детайли на поръчка";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <div class="d-flex gap-2">
+        @if (Model.Status == "Pending")
+        {
+            <form asp-action="Complete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-success" 
+                        onclick="return confirm('Сигурни ли сте, че искате да завършите тази поръчка?')">
+                    <i class="bi bi-check-circle me-2"></i>Завърши поръчка
+                </button>
+            </form>
+            
+            <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-warning" 
+                        onclick="return confirm('Сигурни ли сте, че искате да отмените тази поръчка?')">
+                    <i class="bi bi-x-circle me-2"></i>Отмени поръчка
+                </button>
+            </form>
+        }
+        
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация за поръчката</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Дата:</dt>
+                            <dd class="col-sm-8">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</dd>
+                            
+                            <dt class="col-sm-4">Статус:</dt>
+                            <dd class="col-sm-8">
+                                @switch (Model.Status)
+                                {
+                                    case "Pending":
+                                        <span class="badge bg-warning">Чакаща</span>
+                                        break;
+                                    case "Completed":
+                                        <span class="badge bg-success">Завършена</span>
+                                        break;
+                                    case "Canceled":
+                                        <span class="badge bg-danger">Отменена</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@Model.Status</span>
+                                        break;
+                                }
+                            </dd>
+                            
+                            <dt class="col-sm-4">Начин на плащане:</dt>
+                            <dd class="col-sm-8">@Model.PaymentMethodName</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <dl class="row">
+                                <dt class="col-sm-4">Бележки:</dt>
+                                <dd class="col-sm-8">@Model.Notes</dd>
+                            </dl>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Артикули в поръчката</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Items.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Продукт</th>
+                                    <th>СКУ</th>
+                                    <th>Мерна единица</th>
+                                    <th class="text-end">Количество</th>
+                                    <th class="text-end">Единична цена</th>
+                                    <th class="text-end">Обща цена</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.ProductSku</td>
+                                        <td>@item.UnitOfMeasure</td>
+                                        <td class="text-end">@item.Quantity</td>
+                                        <td class="text-end">@item.UnitPrice.ToString("F2") лв.</td>
+                                        <td class="text-end">@item.TotalPrice.ToString("F2") лв.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-active">
+                                    <th colspan="3">Общо:</th>
+                                    <th class="text-end">@Model.TotalItems</th>
+                                    <th></th>
+                                    <th class="text-end">@Model.Subtotal.ToString("F2") лв.</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3">Няма артикули в тази поръчка</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация за клиента</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Име:</dt>
+                    <dd class="col-sm-8">@Model.CustomerName</dd>
+                    
+                    @if (!string.IsNullOrEmpty(Model.CustomerPhone))
+                    {
+                        <dt class="col-sm-4">Телефон:</dt>
+                        <dd class="col-sm-8">
+                            <a href="tel:@Model.CustomerPhone">@Model.CustomerPhone</a>
+                        </dd>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.CustomerEmail))
+                    {
+                        <dt class="col-sm-4">Имейл:</dt>
+                        <dd class="col-sm-8">
+                            <a href="mailto:@Model.CustomerEmail">@Model.CustomerEmail</a>
+                        </dd>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.CustomerAddress))
+                    {
+                        <dt class="col-sm-4">Адрес:</dt>
+                        <dd class="col-sm-8">@Model.CustomerAddress</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+</div> 

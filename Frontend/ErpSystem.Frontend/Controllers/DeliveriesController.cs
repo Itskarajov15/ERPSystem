@@ -1,4 +1,5 @@
 using ErpSystem.Frontend.Core.Interfaces;
+using ErpSystem.Frontend.Core.Models.Common;
 using ErpSystem.Frontend.Core.Models.Deliveries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,111 +27,185 @@ public class DeliveriesController : Controller
 
     public async Task<IActionResult> Index([FromQuery] DeliveryFilterModel filter)
     {
-        var viewModel = new DeliveriesViewModel { Filter = filter };
-
         try
         {
-            var suppliers = await _supplierService.GetSuppliersAsync();
-            viewModel.Suppliers = suppliers
-                .Items.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
-                .ToList();
-
-            var products = await _productService.GetProductsAsync();
-            viewModel.Products = products
-                .Items.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = $"{p.Name} ({p.Sku})",
-                })
-                .ToList();
-
-            var (items, totalCount) = await _deliveryService.GetDeliveriesAsync(filter);
-            viewModel.Deliveries = items;
-            viewModel.TotalCount = totalCount;
+            var deliveries = await _deliveryService.GetDeliveriesAsync(filter);
+            await LoadSuppliersDropdown();
+            return View(deliveries);
         }
         catch (Exception ex)
         {
-            viewModel.ErrorMessage = ex.Message;
+            TempData["ErrorMessage"] = ex.Message;
+            await LoadSuppliersDropdown();
+            return View(new PageResult<DeliveryViewModel>());
         }
-
-        return View(viewModel);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetDelivery(Guid id)
+    public async Task<IActionResult> Details(Guid id)
     {
         try
         {
             var delivery = await _deliveryService.GetDeliveryByIdAsync(id);
             if (delivery == null)
-                return NotFound(new { message = "Delivery not found" });
+            {
+                TempData["ErrorMessage"] = "Доставката не е намерена";
+                return RedirectToAction(nameof(Index));
+            }
 
-            return Json(delivery);
+            return View(delivery);
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction(nameof(Index));
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] DeliveryEditModel model)
+    [HttpGet]
+    public async Task<IActionResult> Create()
     {
         try
         {
-            if (!ModelState.IsValid)
-                return BadRequest(
-                    new { message = "Please check the form and try again", errors = ModelState }
-                );
-
-            var id = await _deliveryService.CreateDeliveryAsync(model);
-            return Json(new { id });
+            await LoadViewBagData();
+            return View(new DeliveryCreateModel());
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction(nameof(Index));
         }
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(DeliveryCreateModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            await LoadViewBagData();
+            return View(model);
+        }
+
+        try
+        {
+            var deliveryId = await _deliveryService.CreateDeliveryAsync(model);
+            TempData["SuccessMessage"] = "Доставката е създадена успешно";
+            return RedirectToAction(nameof(Details), new { id = deliveryId });
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            await LoadViewBagData();
+            return View(model);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> StartProgress(Guid id)
     {
         try
         {
             await _deliveryService.StartDeliveryProgressAsync(id);
-            return Json(new { success = true });
+            TempData["SuccessMessage"] = "Доставката е започната успешно";
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            TempData["ErrorMessage"] = ex.Message;
         }
+        
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Complete(Guid id)
     {
         try
         {
             await _deliveryService.CompleteDeliveryAsync(id);
-            return Json(new { success = true });
+            TempData["SuccessMessage"] = "Доставката е завършена успешно";
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            TempData["ErrorMessage"] = ex.Message;
         }
+        
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Cancel(Guid id)
+    {
+        try
+        {
+            await _deliveryService.DeleteDeliveryAsync(id);
+            TempData["SuccessMessage"] = "Доставката е отменена успешно";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+        
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
             await _deliveryService.DeleteDeliveryAsync(id);
-            return Json(new { success = true });
+            TempData["SuccessMessage"] = "Доставката е изтрита успешно";
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            TempData["ErrorMessage"] = ex.Message;
         }
+        
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProducts()
+    {
+        try
+        {
+            var products = await _productService.GetProductsAsync();
+            var productList = products
+                .Items.Select(p => new
+                {
+                    id = p.Id,
+                    name = p.Name,
+                    sku = p.Sku,
+                    price = p.UnitPrice,
+                    quantity = p.Quantity,
+                })
+                .ToList();
+
+            return Json(productList);
+        }
+        catch (Exception ex)
+        {
+            return Json(new { error = ex.Message });
+        }
+    }
+
+    private async Task LoadViewBagData()
+    {
+        var suppliers = await _supplierService.GetSuppliersAsync();
+        ViewBag.Suppliers = suppliers
+            .Items.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
+            .ToList();
+    }
+
+    private async Task LoadSuppliersDropdown()
+    {
+        var suppliers = await _supplierService.GetSuppliersAsync();
+        ViewBag.Suppliers = suppliers
+            .Items.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
+            .ToList();
     }
 }

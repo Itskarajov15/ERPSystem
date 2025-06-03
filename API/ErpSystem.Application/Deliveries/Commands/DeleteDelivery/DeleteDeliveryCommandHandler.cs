@@ -1,4 +1,5 @@
-﻿using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Domain.Entities.Deliveries;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
@@ -17,14 +18,15 @@ internal class DeleteDeliveryCommandHandler : IRequestHandler<DeleteDeliveryComm
     public async Task Handle(DeleteDeliveryCommand request, CancellationToken cancellationToken)
     {
         var delivery = await _repository.GetByIdAsync<Delivery>(request.Id);
+
         if (delivery == null)
         {
-            throw new NotFoundException(nameof(Delivery), request.Id);
+            throw new NotFoundException(DeliveryErrorKeys.DeliveryNotFound, request.Id);
         }
 
-        if (delivery.CanBeDeleted())
+        if (!delivery.CanBeDeleted())
         {
-            throw new InvalidOperationException("Only registered deliveries can be deleted.");
+            throw new InvalidOperationException(DeliveryErrorKeys.DeliveryCannotBeDeleted);
         }
 
         _repository.SoftDelete(delivery);
