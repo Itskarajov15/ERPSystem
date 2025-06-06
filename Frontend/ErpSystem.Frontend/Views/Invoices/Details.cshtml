@@ -1,0 +1,225 @@
+@model ErpSystem.Frontend.Core.Models.Invoices.InvoiceDetailViewModel
+
+@{
+    ViewData["Title"] = "Детайли на фактура";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <div class="d-flex gap-2">
+        @if (Model.StatusName == "Draft")
+        {
+            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="status" value="2" />
+                <button type="submit" class="btn btn-success" 
+                        onclick="return confirm('Сигурни ли сте, че искате да издадете тази фактура?')">
+                    <i class="bi bi-send me-2"></i>Издай фактура
+                </button>
+            </form>
+            
+            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="status" value="4" />
+                <button type="submit" class="btn btn-warning" 
+                        onclick="return confirm('Сигурни ли сте, че искате да отмените тази фактура?')">
+                    <i class="bi bi-x-circle me-2"></i>Отмени фактура
+                </button>
+            </form>
+        }
+        
+        @if (Model.StatusName == "Issued")
+        {
+            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="status" value="3" />
+                <button type="submit" class="btn btn-success" 
+                        onclick="return confirm('Сигурни ли сте, че тази фактура е платена?')">
+                    <i class="bi bi-check-circle me-2"></i>Маркирай като платена
+                </button>
+            </form>
+        }
+        
+        <a href="@Url.Action("GetPdf", "Invoices", new { id = Model.Id })" 
+           class="btn btn-outline-primary" target="_blank">
+            <i class="bi bi-file-earmark-pdf me-2"></i>Изтегли PDF
+        </a>
+        
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация за фактурата</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Номер:</dt>
+                            <dd class="col-sm-7">@Model.InvoiceNumber</dd>
+                            
+                            <dt class="col-sm-5">Дата на издаване:</dt>
+                            <dd class="col-sm-7">@Model.InvoiceDate.ToString("dd.MM.yyyy")</dd>
+                            
+                            <dt class="col-sm-5">Статус:</dt>
+                            <dd class="col-sm-7">
+                                @switch (Model.StatusName)
+                                {
+                                    case "Draft":
+                                        <span class="badge bg-secondary">Чернова</span>
+                                        break;
+                                    case "Issued":
+                                        <span class="badge bg-warning">Издадена</span>
+                                        break;
+                                    case "Paid":
+                                        <span class="badge bg-success">Платена</span>
+                                        break;
+                                    case "Cancelled":
+                                        <span class="badge bg-danger">Отменена</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@Model.StatusName</span>
+                                        break;
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            @if (!string.IsNullOrEmpty(Model.Notes))
+                            {
+                                <dt class="col-sm-5">Бележки:</dt>
+                                <dd class="col-sm-7">@Model.Notes</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Артикули във фактурата</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Items.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Продукт</th>
+                                    <th>СКУ</th>
+                                    <th class="text-end">Количество</th>
+                                    <th class="text-end">Единична цена</th>
+                                    <th class="text-end">ДДС %</th>
+                                    <th class="text-end">ДДС сума</th>
+                                    <th class="text-end">Общо</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.ProductSku</td>
+                                        <td class="text-end">@item.Quantity</td>
+                                        <td class="text-end">@item.UnitPrice.ToString("F2") лв.</td>
+                                        <td class="text-end">@item.VatRate.ToString("F1")%</td>
+                                        <td class="text-end">@item.VatAmount.ToString("F2") лв.</td>
+                                        <td class="text-end">@item.LineTotal.ToString("F2") лв.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3">Няма артикули в тази фактура</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация за клиента</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Име:</dt>
+                    <dd class="col-sm-8">@Model.CustomerName</dd>
+                    
+                    @if (!string.IsNullOrEmpty(Model.CustomerPhone))
+                    {
+                        <dt class="col-sm-4">Телефон:</dt>
+                        <dd class="col-sm-8">
+                            <a href="tel:@Model.CustomerPhone">@Model.CustomerPhone</a>
+                        </dd>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.CustomerEmail))
+                    {
+                        <dt class="col-sm-4">Имейл:</dt>
+                        <dd class="col-sm-8">
+                            <a href="mailto:@Model.CustomerEmail">@Model.CustomerEmail</a>
+                        </dd>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.CustomerAddress))
+                    {
+                        <dt class="col-sm-4">Адрес:</dt>
+                        <dd class="col-sm-8">@Model.CustomerAddress</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Финансова информация</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-7">Междинна сума:</dt>
+                    <dd class="col-sm-5 text-end">@Model.SubTotal.ToString("F2") лв.</dd>
+                    
+                    <dt class="col-sm-7">ДДС сума:</dt>
+                    <dd class="col-sm-5 text-end">@Model.VatAmount.ToString("F2") лв.</dd>
+                    
+                    <dt class="col-sm-7 border-top pt-2"><strong>Обща сума:</strong></dt>
+                    <dd class="col-sm-5 text-end border-top pt-2">
+                        <strong class="fs-5 text-primary">@Model.TotalAmount.ToString("F2") лв.</strong>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div> 

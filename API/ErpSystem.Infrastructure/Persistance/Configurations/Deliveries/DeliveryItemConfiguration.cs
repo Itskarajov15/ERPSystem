@@ -6,9 +6,9 @@ namespace ErpSystem.Infrastructure.Persistance.Configurations.Deliveries;
 
 public class DeliveryItemConfiguration : BaseEntityConfiguration<DeliveryItem>
 {
-    public void Configure(EntityTypeBuilder<DeliveryItem> builder)
+    public override void Configure(EntityTypeBuilder<DeliveryItem> builder)
     {
-        builder.HasKey(di => di.Id);
+        base.Configure(builder);
 
         builder.Property(di => di.Quantity).IsRequired();
 

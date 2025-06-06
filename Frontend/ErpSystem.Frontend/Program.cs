@@ -33,6 +33,7 @@ builder.Services.AddScoped<IUnitOfMeasureService, UnitOfMeasureService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddSingleton<ErrorTranslationService>();
 
 var app = builder.Build();

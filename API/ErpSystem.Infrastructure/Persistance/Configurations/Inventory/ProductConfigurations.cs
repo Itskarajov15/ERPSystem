@@ -6,9 +6,9 @@ namespace ErpSystem.Infrastructure.Persistance.Configurations.Inventory;
 
 public class ProductConfigurations : BaseEntityConfiguration<Product>
 {
-    public void Configure(EntityTypeBuilder<Product> builder)
+    public override void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.HasKey(p => p.Id);
+        base.Configure(builder);
 
         builder.Property(p => p.Name).IsRequired().HasMaxLength(100);
 
@@ -31,5 +31,90 @@ public class ProductConfigurations : BaseEntityConfiguration<Product>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasQueryFilter(p => !p.IsDeleted);
+
+        builder.HasData(GetSeedData());
+    }
+
+    private static Product[] GetSeedData()
+    {
+        return new[]
+        {
+            new Product
+            {
+                Id = Guid.Parse("6EE1718F-A1EE-4BFF-8AB1-9CE688D14E4A"),
+                Name = "Офис стол ергономичен",
+                Sku = "CHAIR-ERG-001",
+                Description =
+                    "Ергономичен офис стол с регулируема височина, поддръжка за гръб и подлакътници",
+                Quantity = 50,
+                ReservedQuantity = 0,
+                Price = 289.50m,
+                ReorderLevel = 15,
+                UnitOfMeasureId = Guid.Parse("FC720443-B659-4A2D-94B7-1CD4778B1040"), // бр.
+                CreatedBy = "system",
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                IsDeleted = false,
+            },
+            new Product
+            {
+                Id = Guid.Parse("980FCB9F-F9F1-4D9C-93CC-FE35B7E48B32"),
+                Name = "Копирна хартия А4 80g",
+                Sku = "PAPER-A4-80G",
+                Description = "Висококачествена копирна хартия А4, 80g/m², 500 листа в пакет",
+                Quantity = 200,
+                ReservedQuantity = 0,
+                Price = 12.99m,
+                ReorderLevel = 50,
+                UnitOfMeasureId = Guid.Parse("E7D01A65-7F41-4560-90A8-7140C5FE3F6F"), // кг
+                CreatedBy = "system",
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                IsDeleted = false,
+            },
+            new Product
+            {
+                Id = Guid.Parse("4007B57F-AFDB-45CC-9EFF-B66B0F31B154"),
+                Name = "Химикалки сини комплект",
+                Sku = "PEN-BLUE-SET10",
+                Description = "Комплект от 10 сини химикалки за ежедневно писане, гладко писане",
+                Quantity = 120,
+                ReservedQuantity = 0,
+                Price = 8.50m,
+                ReorderLevel = 30,
+                UnitOfMeasureId = Guid.Parse("FC720443-B659-4A2D-94B7-1CD4778B1040"), // бр.
+                CreatedBy = "system",
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                IsDeleted = false,
+            },
+            new Product
+            {
+                Id = Guid.Parse("3805CAB6-332F-4909-8546-679E0B2F2033"),
+                Name = "Папки класьори А4",
+                Sku = "FOLDER-A4-ARCH",
+                Description = "Картонени класьори за документи А4, с метални скоби",
+                Quantity = 80,
+                ReservedQuantity = 0,
+                Price = 4.75m,
+                ReorderLevel = 25,
+                UnitOfMeasureId = Guid.Parse("FC720443-B659-4A2D-94B7-1CD4778B1040"), // бр.
+                CreatedBy = "system",
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                IsDeleted = false,
+            },
+            new Product
+            {
+                Id = Guid.Parse("40FCE498-755D-4A95-9777-C910AB0306F5"),
+                Name = "Офис почистващ препарат",
+                Sku = "CLEAN-OFFICE-1L",
+                Description = "Специализиран почистващ препарат за офисни повърхности и техника",
+                Quantity = 60,
+                ReservedQuantity = 0,
+                Price = 15.90m,
+                ReorderLevel = 20,
+                UnitOfMeasureId = Guid.Parse("9EF4BC25-3700-40C8-A290-D23FAB4C4E12"), // л
+                CreatedBy = "system",
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                IsDeleted = false,
+            },
+        };
     }
 }

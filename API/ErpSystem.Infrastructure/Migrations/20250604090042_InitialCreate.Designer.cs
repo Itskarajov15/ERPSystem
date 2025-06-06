@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ErpSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250528075537_InitialCreate")]
+    [Migration("20250604090042_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -32,7 +32,8 @@ namespace ErpSystem.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -47,7 +48,8 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("DeliveryNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("DeliveryStatus")
                         .HasColumnType("int");
@@ -106,6 +108,7 @@ namespace ErpSystem.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -125,11 +128,13 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("ContactPerson")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -141,7 +146,8 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -155,15 +161,217 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Suppliers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("f742a28e-b0e0-4c50-bf4f-bf295ebaa9dd"),
+                            Address = "гр. София, ул. Витоша 15",
+                            ContactPerson = "Иван Петров",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "ivan.petrov@office-express.bg",
+                            IsDeleted = false,
+                            Name = "Офис Експрес ЕООД",
+                            Phone = "+359888123456"
+                        },
+                        new
+                        {
+                            Id = new Guid("07ecf61b-33cd-430b-be4e-895da076f73e"),
+                            Address = "гр. Пловдив, бул. Русия 45",
+                            ContactPerson = "Мария Георгиева",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "maria.georgieva@office-materials.bg",
+                            IsDeleted = false,
+                            Name = "Канцеларски Материали БГ АД",
+                            Phone = "+359877234567"
+                        },
+                        new
+                        {
+                            Id = new Guid("d2e467f9-c4c5-4641-b535-620566e37d8b"),
+                            Address = "гр. Варна, ул. Васил Левски 23",
+                            ContactPerson = "Георги Стоянов",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "georgi.stoyanov@pro-office.bg",
+                            IsDeleted = false,
+                            Name = "Професионален Офис ООД",
+                            Phone = "+359866345678"
+                        },
+                        new
+                        {
+                            Id = new Guid("50c8493b-76aa-4b61-ae9d-6eb69cfaf785"),
+                            Address = "гр. Бургас, ул. Александровска 67",
+                            ContactPerson = "Елена Димитрова",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "elena.dimitrova@stationery-group.bg",
+                            IsDeleted = false,
+                            Name = "Стейшънъри Груп ЕООД",
+                            Phone = "+359855456789"
+                        },
+                        new
+                        {
+                            Id = new Guid("facca2c6-49ff-471a-a853-8796ea574217"),
+                            Address = "гр. Стара Загора, ул. Гурко 34",
+                            ContactPerson = "Николай Тодоров",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "nikolay.todorov@office-furniture.bg",
+                            IsDeleted = false,
+                            Name = "Офис Мебели и Техника АД",
+                            Phone = "+359844567890"
+                        });
+                });
+
+            modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.Invoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("VatAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("InvoiceNumber")
+                        .IsUnique();
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("Invoice");
+                });
+
+            modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.InvoiceItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("LineTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ProductSku")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("VatAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("VatRate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("InvoiceItem");
                 });
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Identity.ApplicationRole", b =>
@@ -311,11 +519,13 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("ActionName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ControllerName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -356,7 +566,8 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -370,23 +581,31 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<decimal>("ReorderLevel")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ReservedQuantity")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Sku")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("UnitOfMeasureId")
                         .HasColumnType("uniqueidentifier");
@@ -396,6 +615,83 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.HasIndex("UnitOfMeasureId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("6ee1718f-a1ee-4bff-8ab1-9ce688d14e4a"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Description = "Ергономичен офис стол с регулируема височина, поддръжка за гръб и подлакътници",
+                            IsDeleted = false,
+                            Name = "Офис стол ергономичен",
+                            Price = 289.50m,
+                            Quantity = 50,
+                            ReorderLevel = 15m,
+                            ReservedQuantity = 0,
+                            Sku = "CHAIR-ERG-001",
+                            UnitOfMeasureId = new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040")
+                        },
+                        new
+                        {
+                            Id = new Guid("980fcb9f-f9f1-4d9c-93cc-fe35b7e48b32"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Description = "Висококачествена копирна хартия А4, 80g/m², 500 листа в пакет",
+                            IsDeleted = false,
+                            Name = "Копирна хартия А4 80g",
+                            Price = 12.99m,
+                            Quantity = 200,
+                            ReorderLevel = 50m,
+                            ReservedQuantity = 0,
+                            Sku = "PAPER-A4-80G",
+                            UnitOfMeasureId = new Guid("e7d01a65-7f41-4560-90a8-7140c5fe3f6f")
+                        },
+                        new
+                        {
+                            Id = new Guid("4007b57f-afdb-45cc-9eff-b66b0f31b154"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Description = "Комплект от 10 сини химикалки за ежедневно писане, гладко писане",
+                            IsDeleted = false,
+                            Name = "Химикалки сини комплект",
+                            Price = 8.50m,
+                            Quantity = 120,
+                            ReorderLevel = 30m,
+                            ReservedQuantity = 0,
+                            Sku = "PEN-BLUE-SET10",
+                            UnitOfMeasureId = new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040")
+                        },
+                        new
+                        {
+                            Id = new Guid("3805cab6-332f-4909-8546-679e0b2f2033"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Description = "Картонени класьори за документи А4, с метални скоби",
+                            IsDeleted = false,
+                            Name = "Папки класьори А4",
+                            Price = 4.75m,
+                            Quantity = 80,
+                            ReorderLevel = 25m,
+                            ReservedQuantity = 0,
+                            Sku = "FOLDER-A4-ARCH",
+                            UnitOfMeasureId = new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040")
+                        },
+                        new
+                        {
+                            Id = new Guid("40fce498-755d-4a95-9777-c910ab0306f5"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Description = "Специализиран почистващ препарат за офисни повърхности и техника",
+                            IsDeleted = false,
+                            Name = "Офис почистващ препарат",
+                            Price = 15.90m,
+                            Quantity = 60,
+                            ReorderLevel = 20m,
+                            ReservedQuantity = 0,
+                            Sku = "CLEAN-OFFICE-1L",
+                            UnitOfMeasureId = new Guid("9ef4bc25-3700-40c8-a290-d23fab4c4e12")
+                        });
                 });
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Inventory.UnitOfMeasure", b =>
@@ -424,11 +720,38 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("UnitOfMeasures");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            IsDeleted = false,
+                            Name = "бр."
+                        },
+                        new
+                        {
+                            Id = new Guid("e7d01a65-7f41-4560-90a8-7140c5fe3f6f"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            IsDeleted = false,
+                            Name = "кг"
+                        },
+                        new
+                        {
+                            Id = new Guid("9ef4bc25-3700-40c8-a290-d23fab4c4e12"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            IsDeleted = false,
+                            Name = "л"
+                        });
                 });
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Sales.Customer", b =>
@@ -439,11 +762,13 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("ContactName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -455,7 +780,8 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -469,15 +795,79 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("2bf41498-995a-4a13-8391-f6e0f5223f08"),
+                            Address = "гр. София, бул. Витоша 128",
+                            ContactName = "Стефан Василев",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "stefan.vasilev@petrov-partners.bg",
+                            IsDeleted = false,
+                            Name = "Адвокатско Дружество Петров и Партньори",
+                            Phone = "+359889123456"
+                        },
+                        new
+                        {
+                            Id = new Guid("eb81d76e-d727-47ec-b4e5-af9503baa6fd"),
+                            Address = "гр. Пловдив, ул. Марица 89",
+                            ContactName = "Анна Христова",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "anna.hristova@balance-accounting.bg",
+                            IsDeleted = false,
+                            Name = "Счетоводна Къща Баланс ЕООД",
+                            Phone = "+359878234567"
+                        },
+                        new
+                        {
+                            Id = new Guid("6c6b1118-9a9b-4bd2-bc19-933bdbe74710"),
+                            Address = "гр. Варна, ул. Приморски 12",
+                            ContactName = "Петър Атанасов",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "petar.atanasov@it-solutions.bg",
+                            IsDeleted = false,
+                            Name = "IT Солюшънс България ООД",
+                            Phone = "+359867345678"
+                        },
+                        new
+                        {
+                            Id = new Guid("b98c77d0-6417-4791-a3ee-1acf0d7e18cd"),
+                            Address = "гр. Бургас, бул. Демокрация 45",
+                            ContactName = "Румяна Кирилова",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "rumyana.kirilova@school-botev.bg",
+                            IsDeleted = false,
+                            Name = "Училище Христо Ботев",
+                            Phone = "+359856456789"
+                        },
+                        new
+                        {
+                            Id = new Guid("f490ae0c-4abe-42ac-b499-fed676becadd"),
+                            Address = "гр. Русе, ул. Дунав 78",
+                            ContactName = "Владимир Михайлов",
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            Email = "vladimir.mihaylov@ruse-municipality.bg",
+                            IsDeleted = false,
+                            Name = "Общинска Администрация Русе",
+                            Phone = "+359845567890"
+                        });
                 });
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Sales.Order", b =>
@@ -508,7 +898,8 @@ namespace ErpSystem.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -562,6 +953,7 @@ namespace ErpSystem.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -599,11 +991,38 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("PaymentMethods");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b6525ce3-9252-4b5e-9098-84490c36c487"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            IsDeleted = false,
+                            Name = "В брой"
+                        },
+                        new
+                        {
+                            Id = new Guid("3d1cecab-419f-4ec0-b2a6-a8260cd0d1e3"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            IsDeleted = false,
+                            Name = "Банков превод"
+                        },
+                        new
+                        {
+                            Id = new Guid("1643b266-ea12-4b44-a4f7-a96a41fec121"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "system",
+                            IsDeleted = false,
+                            Name = "Карта"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -714,7 +1133,7 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.HasOne("ErpSystem.Domain.Entities.Deliveries.Supplier", "Supplier")
                         .WithMany("Deliveries")
                         .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Supplier");
@@ -731,10 +1150,48 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.HasOne("ErpSystem.Domain.Entities.Inventory.Product", "Product")
                         .WithMany("DeliveryItems")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Delivery");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.Invoice", b =>
+                {
+                    b.HasOne("ErpSystem.Domain.Entities.Sales.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ErpSystem.Domain.Entities.Sales.Order", "Order")
+                        .WithOne("Invoice")
+                        .HasForeignKey("ErpSystem.Domain.Entities.Financial.Invoice", "OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.InvoiceItem", b =>
+                {
+                    b.HasOne("ErpSystem.Domain.Entities.Financial.Invoice", "Invoice")
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ErpSystem.Domain.Entities.Inventory.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
 
                     b.Navigation("Product");
                 });
@@ -763,7 +1220,7 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.HasOne("ErpSystem.Domain.Entities.Inventory.UnitOfMeasure", "UnitOfMeasure")
                         .WithMany("Products")
                         .HasForeignKey("UnitOfMeasureId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("UnitOfMeasure");
@@ -780,7 +1237,7 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.HasOne("ErpSystem.Domain.Entities.Sales.PaymentMethod", "PaymentMethod")
                         .WithMany()
                         .HasForeignKey("PaymentMethodId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -799,7 +1256,7 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.HasOne("ErpSystem.Domain.Entities.Inventory.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -868,6 +1325,11 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.Navigation("Deliveries");
                 });
 
+            modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.Invoice", b =>
+                {
+                    b.Navigation("InvoiceItems");
+                });
+
             modelBuilder.Entity("ErpSystem.Domain.Entities.Identity.ApplicationRole", b =>
                 {
                     b.Navigation("RoleRoutePermissions");
@@ -897,6 +1359,8 @@ namespace ErpSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Sales.Order", b =>
                 {
+                    b.Navigation("Invoice");
+
                     b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618

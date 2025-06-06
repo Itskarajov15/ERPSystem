@@ -47,6 +47,7 @@
                         <option value="Pending" selected="@(Context.Request.Query["Status"] == "Pending")">Чакаща</option>
                         <option value="Completed" selected="@(Context.Request.Query["Status"] == "Completed")">Завършена</option>
                         <option value="Canceled" selected="@(Context.Request.Query["Status"] == "Canceled")">Отменена</option>
+                        <option value="Archived" selected="@(Context.Request.Query["Status"] == "Archived")">Архивирана</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -120,6 +121,9 @@
                                             break;
                                         case "Canceled":
                                             <span class="badge bg-danger">Отменена</span>
+                                            break;
+                                        case "Archived":
+                                            <span class="badge bg-info">Архивирана</span>
                                             break;
                                         default:
                                             <span class="badge bg-secondary">@order.StatusName</span>

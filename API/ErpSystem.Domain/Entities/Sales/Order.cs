@@ -1,4 +1,6 @@
-﻿using ErpSystem.Domain.Abstractions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using ErpSystem.Domain.Abstractions;
+using ErpSystem.Domain.Entities.Financial;
 
 namespace ErpSystem.Domain.Entities.Sales;
 
@@ -14,9 +16,13 @@ public class Order : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Invoice? Invoice { get; set; }
+
     public Customer Customer { get; set; } = null!;
 
     public PaymentMethod PaymentMethod { get; set; } = null!;
 
     public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
+
+    public bool CanGenerateInvoice() => Status == OrderStatus.Completed && Invoice == null;
 }

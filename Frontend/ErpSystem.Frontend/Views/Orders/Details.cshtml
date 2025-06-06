@@ -26,6 +26,17 @@
             </form>
         }
         
+        @if (Model.Status == "Completed")
+        {
+            <form asp-controller="Invoices" asp-action="CreateFromOrder" asp-route-orderId="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-primary" 
+                        onclick="return confirm('Сигурни ли сте, че искате да генерирате фактура за тази поръчка?')">
+                    <i class="bi bi-receipt me-2"></i>Генерирай фактура
+                </button>
+            </form>
+        }
+        
         <a asp-action="Index" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>Назад към списъка
         </a>
@@ -73,6 +84,9 @@
                                         break;
                                     case "Canceled":
                                         <span class="badge bg-danger">Отменена</span>
+                                        break;
+                                    case "Archived":
+                                        <span class="badge bg-info">Архивирана</span>
                                         break;
                                     default:
                                         <span class="badge bg-secondary">@Model.Status</span>

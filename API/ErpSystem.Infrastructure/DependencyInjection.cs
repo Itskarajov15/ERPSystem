@@ -23,18 +23,15 @@ public static class DependencyInjection
             )
         );
 
-        // Register repository
         services.AddScoped<IRepository, Repository>();
 
-        // Register services
-        //services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDateTime, DateTimeService>();
         services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IPdfService, PdfService>();
 
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IPermissionService, PermissionService>();
 
-        // Register current user service
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 

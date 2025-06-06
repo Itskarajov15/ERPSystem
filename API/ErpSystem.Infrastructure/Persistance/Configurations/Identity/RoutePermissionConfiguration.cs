@@ -5,9 +5,9 @@ namespace ErpSystem.Infrastructure.Persistance.Configurations.Identity;
 
 public class RoutePermissionConfiguration : BaseEntityConfiguration<RoutePermission>
 {
-    public void Configure(EntityTypeBuilder<RoutePermission> builder)
+    public override void Configure(EntityTypeBuilder<RoutePermission> builder)
     {
-        builder.HasKey(rp => rp.Id);
+        base.Configure(builder);
 
         builder.Property(rp => rp.ActionName).IsRequired().HasMaxLength(100);
 

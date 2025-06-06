@@ -6,9 +6,9 @@ namespace ErpSystem.Infrastructure.Persistance.Configurations.Sales;
 
 public class OrderItemConfiguration : BaseEntityConfiguration<OrderItem>
 {
-    public void Configure(EntityTypeBuilder<OrderItem> builder)
+    public override void Configure(EntityTypeBuilder<OrderItem> builder)
     {
-        builder.HasKey(oi => oi.Id);
+        base.Configure(builder);
 
         builder.Property(oi => oi.Quantity).IsRequired();
 
