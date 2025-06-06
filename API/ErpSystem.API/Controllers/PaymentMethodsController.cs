@@ -1,6 +1,7 @@
 ﻿using ErpSystem.Application.PaymentMethods.Commands.CreatePaymentMethod;
 using ErpSystem.Application.PaymentMethods.Commands.DeletePaymentMethod;
 using ErpSystem.Application.PaymentMethods.Commands.UpdatePaymentMethod;
+using ErpSystem.Application.PaymentMethods.Queries.GetAllPaymentMethods;
 using ErpSystem.Application.PaymentMethods.Queries.GetPaymentMethodById;
 using ErpSystem.Application.PaymentMethods.Queries.GetPaymentMethods;
 using ErpSystem.Domain.Common.Pagination;
@@ -19,6 +20,14 @@ public class PaymentMethodsController : BaseController
     public async Task<IActionResult> GetAll([FromQuery] PaginationParams paginationParams)
     {
         var paymentMethods = await _mediator.Send(new GetPaymentMethodsQuery(paginationParams));
+
+        return Ok(paymentMethods);
+    }
+
+    [HttpGet("get-dropdown-list")]
+    public async Task<IActionResult> GetDropdownList()
+    {
+        var paymentMethods = await _mediator.Send(new GetAllPaymentMethodsQuery());
 
         return Ok(paymentMethods);
     }

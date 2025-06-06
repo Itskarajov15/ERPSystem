@@ -9,10 +9,14 @@ namespace ErpSystem.Frontend.Controllers;
 public class InvoicesController : Controller
 {
     private readonly IInvoiceService _invoiceService;
+    private readonly IPaymentMethodService _paymentMethodService;
 
-    public InvoicesController(IInvoiceService invoiceService)
+    public InvoicesController(
+        IInvoiceService invoiceService, 
+        IPaymentMethodService paymentMethodService)
     {
         _invoiceService = invoiceService;
+        _paymentMethodService = paymentMethodService;
     }
 
     public async Task<IActionResult> Index([FromQuery] InvoiceFilterModel filter)
@@ -37,6 +41,11 @@ public class InvoicesController : Controller
             if (invoice == null)
             {
                 return NotFound();
+            }
+
+            if (invoice.CanRecordPayment)
+            {
+                ViewBag.PaymentMethods = await _paymentMethodService.GetAllPaymentMethodsAsync();
             }
 
             return View(invoice);
@@ -65,6 +74,8 @@ public class InvoicesController : Controller
             return RedirectToAction("Details", "Orders", new { id = orderId });
         }
     }
+
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]

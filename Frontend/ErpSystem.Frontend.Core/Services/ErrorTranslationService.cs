@@ -33,6 +33,14 @@ public class ErrorTranslationService
         if (translation != errorKey)
             return translation;
 
+        translation = PaymentErrorKeys.Translate(errorKey);
+        if (translation != errorKey)
+            return translation;
+
+        translation = InvoiceErrorKeys.Translate(errorKey);
+        if (translation != errorKey)
+            return translation;
+
         return errorKey;
     }
 

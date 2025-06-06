@@ -31,5 +31,11 @@ public class Invoice : BaseEntity
 
     public ICollection<InvoiceItem> InvoiceItems { get; set; } = new HashSet<InvoiceItem>();
 
+    public Payment? Payment { get; set; }
+
     public bool CanBeCancelled() => Status == InvoiceStatus.Draft || Status == InvoiceStatus.Issued;
+
+    public bool CanRecordPayment() => Status == InvoiceStatus.Issued && Payment == null;
+
+    public bool IsFullyPaid() => Payment != null && Payment.Amount >= TotalAmount;
 }

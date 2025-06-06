@@ -1,4 +1,5 @@
-@model ErpSystem.Frontend.Core.Models.Invoices.InvoiceDetailViewModel
+@using ErpSystem.Frontend.Core.Models.Invoices
+@model InvoiceDetailViewModel
 
 @{
     ViewData["Title"] = "Детайли на фактура";
@@ -28,16 +29,11 @@
             </form>
         }
         
-        @if (Model.StatusName == "Issued")
+        @if (Model.CanRecordPayment)
         {
-            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post" class="d-inline">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="status" value="3" />
-                <button type="submit" class="btn btn-success" 
-                        onclick="return confirm('Сигурни ли сте, че тази фактура е платена?')">
-                    <i class="bi bi-check-circle me-2"></i>Маркирай като платена
-                </button>
-            </form>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#recordPaymentModal">
+                <i class="bi bi-credit-card me-2"></i>Запиши плащане
+            </button>
         }
         
         <a href="@Url.Action("GetPdf", "Invoices", new { id = Model.Id })" 
@@ -118,6 +114,40 @@
                 </div>
             </div>
         </div>
+
+        @if (Model.StatusName == "Paid" && Model.Payment != null)
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Информация за плащането</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">Дата на плащане:</dt>
+                                <dd class="col-sm-7">@Model.Payment.PaymentDate.ToString("dd.MM.yyyy")</dd>
+                                
+                                <dt class="col-sm-5">Платена сума:</dt>
+                                <dd class="col-sm-7">@Model.Payment.Amount.ToString("F2") лв.</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">Начин на плащане:</dt>
+                                <dd class="col-sm-7">@Model.Payment.PaymentMethodName</dd>
+                                
+                                @if (!string.IsNullOrEmpty(Model.Payment.PaymentReference))
+                                {
+                                    <dt class="col-sm-5">Референция:</dt>
+                                    <dd class="col-sm-7">@Model.Payment.PaymentReference</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
         <div class="card">
             <div class="card-header">
@@ -208,18 +238,79 @@
             </div>
             <div class="card-body">
                 <dl class="row">
-                    <dt class="col-sm-7">Междинна сума:</dt>
-                    <dd class="col-sm-5 text-end">@Model.SubTotal.ToString("F2") лв.</dd>
+                    <dt class="col-sm-6">Междинна сума:</dt>
+                    <dd class="col-sm-6 text-end">@Model.SubTotal.ToString("F2") лв.</dd>
                     
-                    <dt class="col-sm-7">ДДС сума:</dt>
-                    <dd class="col-sm-5 text-end">@Model.VatAmount.ToString("F2") лв.</dd>
+                    <dt class="col-sm-6">ДДС:</dt>
+                    <dd class="col-sm-6 text-end">@Model.VatAmount.ToString("F2") лв.</dd>
                     
-                    <dt class="col-sm-7 border-top pt-2"><strong>Обща сума:</strong></dt>
-                    <dd class="col-sm-5 text-end border-top pt-2">
-                        <strong class="fs-5 text-primary">@Model.TotalAmount.ToString("F2") лв.</strong>
-                    </dd>
+                    <dt class="col-sm-6"><strong>Обща сума:</strong></dt>
+                    <dd class="col-sm-6 text-end"><strong>@Model.TotalAmount.ToString("F2") лв.</strong></dd>
+                    
+                    @if (Model.Payment != null)
+                    {
+                        <dt class="col-sm-6">Платено:</dt>
+                        <dd class="col-sm-6 text-end text-success">@Model.Payment.Amount.ToString("F2") лв.</dd>
+                    }
                 </dl>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+@if (Model.CanRecordPayment)
+{
+    <!-- Record Payment Modal -->
+    <div class="modal fade" id="recordPaymentModal" tabindex="-1" aria-labelledby="recordPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-controller="Payments" asp-action="RecordPayment" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="recordPaymentModalLabel">Запиши плащане</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="InvoiceId" value="@Model.Id" />
+                        
+                        <div class="mb-3">
+                            <label for="Amount" class="form-label">Сума <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="Amount" name="Amount" 
+                                   value="@Model.TotalAmount" step="0.01" min="0.01" required readonly>
+                            <div class="form-text">Частични плащания не са разрешени. Сумата трябва да бъде равна на общата сума на фактурата.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PaymentMethodId" class="form-label">Начин на плащане <span class="text-danger">*</span></label>
+                            <select class="form-select" id="PaymentMethodId" name="PaymentMethodId" required>
+                                <option value="">Изберете начин на плащане</option>
+                                @if (ViewBag.PaymentMethods != null)
+                                {
+                                    @foreach (var paymentMethod in ViewBag.PaymentMethods)
+                                    {
+                                        <option value="@paymentMethod.Id">@paymentMethod.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PaymentDate" class="form-label">Дата на плащане <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="PaymentDate" name="PaymentDate" 
+                                   value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PaymentReference" class="form-label">Референция на плащането</label>
+                            <input type="text" class="form-control" id="PaymentReference" name="PaymentReference" 
+                                   maxlength="100" placeholder="Номер на банков превод, чек и др.">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                        <button type="submit" class="btn btn-success">Запиши плащане</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+} 

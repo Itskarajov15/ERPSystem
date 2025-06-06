@@ -8,4 +8,4 @@ public static class InvoiceErrorKeys
     public const string InvoiceCannotBeMarkedAsPaid = "InvoiceCannotBeMarkedAsPaid";
     public const string OrderCannotGenerateInvoice = "OrderCannotGenerateInvoice";
     public const string InvoiceAlreadyExists = "InvoiceAlreadyExists";
-} 
+}

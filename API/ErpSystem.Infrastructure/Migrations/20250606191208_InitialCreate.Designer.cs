@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ErpSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250604090042_InitialCreate")]
+    [Migration("20250606191208_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -303,7 +303,7 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("Invoice");
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.InvoiceItem", b =>
@@ -371,7 +371,58 @@ namespace ErpSystem.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("InvoiceItem");
+                    b.ToTable("InvoiceItems");
+                });
+
+            modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PaymentMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PaymentReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Identity.ApplicationRole", b =>
@@ -1196,6 +1247,25 @@ namespace ErpSystem.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.Payment", b =>
+                {
+                    b.HasOne("ErpSystem.Domain.Entities.Financial.Invoice", "Invoice")
+                        .WithOne("Payment")
+                        .HasForeignKey("ErpSystem.Domain.Entities.Financial.Payment", "InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ErpSystem.Domain.Entities.Sales.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("PaymentMethod");
+                });
+
             modelBuilder.Entity("ErpSystem.Domain.Entities.Identity.RoleRoutePermission", b =>
                 {
                     b.HasOne("ErpSystem.Domain.Entities.Identity.ApplicationRole", "ApplicationRole")
@@ -1328,6 +1398,8 @@ namespace ErpSystem.Infrastructure.Migrations
             modelBuilder.Entity("ErpSystem.Domain.Entities.Financial.Invoice", b =>
                 {
                     b.Navigation("InvoiceItems");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("ErpSystem.Domain.Entities.Identity.ApplicationRole", b =>

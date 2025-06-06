@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using ErpSystem.Frontend.Core.Models.Payments;
 
 namespace ErpSystem.Frontend.Core.Models.Invoices;
 
@@ -44,5 +46,11 @@ public class InvoiceDetailViewModel
     [Display(Name = "Артикули")]
     public List<InvoiceItemDetailViewModel> Items { get; set; } = new();
 
+    [Display(Name = "Плащане")]
+    public PaymentDetailViewModel? Payment { get; set; }
+
     public DateTime CreatedAt { get; set; }
-} 
+
+    public bool CanRecordPayment => StatusName == "Issued" && Payment == null;
+    public bool IsFullyPaid => Payment != null && Payment.Amount >= TotalAmount;
+}

@@ -42,6 +42,16 @@ public class PaymentMethodService : IPaymentMethodService
         return response ?? new PageResult<PaymentMethodViewModel>();
     }
 
+    public async Task<List<PaymentMethodViewModel>> GetAllPaymentMethodsAsync()
+    {
+        var token = GetToken();
+        var response = await _apiService.GetAsync<List<PaymentMethodViewModel>>(
+            "/api/payment-methods/get-dropdown-list",
+            token
+        );
+        return response ?? new List<PaymentMethodViewModel>();
+    }
+
     public async Task<PaymentMethodViewModel?> GetPaymentMethodByIdAsync(Guid id)
     {
         var token = GetToken();

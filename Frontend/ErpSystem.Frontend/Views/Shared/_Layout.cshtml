@@ -61,6 +61,11 @@
                         <i class="bi bi-receipt me-2"></i>
                         <span class="nav-text">Фактури</span>
                     </a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payments" ? "active" : "")"
+                       asp-controller="Payments" asp-action="Index">
+                        <i class="bi bi-cash-coin me-2"></i>
+                        <span class="nav-text">Плащания</span>
+                    </a>
                     <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Deliveries" ? "active" : "")"
                        asp-controller="Deliveries" asp-action="Index">
                         <i class="bi bi-truck-flatbed me-2"></i>

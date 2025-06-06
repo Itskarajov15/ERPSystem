@@ -3,6 +3,7 @@ using System.Reflection;
 using ErpSystem.Application.Common.Interfaces;
 using ErpSystem.Domain.Abstractions;
 using ErpSystem.Domain.Entities.Deliveries;
+using ErpSystem.Domain.Entities.Financial;
 using ErpSystem.Domain.Entities.Identity;
 using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Entities.Sales;
@@ -44,6 +45,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
     public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
+
+    public DbSet<Invoice> Invoices => Set<Invoice>();
+
+    public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
+
+    public DbSet<Payment> Payments => Set<Payment>();
 
     public DbSet<RoutePermission> RoutePermissions => Set<RoutePermission>();
 
