@@ -113,7 +113,7 @@ public class DeliveriesController : Controller
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -130,7 +130,7 @@ public class DeliveriesController : Controller
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -147,7 +147,7 @@ public class DeliveriesController : Controller
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -164,7 +164,7 @@ public class DeliveriesController : Controller
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        
+
         return RedirectToAction(nameof(Index));
     }
 

@@ -21,4 +21,4 @@ public class InvoiceFilterModel : PaginationParams
     [Display(Name = "До дата")]
     [DataType(DataType.Date)]
     public DateTime? ToDate { get; set; }
-} 
+}

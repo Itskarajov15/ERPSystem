@@ -20,4 +20,4 @@ public class CustomerViewModel
 
     [Display(Name = "Адрес")]
     public string Address { get; set; } = string.Empty;
-} 
+}

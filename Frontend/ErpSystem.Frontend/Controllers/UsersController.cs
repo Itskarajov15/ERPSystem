@@ -25,10 +25,7 @@ public class UsersController : Controller
     public async Task<IActionResult> Create()
     {
         var roles = await _userService.GetRolesAsync();
-        var model = new CreateUserViewModel
-        {
-            AvailableRoles = roles.Items.ToList()
-        };
+        var model = new CreateUserViewModel { AvailableRoles = roles.Items.ToList() };
         return View(model);
     }
 
@@ -105,7 +102,9 @@ public class UsersController : Controller
             return NotFound();
         }
 
-        return Json(new { availableRoles = roles.Items, userRoles = user.Roles.Select(r => r.Name) });
+        return Json(
+            new { availableRoles = roles.Items, userRoles = user.Roles.Select(r => r.Name) }
+        );
     }
 
     [HttpPost]

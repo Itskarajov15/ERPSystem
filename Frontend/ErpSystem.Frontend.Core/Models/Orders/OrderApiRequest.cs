@@ -6,4 +6,4 @@ public class OrderApiRequest
     public Guid PaymentMethodId { get; set; }
     public string? Notes { get; set; }
     public List<OrderItemApiRequest> Items { get; set; } = new();
-} 
+}

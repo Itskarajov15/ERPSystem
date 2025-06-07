@@ -10,4 +10,4 @@ public interface ICustomerService
     Task<Guid> AddCustomerAsync(CustomerEditModel model);
     Task UpdateCustomerAsync(CustomerEditModel model);
     Task DeleteCustomerAsync(Guid id);
-} 
+}

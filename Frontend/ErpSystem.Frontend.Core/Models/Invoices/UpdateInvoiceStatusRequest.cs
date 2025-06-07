@@ -4,4 +4,4 @@ public class UpdateInvoiceStatusRequest
 {
     public Guid InvoiceId { get; set; }
     public InvoiceStatus Status { get; set; }
-} 
+}

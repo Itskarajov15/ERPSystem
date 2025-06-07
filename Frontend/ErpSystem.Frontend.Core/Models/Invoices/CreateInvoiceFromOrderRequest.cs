@@ -4,4 +4,4 @@ public class CreateInvoiceFromOrderRequest
 {
     public Guid OrderId { get; set; }
     public string? Notes { get; set; }
-} 
+}

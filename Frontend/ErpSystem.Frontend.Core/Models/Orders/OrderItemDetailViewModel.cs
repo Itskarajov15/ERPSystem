@@ -23,4 +23,4 @@ public class OrderItemDetailViewModel
 
     [Display(Name = "Обща цена")]
     public decimal TotalPrice => Quantity * UnitPrice;
-} 
+}

@@ -8,4 +8,4 @@ public class PaymentMethodViewModel
 
     [Display(Name = "Име")]
     public string Name { get; set; } = string.Empty;
-} 
+}

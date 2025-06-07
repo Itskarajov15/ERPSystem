@@ -16,7 +16,9 @@ public class CustomerService : ICustomerService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<PageResult<CustomerViewModel>> GetCustomersAsync(CustomerFilterModel? filter = null)
+    public async Task<PageResult<CustomerViewModel>> GetCustomersAsync(
+        CustomerFilterModel? filter = null
+    )
     {
         var token = GetToken();
         var endpoint = "/api/customers/get-all";
@@ -45,7 +47,10 @@ public class CustomerService : ICustomerService
     public async Task<CustomerViewModel?> GetCustomerByIdAsync(Guid id)
     {
         var token = GetToken();
-        return await _apiService.GetAsync<CustomerViewModel>($"/api/customers/get-by-id/{id}", token);
+        return await _apiService.GetAsync<CustomerViewModel>(
+            $"/api/customers/get-by-id/{id}",
+            token
+        );
     }
 
     public async Task<Guid> AddCustomerAsync(CustomerEditModel model)
@@ -72,5 +77,6 @@ public class CustomerService : ICustomerService
         await _apiService.DeleteAsync($"/api/customers/delete/{id}", token);
     }
 
-    private string? GetToken() => _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
-} 
+    private string? GetToken() =>
+        _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
+}

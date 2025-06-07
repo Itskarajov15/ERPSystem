@@ -8,4 +8,4 @@ public interface IPaymentService
     Task<PageResult<PaymentViewModel>> GetPaymentsAsync(PaymentFilterModel? filter = null);
     Task<PaymentDetailViewModel?> GetPaymentByIdAsync(Guid paymentId);
     Task RecordPaymentAsync(RecordPaymentRequest request);
-} 
+}

@@ -13,7 +13,10 @@ public class CustomerEditModel
 
     [Required(ErrorMessage = "Лицето за контакт е задължително")]
     [Display(Name = "Лице за контакт")]
-    [StringLength(100, ErrorMessage = "Името на лицето за контакт не може да бъде по-дълго от 100 символа")]
+    [StringLength(
+        100,
+        ErrorMessage = "Името на лицето за контакт не може да бъде по-дълго от 100 символа"
+    )]
     public string ContactName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Имейлът е задължителен")]
@@ -29,4 +32,4 @@ public class CustomerEditModel
     [Required(ErrorMessage = "Адресът е задължителен")]
     [Display(Name = "Адрес")]
     public string Address { get; set; } = string.Empty;
-} 
+}

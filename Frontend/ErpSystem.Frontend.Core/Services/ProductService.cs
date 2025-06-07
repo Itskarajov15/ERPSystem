@@ -16,7 +16,9 @@ public class ProductService : IProductService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<PageResult<ProductViewModel>> GetProductsAsync(ProductFilterModel? filter = null)
+    public async Task<PageResult<ProductViewModel>> GetProductsAsync(
+        ProductFilterModel? filter = null
+    )
     {
         var token = GetToken();
         var endpoint = "/api/products/get-all";
@@ -76,5 +78,6 @@ public class ProductService : IProductService
         await _apiService.DeleteAsync($"/api/products/delete/{id}", token);
     }
 
-    private string? GetToken() => _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
+    private string? GetToken() =>
+        _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
 }

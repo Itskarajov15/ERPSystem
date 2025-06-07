@@ -12,8 +12,9 @@ public class InvoicesController : Controller
     private readonly IPaymentMethodService _paymentMethodService;
 
     public InvoicesController(
-        IInvoiceService invoiceService, 
-        IPaymentMethodService paymentMethodService)
+        IInvoiceService invoiceService,
+        IPaymentMethodService paymentMethodService
+    )
     {
         _invoiceService = invoiceService;
         _paymentMethodService = paymentMethodService;
@@ -74,8 +75,6 @@ public class InvoicesController : Controller
             return RedirectToAction("Details", "Orders", new { id = orderId });
         }
     }
-
-
 
     [HttpPost]
     [ValidateAntiForgeryToken]

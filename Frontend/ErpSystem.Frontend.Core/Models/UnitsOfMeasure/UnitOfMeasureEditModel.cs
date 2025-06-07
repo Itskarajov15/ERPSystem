@@ -9,4 +9,4 @@ public class UnitOfMeasureEditModel
     [Required(ErrorMessage = "Името е задължително")]
     [MaxLength(50, ErrorMessage = "Името не трябва да надвишава 50 символа")]
     public string Name { get; set; } = string.Empty;
-} 
+}

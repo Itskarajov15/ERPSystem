@@ -16,7 +16,9 @@ public class SupplierService : ISupplierService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<PageResult<SupplierViewModel>> GetSuppliersAsync(SupplierFilterModel? filter = null)
+    public async Task<PageResult<SupplierViewModel>> GetSuppliersAsync(
+        SupplierFilterModel? filter = null
+    )
     {
         var token = GetToken();
         var endpoint = "/api/suppliers/get-all";
@@ -49,7 +51,10 @@ public class SupplierService : ISupplierService
     public async Task<SupplierViewModel?> GetSupplierByIdAsync(Guid id)
     {
         var token = GetToken();
-        return await _apiService.GetAsync<SupplierViewModel>($"/api/suppliers/get-by-id/{id}", token);
+        return await _apiService.GetAsync<SupplierViewModel>(
+            $"/api/suppliers/get-by-id/{id}",
+            token
+        );
     }
 
     public async Task<Guid> AddSupplierAsync(SupplierEditModel model)
@@ -76,5 +81,6 @@ public class SupplierService : ISupplierService
         await _apiService.DeleteAsync($"/api/suppliers/delete/{id}", token);
     }
 
-    private string? GetToken() => _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
+    private string? GetToken() =>
+        _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
 }

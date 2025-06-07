@@ -15,4 +15,4 @@ public class PageResult<T>
     public bool HasNext => CurrentPage < TotalPages;
 
     public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
-} 
+}

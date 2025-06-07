@@ -13,7 +13,10 @@ public class SupplierEditModel
 
     [Required(ErrorMessage = "Лицето за контакт е задължително")]
     [Display(Name = "Лице за контакт")]
-    [StringLength(100, ErrorMessage = "Името на лицето за контакт не може да бъде по-дълго от 100 символа")]
+    [StringLength(
+        100,
+        ErrorMessage = "Името на лицето за контакт не може да бъде по-дълго от 100 символа"
+    )]
     public string ContactPerson { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Имейлът е задължителен")]

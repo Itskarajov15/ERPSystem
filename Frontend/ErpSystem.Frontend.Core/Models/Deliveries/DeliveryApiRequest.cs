@@ -7,4 +7,4 @@ public class DeliveryApiRequest
     public DateTime DeliveryDate { get; set; }
     public string? Comment { get; set; }
     public List<DeliveryItemApiRequest> Items { get; set; } = new();
-} 
+}

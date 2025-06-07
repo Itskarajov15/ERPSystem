@@ -20,4 +20,4 @@ public class OrderCreateModel
     [Required(ErrorMessage = "Поне един артикул е задължителен")]
     [MinLength(1, ErrorMessage = "Поне един артикул е задължителен")]
     public List<OrderItemCreateModel> Items { get; set; } = new();
-} 
+}

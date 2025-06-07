@@ -10,7 +10,10 @@ public class DeliveryCreateModel
 
     [Required(ErrorMessage = "Номерът на доставката е задължителен")]
     [Display(Name = "Номер на доставка")]
-    [StringLength(50, ErrorMessage = "Номерът на доставката не може да бъде по-дълъг от 50 символа")]
+    [StringLength(
+        50,
+        ErrorMessage = "Номерът на доставката не може да бъде по-дълъг от 50 символа"
+    )]
     public string DeliveryNumber { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Датата на доставка е задължителна")]
@@ -25,4 +28,4 @@ public class DeliveryCreateModel
     [Required(ErrorMessage = "Поне един артикул е задължителен")]
     [MinLength(1, ErrorMessage = "Поне един артикул е задължителен")]
     public List<DeliveryItemCreateModel> Items { get; set; } = new();
-} 
+}

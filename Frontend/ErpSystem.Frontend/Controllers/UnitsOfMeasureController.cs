@@ -69,11 +69,7 @@ public class UnitsOfMeasureController : Controller
                 return NotFound();
             }
 
-            var model = new UnitOfMeasureEditModel
-            {
-                Id = unit.Id,
-                Name = unit.Name
-            };
+            var model = new UnitOfMeasureEditModel { Id = unit.Id, Name = unit.Name };
 
             return View(model);
         }
@@ -122,4 +118,4 @@ public class UnitsOfMeasureController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-} 
+}

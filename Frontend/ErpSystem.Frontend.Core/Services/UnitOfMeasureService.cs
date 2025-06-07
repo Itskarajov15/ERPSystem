@@ -16,7 +16,10 @@ public class UnitOfMeasureService : IUnitOfMeasureService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<PageResult<UnitOfMeasureViewModel>> GetUnitsOfMeasureAsync(int page = 1, int pageSize = 10)
+    public async Task<PageResult<UnitOfMeasureViewModel>> GetUnitsOfMeasureAsync(
+        int page = 1,
+        int pageSize = 10
+    )
     {
         var token = GetToken();
         var paginationParams = new PaginationParams { Page = page, PageSize = pageSize };
@@ -59,4 +62,4 @@ public class UnitOfMeasureService : IUnitOfMeasureService
     {
         return _httpContextAccessor.HttpContext?.User.FindFirst("jwt_token")?.Value;
     }
-} 
+}

@@ -20,4 +20,4 @@ public class OrderViewModel
 
     [Display(Name = "Обща сума")]
     public decimal TotalAmount { get; set; }
-} 
+}

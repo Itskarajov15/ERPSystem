@@ -154,14 +154,16 @@ public class OrdersController : Controller
         try
         {
             var products = await _productService.GetProductsAsync();
-            var productList = products.Items.Select(p => new
-            {
-                id = p.Id,
-                name = p.Name,
-                sku = p.Sku,
-                price = p.UnitPrice,
-                quantity = p.Quantity
-            }).ToList();
+            var productList = products
+                .Items.Select(p => new
+                {
+                    id = p.Id,
+                    name = p.Name,
+                    sku = p.Sku,
+                    price = p.UnitPrice,
+                    quantity = p.Quantity,
+                })
+                .ToList();
 
             return Json(productList);
         }
@@ -180,16 +182,16 @@ public class OrdersController : Controller
     private async Task PopulateCustomersDropdown()
     {
         var customers = await _customerService.GetCustomersAsync();
-        ViewBag.Customers = customers.Items
-            .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+        ViewBag.Customers = customers
+            .Items.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
             .ToList();
     }
 
     private async Task PopulatePaymentMethodsDropdown()
     {
         var paymentMethods = await _paymentMethodService.GetPaymentMethodsAsync();
-        ViewBag.PaymentMethods = paymentMethods.Items
-            .Select(pm => new SelectListItem { Value = pm.Id.ToString(), Text = pm.Name })
+        ViewBag.PaymentMethods = paymentMethods
+            .Items.Select(pm => new SelectListItem { Value = pm.Id.ToString(), Text = pm.Name })
             .ToList();
     }
-} 
+}

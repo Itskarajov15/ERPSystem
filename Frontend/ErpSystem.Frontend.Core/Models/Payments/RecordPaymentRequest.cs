@@ -22,4 +22,4 @@ public class RecordPaymentRequest
     [Display(Name = "Референция на плащането")]
     [StringLength(100, ErrorMessage = "Референцията не може да бъде по-дълга от 100 символа")]
     public string? PaymentReference { get; set; }
-} 
+}

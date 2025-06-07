@@ -42,4 +42,4 @@ public class OrderDetailViewModel
 
     [Display(Name = "Междинна сума")]
     public decimal Subtotal => Items.Sum(i => i.TotalPrice);
-} 
+}

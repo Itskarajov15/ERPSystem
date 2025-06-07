@@ -16,4 +16,4 @@ public class DeliveryDetailViewModel
     public DateTime CreatedOn { get; set; }
     public List<DeliveryItemDetailViewModel> Items { get; set; } = new();
     public decimal TotalAmount => Items.Sum(i => i.TotalPrice);
-} 
+}

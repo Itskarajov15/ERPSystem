@@ -10,4 +10,4 @@ public interface IInvoiceService
     Task<Guid> CreateInvoiceFromOrderAsync(Guid orderId, string? notes = null);
     Task UpdateInvoiceStatusAsync(Guid invoiceId, InvoiceStatus status);
     Task<byte[]> GetInvoicePdfAsync(Guid invoiceId);
-} 
+}

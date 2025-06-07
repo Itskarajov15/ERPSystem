@@ -68,7 +68,7 @@ public class PaymentMethodsController : Controller
             var model = new PaymentMethodEditModel
             {
                 Id = paymentMethod.Id,
-                Name = paymentMethod.Name
+                Name = paymentMethod.Name,
             };
 
             return View(model);
@@ -117,4 +117,4 @@ public class PaymentMethodsController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-} 
+}

@@ -11,4 +11,4 @@ public interface IOrderService
     Task CompleteOrderAsync(Guid id);
     Task CancelOrderAsync(Guid id);
     Task DeleteOrderAsync(Guid id);
-} 
+}
