@@ -30,4 +30,4 @@ public class PaymentConfiguration : BaseEntityConfiguration<Payment>
 
         builder.HasQueryFilter(p => !p.IsDeleted);
     }
-} 
+}

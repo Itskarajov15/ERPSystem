@@ -26,4 +26,4 @@ public class InvoiceItem : BaseEntity
     public Invoice Invoice { get; set; } = null!;
 
     public Product Product { get; set; } = null!;
-} 
+}

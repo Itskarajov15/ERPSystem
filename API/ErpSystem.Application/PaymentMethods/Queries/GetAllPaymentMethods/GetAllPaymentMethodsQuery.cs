@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ErpSystem.Application.PaymentMethods.Queries.GetAllPaymentMethods;
 
-public record GetAllPaymentMethodsQuery : IRequest<List<PaymentMethodDto>>; 
+public record GetAllPaymentMethodsQuery : IRequest<List<PaymentMethodDto>>;

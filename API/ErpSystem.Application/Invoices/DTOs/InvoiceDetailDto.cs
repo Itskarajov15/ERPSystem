@@ -31,4 +31,4 @@ public class InvoiceDetailDto
     public decimal TotalAmount { get; set; }
 
     public List<InvoiceItemDto> Items { get; set; } = new();
-} 
+}

@@ -18,4 +18,4 @@ public class Payment : BaseEntity
     public Invoice Invoice { get; set; } = null!;
 
     public PaymentMethod PaymentMethod { get; set; } = null!;
-} 
+}

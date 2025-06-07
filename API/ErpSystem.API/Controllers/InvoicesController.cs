@@ -16,7 +16,7 @@ public class InvoicesController : BaseController
     private readonly IPdfService _pdfService;
 
     public InvoicesController(IMediator mediator, IPdfService pdfService)
-        : base(mediator) 
+        : base(mediator)
     {
         _pdfService = pdfService;
     }

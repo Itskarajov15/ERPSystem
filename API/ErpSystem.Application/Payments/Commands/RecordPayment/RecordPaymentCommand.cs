@@ -8,4 +8,4 @@ public record RecordPaymentCommand(
     Guid PaymentMethodId,
     DateTime PaymentDate,
     string? PaymentReference = null
-) : IRequest; 
+) : IRequest;

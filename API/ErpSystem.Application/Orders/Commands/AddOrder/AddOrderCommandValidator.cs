@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using ErpSystem.Application.Common.Constants;
+﻿using ErpSystem.Application.Common.Constants;
+using FluentValidation;
 
 namespace ErpSystem.Application.Orders.Commands.AddOrder;
 
@@ -9,7 +9,9 @@ public class AddOrderCommandValidator : AbstractValidator<AddOrderCommand>
     {
         RuleFor(x => x.CustomerId).NotEmpty().WithMessage(CustomerErrorKeys.CustomerRequired);
 
-        RuleFor(x => x.PaymentMethodId).NotEmpty().WithMessage(PaymentMethodErrorKeys.PaymentMethodRequired);
+        RuleFor(x => x.PaymentMethodId)
+            .NotEmpty()
+            .WithMessage(PaymentMethodErrorKeys.PaymentMethodRequired);
 
         RuleFor(x => x.Items)
             .NotEmpty()
@@ -20,7 +22,10 @@ public class AddOrderCommandValidator : AbstractValidator<AddOrderCommand>
         RuleForEach(x => x.Items)
             .ChildRules(items =>
             {
-                items.RuleFor(i => i.ProductId).NotEmpty().WithMessage(ProductErrorKeys.ProductRequired);
+                items
+                    .RuleFor(i => i.ProductId)
+                    .NotEmpty()
+                    .WithMessage(ProductErrorKeys.ProductRequired);
 
                 items
                     .RuleFor(i => i.Quantity)

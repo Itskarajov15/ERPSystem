@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Payments.Queries.GetPaymentById;
 
-public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, PaymentDetailViewModel?>
+public class GetPaymentByIdQueryHandler
+    : IRequestHandler<GetPaymentByIdQuery, PaymentDetailViewModel?>
 {
     private readonly IRepository _repository;
 
@@ -14,12 +15,15 @@ public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, P
         _repository = repository;
     }
 
-    public async Task<PaymentDetailViewModel?> Handle(GetPaymentByIdQuery request, CancellationToken cancellationToken)
+    public async Task<PaymentDetailViewModel?> Handle(
+        GetPaymentByIdQuery request,
+        CancellationToken cancellationToken
+    )
     {
         var payment = await _repository
             .AllReadOnly<Payment>()
             .Include(p => p.Invoice)
-                .ThenInclude(i => i.Customer)
+            .ThenInclude(i => i.Customer)
             .Include(p => p.PaymentMethod)
             .Where(p => p.Id == request.PaymentId)
             .Select(p => new PaymentDetailViewModel
@@ -40,10 +44,10 @@ public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, P
                 PaymentDate = p.PaymentDate,
                 PaymentReference = p.PaymentReference,
                 CreatedAt = p.CreatedAt,
-                CreatedBy = p.CreatedBy
+                CreatedBy = p.CreatedBy,
             })
             .FirstOrDefaultAsync(cancellationToken);
 
         return payment;
     }
-} 
+}

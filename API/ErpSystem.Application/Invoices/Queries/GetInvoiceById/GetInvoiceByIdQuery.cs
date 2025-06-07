@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ErpSystem.Application.Invoices.Queries.GetInvoiceById;
 
-public record GetInvoiceByIdQuery(Guid Id) : IRequest<InvoiceDetailDto?>; 
+public record GetInvoiceByIdQuery(Guid Id) : IRequest<InvoiceDetailDto?>;

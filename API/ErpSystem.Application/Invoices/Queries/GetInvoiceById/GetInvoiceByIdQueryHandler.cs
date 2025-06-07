@@ -46,17 +46,19 @@ internal class GetInvoiceByIdQueryHandler : IRequestHandler<GetInvoiceByIdQuery,
             SubTotal = invoice.SubTotal,
             VatAmount = invoice.VatAmount,
             TotalAmount = invoice.TotalAmount,
-            Items = invoice.InvoiceItems.Select(ii => new InvoiceItemDto
-            {
-                ProductId = ii.ProductId,
-                ProductName = ii.ProductName,
-                ProductSku = ii.ProductSku,
-                Quantity = ii.Quantity,
-                UnitPrice = ii.UnitPrice,
-                VatRate = ii.VatRate,
-                VatAmount = ii.VatAmount,
-                LineTotal = ii.LineTotal
-            }).ToList()
+            Items = invoice
+                .InvoiceItems.Select(ii => new InvoiceItemDto
+                {
+                    ProductId = ii.ProductId,
+                    ProductName = ii.ProductName,
+                    ProductSku = ii.ProductSku,
+                    Quantity = ii.Quantity,
+                    UnitPrice = ii.UnitPrice,
+                    VatRate = ii.VatRate,
+                    VatAmount = ii.VatAmount,
+                    LineTotal = ii.LineTotal,
+                })
+                .ToList(),
         };
     }
 }

@@ -7,4 +7,4 @@ namespace ErpSystem.Application.Payments.Queries.GetPayments;
 public record GetPaymentsQuery(
     PaginationParams PaginationParams,
     PaymentFilters? PaymentFilters = null
-) : IRequest<PageResult<PaymentViewModel>>; 
+) : IRequest<PageResult<PaymentViewModel>>;

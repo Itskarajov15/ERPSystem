@@ -49,7 +49,7 @@ public class RecordPaymentCommandHandler : IRequestHandler<RecordPaymentCommand>
             Amount = request.Amount,
             PaymentMethodId = request.PaymentMethodId,
             PaymentDate = request.PaymentDate,
-            PaymentReference = request.PaymentReference
+            PaymentReference = request.PaymentReference,
         };
 
         await _repository.AddAsync(payment);
@@ -58,4 +58,4 @@ public class RecordPaymentCommandHandler : IRequestHandler<RecordPaymentCommand>
 
         await _repository.SaveChangesAsync();
     }
-} 
+}
