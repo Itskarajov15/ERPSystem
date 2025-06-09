@@ -1,0 +1,75 @@
+@using ErpSystem.Frontend.Core.Models.Roles
+@model RoleDetailsViewModel
+
+@{
+    ViewData["Title"] = "Детайли за роля";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Детайли за роля: @Model.Name</h1>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2">
+            <i class="bi bi-pencil me-2"></i>Редактирай
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация за ролята</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Име:</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+
+                    <dt class="col-sm-3">Описание:</dt>
+                    <dd class="col-sm-9">@(Model.Description ?? "Без описание")</dd>
+
+                    <dt class="col-sm-3">Създадена:</dt>
+                    <dd class="col-sm-9">@Model.CreatedAt.ToString("dd.MM.yyyy г. в HH:mm ч.")</dd>
+
+                    <dt class="col-sm-3">Брой права:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-info fs-6">@(Model.Permissions?.Count ?? 0) права</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Права за достъп</h5>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                @if (Model.Permissions != null && Model.Permissions.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var permission in Model.Permissions)
+                        {
+                            <div class="list-group-item px-0 py-2 border-0 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">@permission.Controller - @permission.Action</h6>
+                                        <small class="text-muted">@permission.Name</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Тази роля няма права за достъп.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div> 

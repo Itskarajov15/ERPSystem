@@ -46,6 +46,7 @@ public static class LocalizationResources
             // Error Messages
             { "Resource not found", "Ресурсът не е намерен" },
             { "Unauthorized access", "Неоторизиран достъп" },
+            { "Forbidden access", "Забранен достъп" },
             { "Invalid request", "Невалидна заявка" },
             {
                 "An error occurred while processing your request",

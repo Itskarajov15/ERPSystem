@@ -48,18 +48,15 @@ public class GlobalExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "text/html";
-        var tempData = _tempDataDictionaryFactory.GetTempData(context);
-
         var localizationService =
             context.RequestServices.GetRequiredService<ILocalizationService>();
         var errorMessage = GetLocalizedErrorMessage(exception, localizationService);
-        tempData["ErrorMessage"] = errorMessage;
 
-        // If it's an API call (AJAX request)
         if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
         {
             context.Response.ContentType = "application/json";
+            context.Response.StatusCode = GetStatusCode(exception);
+
             var response = new ErrorResponse
             {
                 Message = errorMessage,
@@ -71,7 +68,32 @@ public class GlobalExceptionHandlingMiddleware
             return;
         }
 
-        // For regular requests, redirect to error page
+        if (exception is HttpRequestException ex && ex.StatusCode == HttpStatusCode.Forbidden)
+        {
+            var tempData = _tempDataDictionaryFactory.GetTempData(context);
+            tempData["ErrorMessage"] = errorMessage;
+
+            var referer = context.Request.Headers["Referer"].ToString();
+            if (
+                !string.IsNullOrEmpty(referer)
+                && Uri.TryCreate(referer, UriKind.Absolute, out var refererUri)
+            )
+            {
+                var redirectPath = refererUri.PathAndQuery;
+                if (redirectPath != context.Request.Path)
+                {
+                    context.Response.Redirect(redirectPath);
+                    return;
+                }
+            }
+
+            context.Response.Redirect("/");
+            return;
+        }
+
+        context.Response.ContentType = "text/html";
+        var tempDataOther = _tempDataDictionaryFactory.GetTempData(context);
+        tempDataOther["ErrorMessage"] = errorMessage;
         context.Response.Redirect("/Home/Error");
     }
 
@@ -86,6 +108,8 @@ public class GlobalExceptionHandlingMiddleware
                 "Resource not found",
             HttpRequestException ex when ex.StatusCode == HttpStatusCode.Unauthorized =>
                 "Unauthorized access",
+            HttpRequestException ex when ex.StatusCode == HttpStatusCode.Forbidden =>
+                "Forbidden access",
             HttpRequestException ex when ex.StatusCode == HttpStatusCode.BadRequest =>
                 "Invalid request",
             UnauthorizedAccessException => "Unauthorized access",

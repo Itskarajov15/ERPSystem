@@ -31,58 +31,123 @@
                         <i class="bi bi-house-door"></i>
                         <span class="nav-text">Начало</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" ? "active" : "")"
+                    
+                    <div class="nav-section">
+                        <div class="nav-section-header" data-bs-toggle="collapse" data-bs-target="#catalog-content" aria-expanded="false" aria-controls="catalog-content" data-tooltip="Каталог">
+                            <i class="bi bi-book section-icon"></i>
+                            <span class="nav-text section-title">Каталог</span>
+                            <i class="bi bi-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="nav-section-content collapse" id="catalog-content">
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" ? "active" : "")"
                        asp-controller="Products" asp-action="Index">
-                        <i class="bi bi-box me-2"></i>
+                                <i class="bi bi-box"></i>
                         <span class="nav-text">Продукти</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "UnitsOfMeasure" ? "active" : "")"
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "UnitsOfMeasure" ? "active" : "")"
                        asp-controller="UnitsOfMeasure" asp-action="Index">
-                        <i class="bi bi-rulers me-2"></i>
+                                <i class="bi bi-rulers"></i>
                         <span class="nav-text">Мерни единици</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active" : "")"
+                        </div>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-header" data-bs-toggle="collapse" data-bs-target="#contractors-content" aria-expanded="false" aria-controls="contractors-content" data-tooltip="Контрагенти">
+                            <i class="bi bi-people section-icon"></i>
+                            <span class="nav-text section-title">Контрагенти</span>
+                            <i class="bi bi-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="nav-section-content collapse" id="contractors-content">
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active" : "")"
                        asp-controller="Customers" asp-action="Index">
-                        <i class="bi bi-people me-2"></i>
+                                <i class="bi bi-person"></i>
                         <span class="nav-text">Клиенти</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Suppliers" ? "active" : "")"
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Suppliers" ? "active" : "")"
                        asp-controller="Suppliers" asp-action="Index">
-                        <i class="bi bi-truck me-2"></i>
+                                <i class="bi bi-truck"></i>
                         <span class="nav-text">Доставчици</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Orders" ? "active" : "")"
+                        </div>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-header" data-bs-toggle="collapse" data-bs-target="#sales-content" aria-expanded="false" aria-controls="sales-content" data-tooltip="Продажби">
+                            <i class="bi bi-cart section-icon"></i>
+                            <span class="nav-text section-title">Продажби</span>
+                            <i class="bi bi-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="nav-section-content collapse" id="sales-content">
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Orders" ? "active" : "")"
                        asp-controller="Orders" asp-action="Index">
-                        <i class="bi bi-cart me-2"></i>
+                                <i class="bi bi-clipboard"></i>
                         <span class="nav-text">Поръчки</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Invoices" ? "active" : "")"
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Invoices" ? "active" : "")"
                        asp-controller="Invoices" asp-action="Index">
-                        <i class="bi bi-receipt me-2"></i>
+                                <i class="bi bi-receipt"></i>
                         <span class="nav-text">Фактури</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payments" ? "active" : "")"
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payments" ? "active" : "")"
                        asp-controller="Payments" asp-action="Index">
-                        <i class="bi bi-cash-coin me-2"></i>
+                                <i class="bi bi-cash-coin"></i>
                         <span class="nav-text">Плащания</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Deliveries" ? "active" : "")"
+                        </div>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-header" data-bs-toggle="collapse" data-bs-target="#deliveries-content" aria-expanded="false" aria-controls="deliveries-content" data-tooltip="Доставки">
+                            <i class="bi bi-truck-flatbed section-icon"></i>
+                            <span class="nav-text section-title">Доставки</span>
+                            <i class="bi bi-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="nav-section-content collapse" id="deliveries-content">
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Deliveries" ? "active" : "")"
                        asp-controller="Deliveries" asp-action="Index">
-                        <i class="bi bi-truck-flatbed me-2"></i>
+                                <i class="bi bi-box-seam"></i>
                         <span class="nav-text">Доставки</span>
                     </a>
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PaymentMethods" ? "active" : "")"
+                        </div>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-header" data-bs-toggle="collapse" data-bs-target="#finance-content" aria-expanded="false" aria-controls="finance-content" data-tooltip="Финанси">
+                            <i class="bi bi-currency-dollar section-icon"></i>
+                            <span class="nav-text section-title">Финанси</span>
+                            <i class="bi bi-chevron-down section-toggle"></i>
+                        </div>
+                        <div class="nav-section-content collapse" id="finance-content">
+                            <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PaymentMethods" ? "active" : "")"
                        asp-controller="PaymentMethods" asp-action="Index">
-                        <i class="bi bi-credit-card me-2"></i>
+                                <i class="bi bi-credit-card"></i>
                         <span class="nav-text">Начини на плащане</span>
                     </a>
+                        </div>
+                    </div>
+
                     @if (User.IsInRole("Admin"))
                     {
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")"
+                        <div class="nav-section">
+                            <div class="nav-section-header" data-bs-toggle="collapse" data-bs-target="#admin-content" aria-expanded="false" aria-controls="admin-content" data-tooltip="Администрация">
+                                <i class="bi bi-gear section-icon"></i>
+                                <span class="nav-text section-title">Администрация</span>
+                                <i class="bi bi-chevron-down section-toggle"></i>
+                            </div>
+                            <div class="nav-section-content collapse" id="admin-content">
+                                <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")"
                            asp-controller="Users" asp-action="Index">
-                            <i class="bi bi-people me-2"></i>
+                                    <i class="bi bi-people"></i>
                             <span class="nav-text">Потребители</span>
                         </a>
+                                <a class="nav-link nav-link-sub @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Roles" ? "active" : "")"
+                                   asp-controller="Roles" asp-action="Index">
+                                    <i class="bi bi-shield-check"></i>
+                                    <span class="nav-text">Роли</span>
+                                </a>
+                            </div>
+                        </div>
                     }
                 </div>
             </nav>
@@ -183,7 +248,6 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const mainContent = document.querySelector('.main-content');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const isCollapsed = sidebar.classList.toggle('collapsed');
             
@@ -193,6 +257,17 @@
                 sidebarToggle.innerHTML = '<i class="bi bi-chevron-left"></i>';
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeSections = ['catalog-content', 'contractors-content', 'sales-content', 'deliveries-content', 'finance-content', 'admin-content'];
+            
+            activeSections.forEach(sectionId => {
+                const content = document.getElementById(sectionId);
+                if (content && content.querySelector('.nav-link-sub.active')) {
+                    new bootstrap.Collapse(content, { show: true });
+                }
+            });
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

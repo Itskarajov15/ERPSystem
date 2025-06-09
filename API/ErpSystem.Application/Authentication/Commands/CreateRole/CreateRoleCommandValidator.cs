@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ErpSystem.Application.Common.Constants;
+using FluentValidation;
 
 namespace ErpSystem.Application.Authentication.Commands.CreateRole;
 
@@ -8,17 +9,19 @@ public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("Role name is required.")
+            .WithMessage(RoleErrorKeys.RoleNameRequired)
             .MinimumLength(3)
-            .WithMessage("Role name must be at least 3 characters.")
+            .WithMessage(RoleErrorKeys.RoleNameTooShort)
             .MaximumLength(50)
-            .WithMessage("Role name must not exceed 50 characters.")
+            .WithMessage(RoleErrorKeys.RoleNameTooLong)
             .Matches("^[a-zA-Z0-9_-]*$")
-            .WithMessage("Role name can only contain letters, numbers, underscores, and hyphens.");
+            .WithMessage(RoleErrorKeys.RoleNameInvalidCharacters);
 
         RuleFor(x => x.Description)
             .MaximumLength(500)
-            .WithMessage("Description must not exceed 500 characters.")
+            .WithMessage(RoleErrorKeys.RoleDescriptionTooLong)
             .When(x => !string.IsNullOrEmpty(x.Description));
+
+        RuleFor(x => x.PermissionIds).NotNull().WithMessage(RoleErrorKeys.PermissionIdsRequired);
     }
 }

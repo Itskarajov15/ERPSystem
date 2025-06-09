@@ -1,0 +1,84 @@
+@using ErpSystem.Frontend.Core.Models.Roles
+@model RoleEditModel
+
+@{
+    ViewData["Title"] = "Създаване на роля";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Създаване на нова роля</h1>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Име на ролята</label>
+                        <input asp-for="Name" class="form-control" placeholder="Име на ролята" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label">Описание</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Описание на ролята"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Права за достъп</label>
+                <span asp-validation-for="SelectedPermissionIds" class="text-danger d-block mb-2"></span>
+                <div class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+                    @if (Model.AvailableEndpoints != null && Model.AvailableEndpoints.Any())
+                    {
+                        <div class="row">
+                            @foreach (var endpoint in Model.AvailableEndpoints)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" 
+                                               name="SelectedPermissionIds" value="@endpoint.Id" 
+                                               id="endpoint_@endpoint.Id" />
+                                        <label class="form-check-label" for="endpoint_@endpoint.Id">
+                                            @endpoint.ControllerName - @endpoint.ActionName
+                                            <small class="text-muted d-block">@endpoint.Endpoint</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Няма налични права за достъп.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-x-lg me-2"></i>Отказ
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-2"></i>Създай роля
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

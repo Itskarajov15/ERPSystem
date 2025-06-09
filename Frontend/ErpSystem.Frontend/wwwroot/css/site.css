@@ -22,7 +22,6 @@ body {
     display: flex;
 }
 
-/* Layout */
 .main-sidebar {
     width: var(--sidebar-width);
     position: fixed;
@@ -50,7 +49,6 @@ body {
     width: calc(100% - 60px);
 }
 
-/* Sidebar Header */
 .main-sidebar .border-bottom {
     position: relative;
     padding: 1rem;
@@ -101,7 +99,6 @@ body {
     display: none;
 }
 
-/* Hide all elements in the bottom section when collapsed except logout button */
 .main-sidebar.collapsed .border-top > div > *:not(form) {
     display: none !important;
 }
@@ -116,7 +113,6 @@ body {
     margin: 0;
 }
 
-/* Navigation items styling */
 .nav-link {
     padding: 0.8rem 1rem;
     color: var(--text-color);
@@ -143,6 +139,133 @@ body {
     font-size: 1.4rem;
 }
 
+.nav-section {
+    margin-bottom: 0.5rem;
+}
+
+.nav-section-header {
+    padding: 0.8rem 1rem;
+    color: var(--text-color);
+    background-color: #f8f9fa;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.nav-section-header:hover {
+    background-color: rgba(220, 30, 53, 0.05);
+    border-left-color: var(--primary-color);
+}
+
+.nav-section-header .section-icon {
+    font-size: 1.2rem;
+    min-width: 24px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.nav-section-header .section-title {
+    flex-grow: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-section-header .section-toggle {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    color: #6c757d;
+}
+
+.nav-section-header[aria-expanded="true"] .section-toggle {
+    transform: rotate(180deg);
+}
+
+.nav-section-content {
+    background-color: rgba(248, 249, 250, 0.5);
+}
+
+.nav-link-sub {
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    font-size: 0.9rem;
+    border-left: 3px solid transparent;
+}
+
+.nav-link-sub:hover {
+    background-color: rgba(220, 30, 53, 0.1);
+    border-left-color: var(--primary-color);
+}
+
+.nav-link-sub.active {
+    background-color: var(--primary-color);
+    color: white !important;
+    border-left-color: #b91a2d;
+}
+
+.nav-link-sub i {
+    font-size: 1rem;
+    min-width: 20px;
+}
+
+.main-sidebar.collapsed .nav-section-header {
+    justify-content: center;
+    padding: 0.8rem;
+}
+
+.main-sidebar.collapsed .nav-section-header .section-title,
+.main-sidebar.collapsed .nav-section-header .section-toggle {
+    display: none;
+}
+
+.main-sidebar.collapsed .nav-section-header .section-icon {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.main-sidebar.collapsed .nav-section-content {
+    display: none;
+}
+
+.main-sidebar.collapsed .nav-section-header {
+    position: relative;
+}
+
+.main-sidebar.collapsed .nav-section-header:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-left: 10px;
+    pointer-events: none;
+}
+
+.main-sidebar.collapsed .nav-section-header:hover::before {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: rgba(0, 0, 0, 0.8);
+    margin-left: 5px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
 .main-content {
     margin-left: var(--sidebar-width);
     padding: 20px;
@@ -151,7 +274,6 @@ body {
     transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-/* Navigation */
 .nav-item {
     width: 100%;
 }
@@ -166,7 +288,6 @@ body {
     color: white !important;
 }
 
-/* Cards */
 .card {
     border: none;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -183,7 +304,6 @@ body {
     overflow: visible;
 }
 
-/* Buttons */
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -207,7 +327,6 @@ body {
     border-color: var(--primary-color);
 }
 
-/* Tables */
 .table {
     background-color: white;
     border-radius: 0.25rem;
@@ -220,7 +339,6 @@ body {
     color: var(--secondary-color);
 }
 
-/* Table dropdown fixes */
 .table .dropdown-menu {
     min-width: 120px;
     margin-top: 0;
@@ -231,13 +349,11 @@ body {
     position: relative;
 }
 
-/* Forms */
 .form-control:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(220, 30, 53, 0.25);
 }
 
-/* Checkbox styling */
 .form-check-input:checked {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -248,7 +364,6 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(220, 30, 53, 0.25);
 }
 
-/* Login/Register pages */
 .auth-wrapper {
     min-height: 100vh;
     width: 100%;
@@ -290,7 +405,6 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Status Badges */
 .status-badge {
     display: inline-block;
     padding: 0.25rem 0.5rem;
@@ -317,7 +431,6 @@ body {
     border: 1px solid #c3e6cb;
 }
 
-/* Loading Spinner */
 .loading-spinner-overlay {
     position: fixed;
     top: 0;
@@ -336,7 +449,6 @@ body {
     height: 3rem;
 }
 
-/* Toastr Customization */
 .toast-small {
     font-size: 0.875rem;
     padding: 0.5rem 1rem;
@@ -363,7 +475,6 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Table Responsiveness */
 .table-responsive {
     margin: 0;
     padding: 0;
@@ -371,7 +482,6 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .main-sidebar {
         width: 60px;
@@ -407,7 +517,6 @@ body {
     }
 }
 
-/* Modal Styles */
 .modal-content {
     border-radius: 0.5rem;
     border: none;
@@ -424,7 +533,6 @@ body {
     background-color: #f8f9fa;
 }
 
-/* Form Validation Styles */
 .field-validation-error {
     color: var(--primary-color);
     font-size: 0.875rem;
@@ -440,7 +548,6 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(220, 30, 53, 0.25);
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -459,7 +566,6 @@ body {
     background: #555;
 }
 
-/* Pagination */
 .pagination .page-item.active .page-link {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -481,7 +587,6 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(220, 30, 53, 0.25);
 }
 
-/* Pagination */
 .form-select-sm {
     padding-right: 24px;
     background-position: right 4px center;

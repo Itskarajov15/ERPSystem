@@ -1,5 +1,6 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.Common;
+using ErpSystem.Frontend.Core.Models.DTOs;
 using ErpSystem.Frontend.Core.Models.Users;
 using Microsoft.AspNetCore.Http;
 
@@ -16,17 +17,22 @@ public class UserService : IUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<UserViewModel?> GetUserByIdAsync(string id)
+    public async Task<PageResult<UserViewModel>> GetUsersAsync(
+        int page = 1,
+        int pageSize = 25,
+        string searchTerm = ""
+    )
     {
         var token = GetToken();
-        return await _apiService.GetAsync<UserViewModel>($"/api/users/get-by-id/{id}", token);
-    }
+        var queryParams = $"page={page}&pageSize={pageSize}";
 
-    public async Task<PageResult<UserViewModel>> GetUsersAsync(int page = 1, int pageSize = 10)
-    {
-        var token = GetToken();
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            queryParams += $"&searchTerm={Uri.EscapeDataString(searchTerm)}";
+        }
+
         var response = await _apiService.GetAsync<PageResult<UserViewModel>>(
-            $"/api/authentication/users?page={page}&pageSize={pageSize}",
+            $"/api/authentication/users?{queryParams}",
             token
         );
         return response ?? new PageResult<UserViewModel>();
@@ -100,16 +106,17 @@ public class UserService : IUserService
         var token = GetToken();
         try
         {
-            await _apiService.PostAsync<object>(
-                "/api/authentication/roles",
-                new
-                {
-                    name,
-                    description,
-                    permissionIds,
-                },
-                token
-            );
+            var createRoleDto = new CreateRoleDto
+            {
+                Name = name,
+                Description = description,
+                PermissionIds = permissionIds
+                    .Where(id => Guid.TryParse(id, out _))
+                    .Select(Guid.Parse)
+                    .ToList(),
+            };
+
+            await _apiService.PostAsync<object>("/api/authentication/roles", createRoleDto, token);
             return true;
         }
         catch
@@ -128,14 +135,19 @@ public class UserService : IUserService
         var token = GetToken();
         try
         {
+            var updateRoleDto = new UpdateRoleDto
+            {
+                Name = name,
+                Description = description,
+                PermissionIds = permissionIds
+                    .Where(id => Guid.TryParse(id, out _))
+                    .Select(Guid.Parse)
+                    .ToList(),
+            };
+
             await _apiService.PutAsync<object>(
                 $"/api/authentication/roles/{roleId}",
-                new
-                {
-                    name,
-                    description,
-                    permissionIds,
-                },
+                updateRoleDto,
                 token
             );
             return true;

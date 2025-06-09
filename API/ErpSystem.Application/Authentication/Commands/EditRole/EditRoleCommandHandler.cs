@@ -1,4 +1,5 @@
-﻿using ErpSystem.Application.Common.Exceptions;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Domain.Entities.Identity;
 using ErpSystem.Domain.Interfaces;
 using MediatR;
@@ -24,7 +25,7 @@ internal class EditRoleCommandHandler : IRequestHandler<EditRoleCommand>
 
         if (role == null)
         {
-            throw new NotFoundException(nameof(ApplicationRole), request.RoleId);
+            throw new NotFoundException(RoleErrorKeys.RoleNotFound);
         }
 
         if (
@@ -32,7 +33,7 @@ internal class EditRoleCommandHandler : IRequestHandler<EditRoleCommand>
             && await _roleManager.FindByNameAsync(request.Dto.Name) != null
         )
         {
-            throw new ArgumentException("Role with the same name already exists");
+            throw new ArgumentException(RoleErrorKeys.RoleAlreadyExists);
         }
 
         role.Name = request.Dto.Name;

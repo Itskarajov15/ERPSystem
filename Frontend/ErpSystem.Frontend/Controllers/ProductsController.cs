@@ -1,5 +1,6 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.Products;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,14 +12,17 @@ public class ProductsController : Controller
 {
     private readonly IProductService _productService;
     private readonly IUnitOfMeasureService _unitOfMeasureService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
     public ProductsController(
         IProductService productService,
-        IUnitOfMeasureService unitOfMeasureService
+        IUnitOfMeasureService unitOfMeasureService,
+        ErrorTranslationService errorTranslationService
     )
     {
         _productService = productService;
         _unitOfMeasureService = unitOfMeasureService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index([FromQuery] ProductFilterModel filter)
@@ -30,7 +34,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return View(new Core.Models.Common.PageResult<ProductViewModel>());
         }
     }
@@ -44,7 +49,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -64,7 +70,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         await PopulateUnitsOfMeasureDropdown();
@@ -97,7 +104,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -117,7 +125,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         await PopulateUnitsOfMeasureDropdown();
@@ -135,7 +144,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));

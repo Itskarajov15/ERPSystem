@@ -1,5 +1,6 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.Invoices;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,14 +11,17 @@ public class InvoicesController : Controller
 {
     private readonly IInvoiceService _invoiceService;
     private readonly IPaymentMethodService _paymentMethodService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
     public InvoicesController(
         IInvoiceService invoiceService,
-        IPaymentMethodService paymentMethodService
+        IPaymentMethodService paymentMethodService,
+        ErrorTranslationService errorTranslationService
     )
     {
         _invoiceService = invoiceService;
         _paymentMethodService = paymentMethodService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index([FromQuery] InvoiceFilterModel filter)
@@ -29,7 +33,8 @@ public class InvoicesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return View(new Core.Models.Common.PageResult<InvoiceViewModel>());
         }
     }
@@ -53,7 +58,8 @@ public class InvoicesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -71,7 +77,8 @@ public class InvoicesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction("Details", "Orders", new { id = orderId });
         }
     }
@@ -87,7 +94,8 @@ public class InvoicesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Details), new { id });
@@ -108,7 +116,8 @@ public class InvoicesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Details), new { id });
         }
     }

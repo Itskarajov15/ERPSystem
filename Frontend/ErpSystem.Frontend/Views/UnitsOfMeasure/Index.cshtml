@@ -1,4 +1,6 @@
-@model ErpSystem.Frontend.Core.Models.Common.PageResult<ErpSystem.Frontend.Core.Models.UnitsOfMeasure.UnitOfMeasureViewModel>
+@using ErpSystem.Frontend.Core.Models.Common
+@using ErpSystem.Frontend.Core.Models.UnitsOfMeasure
+@model PageResult<UnitOfMeasureViewModel>
 
 @{
     ViewData["Title"] = "Мерни единици";
@@ -20,14 +22,6 @@
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["ErrorMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
@@ -99,7 +93,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -1,0 +1,155 @@
+@using ErpSystem.Frontend.Core.Models.Common
+@using ErpSystem.Frontend.Core.Models.Roles
+@using ErpSystem.Frontend.Core.Models.Users
+@model PageResult<RoleViewModel>
+
+@{
+    ViewData["Title"] = "Роли";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Управление на роли</h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Нова роля
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-4" id="searchForm">
+            <input type="hidden" id="pageSize" name="pageSize" value="@Model.PageSize" />
+            <div class="col-md-4">
+                <label class="form-label">Търсене</label>
+                <input type="text" class="form-control" name="SearchTerm" value="@Context.Request.Query["SearchTerm"]"
+                       placeholder="Търси по име или описание...">
+            </div>
+            <div class="col-md-8 d-flex align-items-end justify-content-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Търси
+                </button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Име</th>
+                        <th>Описание</th>
+                        <th>Брой права</th>
+                        <th>Създадена</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model?.Items != null && Model.Items.Any())
+                    {
+                        foreach (var role in Model.Items)
+                        {
+                            <tr>
+                                <td>@role.Name</td>
+                                <td>@(role.Description ?? "Без описание")</td>
+                                <td>
+                                    <span class="badge bg-info">@(role.Permissions?.Count() ?? 0) права</span>
+                                </td>
+                                <td>@role.CreatedAt.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-dark p-0" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" asp-action="Details" asp-route-id="@role.Id">Детайли</a></li>
+                                            <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@role.Id">Редактирай</a></li>
+                                            <li>
+                                                <button class="dropdown-item text-danger" onclick="deleteRole('@role.Id', '@role.Name')">
+                                                    <i class="bi bi-trash me-2"></i>Изтрий
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">Няма намерени роли.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center mt-3">
+            <div class="d-flex align-items-center">
+                <span class="me-2">Редове на страница:</span>
+                <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this)">
+                    <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                    <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                    <option value="100" selected="@(Model.PageSize == 100)">100</option>
+                </select>
+                <span class="mx-4">@(((Model?.CurrentPage ?? 1) - 1) * (Model?.PageSize ?? 25) + 1) - @(Math.Min((Model?.CurrentPage ?? 1) * (Model?.PageSize ?? 25), Model?.TotalCount ?? 0)) от @(Model?.TotalCount ?? 0)</span>
+                <div class="btn-group">
+                    <a href="@Url.Action("Index", new { page = Math.Max(1, (Model?.CurrentPage ?? 1) - 1), pageSize = Model?.PageSize ?? 25, searchTerm = Context.Request.Query["SearchTerm"] })" 
+                       class="btn btn-sm btn-outline-secondary @(Model?.CurrentPage <= 1 ? "disabled" : "")"
+                       aria-label="Previous">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    <a href="@Url.Action("Index", new { page = Math.Min(Model?.TotalPages ?? 1, (Model?.CurrentPage ?? 1) + 1), pageSize = Model?.PageSize ?? 25, searchTerm = Context.Request.Query["SearchTerm"] })" 
+                       class="btn btn-sm btn-outline-secondary @(Model?.CurrentPage >= (Model?.TotalPages ?? 1) ? "disabled" : "")"
+                       aria-label="Next">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Потвърждение за изтриване</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Сигурни ли сте, че искате да изтриете ролята "<span id="deleteRoleName"></span>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                <form asp-action="Delete" method="post" style="display: inline;">
+                    <input type="hidden" name="id" id="deleteRoleId" />
+                    <button type="submit" class="btn btn-danger">Изтрий</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+        function deleteRole(roleId, roleName) {
+            document.getElementById('deleteRoleId').value = roleId;
+            document.getElementById('deleteRoleName').textContent = roleName;
+            deleteModal.show();
+        }
+
+        function changePageSize(select) {
+            document.getElementById('pageSize').value = select.value;
+            document.getElementById('searchForm').submit();
+        }
+    </script>
+} 

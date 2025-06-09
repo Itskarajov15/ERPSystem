@@ -7,8 +7,10 @@ using ErpSystem.Application.Authentication.Commands.Register;
 using ErpSystem.Application.Authentication.Commands.RemoveRole;
 using ErpSystem.Application.Authentication.DTOs;
 using ErpSystem.Application.Authentication.Queries.GetEndpoints;
+using ErpSystem.Application.Authentication.Queries.GetRoleById;
 using ErpSystem.Application.Authentication.Queries.GetRoles;
 using ErpSystem.Application.Authentication.Queries.GetUsersWithRoles;
+using ErpSystem.Domain.Common.Filters;
 using ErpSystem.Domain.Common.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -41,18 +43,39 @@ public class AuthenticationController : BaseController
     }
 
     [HttpGet("users")]
-    public async Task<IActionResult> GetUsers([FromQuery] PaginationParams paginationParams)
+    public async Task<IActionResult> GetUsers(
+        [FromQuery] PaginationParams paginationParams,
+        [FromQuery] string? searchTerm = null
+    )
     {
-        var query = new GetUsersWithRolesQuery(paginationParams);
+        var userFilters = string.IsNullOrEmpty(searchTerm)
+            ? null
+            : new UserFilters { SearchTerm = searchTerm };
+        var query = new GetUsersWithRolesQuery(paginationParams, userFilters);
         var result = await _mediator.Send(query);
 
         return Ok(result);
     }
 
     [HttpGet("roles")]
-    public async Task<IActionResult> GetRoles([FromQuery] PaginationParams paginationParams)
+    public async Task<IActionResult> GetRoles(
+        [FromQuery] PaginationParams paginationParams,
+        [FromQuery] string? searchTerm = null
+    )
     {
-        var query = new GetRolesQuery(paginationParams);
+        var roleFilters = string.IsNullOrEmpty(searchTerm)
+            ? null
+            : new RoleFilters { SearchTerm = searchTerm };
+        var query = new GetRolesQuery(paginationParams, roleFilters);
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
+    }
+
+    [HttpGet("roles/{id}")]
+    public async Task<IActionResult> GetRoleById(Guid id)
+    {
+        var query = new GetRoleByIdQuery(id);
         var result = await _mediator.Send(query);
 
         return Ok(result);

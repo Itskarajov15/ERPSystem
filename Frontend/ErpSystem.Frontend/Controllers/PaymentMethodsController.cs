@@ -1,5 +1,6 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.PaymentMethods;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,15 @@ namespace ErpSystem.Frontend.Controllers;
 public class PaymentMethodsController : Controller
 {
     private readonly IPaymentMethodService _paymentMethodService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
-    public PaymentMethodsController(IPaymentMethodService paymentMethodService)
+    public PaymentMethodsController(
+        IPaymentMethodService paymentMethodService,
+        ErrorTranslationService errorTranslationService
+    )
     {
         _paymentMethodService = paymentMethodService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index([FromQuery] PaymentMethodFilterModel filter)
@@ -24,7 +30,8 @@ public class PaymentMethodsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return View(new Core.Models.Common.PageResult<PaymentMethodViewModel>());
         }
     }
@@ -49,7 +56,8 @@ public class PaymentMethodsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return View(model);
@@ -75,7 +83,8 @@ public class PaymentMethodsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -95,7 +104,8 @@ public class PaymentMethodsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return View(model);
@@ -112,7 +122,8 @@ public class PaymentMethodsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));

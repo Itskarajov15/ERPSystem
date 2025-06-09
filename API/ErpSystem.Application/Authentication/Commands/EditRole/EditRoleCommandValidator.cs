@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ErpSystem.Application.Common.Constants;
+using FluentValidation;
 
 namespace ErpSystem.Application.Authentication.Commands.EditRole;
 
@@ -6,15 +7,15 @@ public class EditRoleCommandValidator : AbstractValidator<EditRoleCommand>
 {
     public EditRoleCommandValidator()
     {
-        RuleFor(x => x.RoleId).NotEmpty().WithMessage("Role ID is required.");
-        RuleFor(x => x.Dto).NotNull().WithMessage("Role data is required.");
+        RuleFor(x => x.RoleId).NotEmpty().WithMessage(RoleErrorKeys.RoleIdRequired);
+        RuleFor(x => x.Dto).NotNull().WithMessage(RoleErrorKeys.RoleDataRequired);
         RuleFor(x => x.Dto.Name)
             .NotEmpty()
-            .WithMessage("Role name is required.")
+            .WithMessage(RoleErrorKeys.RoleNameRequired)
             .MaximumLength(100)
-            .WithMessage("Role name must not exceed 100 characters.");
+            .WithMessage(RoleErrorKeys.RoleNameTooLong);
         RuleFor(x => x.Dto.Description)
             .MaximumLength(500)
-            .WithMessage("Role description must not exceed 500 characters.");
+            .WithMessage(RoleErrorKeys.RoleDescriptionTooLong);
     }
 }

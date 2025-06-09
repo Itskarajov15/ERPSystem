@@ -12,17 +12,13 @@ public class UserViewModel
 
     public string LastName { get; set; } = string.Empty;
 
-    public bool IsActive { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
     public DateTime? LastLogin { get; set; }
 
-    public List<RoleViewModel> Roles { get; set; } = new();
+    public string RoleName { get; set; } = string.Empty;
 
     public string FullName => $"{FirstName} {LastName}";
-
-    public string Status => IsActive ? "Active" : "Inactive";
 
     public string LastLoginDisplay => LastLogin?.ToString("g") ?? "Never";
 }

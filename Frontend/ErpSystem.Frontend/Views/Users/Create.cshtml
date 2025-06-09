@@ -1,31 +1,34 @@
-@model ErpSystem.Frontend.Core.Models.Users.CreateUserViewModel
+@using ErpSystem.Frontend.Core.Models.Users
+@model CreateUserViewModel
 
 @{
-    ViewData["Title"] = "Create User";
+    ViewData["Title"] = "Създаване на потребител";
 }
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Създаване на нов потребител</h1>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Назад към списъка
+    </a>
+</div>
+
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title mb-4">@ViewData["Title"]</h2>
-
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input asp-for="Email" class="form-control" placeholder="name@example.com" />
-                                    <label asp-for="Email">Email address</label>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Имейл адрес</label>
+                        <input asp-for="Email" class="form-control" placeholder="user@domain.com" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input asp-for="Username" class="form-control" placeholder="Username" />
-                                    <label asp-for="Username">Username</label>
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label">Потребителско име</label>
+                        <input asp-for="Username" class="form-control" placeholder="Потребителско име" />
                                     <span asp-validation-for="Username" class="text-danger"></span>
                                 </div>
                             </div>
@@ -33,64 +36,73 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input asp-for="FirstName" class="form-control" placeholder="First Name" />
-                                    <label asp-for="FirstName">First Name</label>
+                    <div class="mb-3">
+                        <label asp-for="FirstName" class="form-label">Име</label>
+                        <input asp-for="FirstName" class="form-control" placeholder="Име" />
                                     <span asp-validation-for="FirstName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input asp-for="LastName" class="form-control" placeholder="Last Name" />
-                                    <label asp-for="LastName">Last Name</label>
+                    <div class="mb-3">
+                        <label asp-for="LastName" class="form-label">Фамилия</label>
+                        <input asp-for="LastName" class="form-control" placeholder="Фамилия" />
                                     <span asp-validation-for="LastName" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row mb-4">
+            <div class="row">
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input asp-for="Password" class="form-control" placeholder="Password" />
-                                    <label asp-for="Password">Password</label>
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label">Парола</label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Парола" />
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">Roles</label>
+                <label class="form-label">Роли</label>
                             <span asp-validation-for="SelectedRoles" class="text-danger d-block mb-2"></span>
                             <div class="row">
-                                @foreach (var role in Model.AvailableRoles)
+                    @if (Model.AvailableRoles != null && Model.AvailableRoles.Any())
+                    {
+                        foreach (var role in Model.AvailableRoles)
                                 {
-                                    <div class="col-md-6 mb-2">
+                            <div class="col-md-6 col-lg-4 mb-2">
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input" 
                                                    name="SelectedRoles" value="@role.Name" 
                                                    id="role_@role.Id" />
                                             <label class="form-check-label" for="role_@role.Id">
                                                 @role.Name
+                                        @if (!string.IsNullOrEmpty(role.Description))
+                                        {
                                                 <small class="text-muted d-block">@role.Description</small>
+                                        }
                                             </label>
                                         </div>
                                     </div>
                                 }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <p class="text-muted">Няма налични роли.</p>
+                        </div>
+                    }
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-end gap-2">
                             <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                    <i class="bi bi-x-lg me-2"></i>Отказ
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-person-plus me-2"></i>Create User
+                    <i class="bi bi-person-plus me-2"></i>Създай потребител
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

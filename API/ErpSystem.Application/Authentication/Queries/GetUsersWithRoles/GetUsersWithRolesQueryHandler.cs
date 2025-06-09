@@ -1,4 +1,5 @@
 using ErpSystem.Application.Authentication.DTOs;
+using ErpSystem.Domain.Common.Filters;
 using ErpSystem.Domain.Common.Pagination;
 using ErpSystem.Domain.Entities.Identity;
 using ErpSystem.Domain.Interfaces;
@@ -31,6 +32,8 @@ internal class GetUsersWithRolesQueryHandler
         CancellationToken cancellationToken
     )
     {
+        var filterBy = ComposeFilterBy(request.UserFilters);
+
         var users = await _repository.GetPaginatedAsync<ApplicationUser, UserWithRolesDto>(
             request.PaginationParams,
             q =>
@@ -44,7 +47,8 @@ internal class GetUsersWithRolesQueryHandler
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt,
                     LastLogin = u.LastLogin,
-                })
+                }),
+            filterBy
         );
 
         var userIds = users.Items.Select(u => Guid.Parse(u.Id)).ToList();
@@ -74,4 +78,27 @@ internal class GetUsersWithRolesQueryHandler
 
         return users;
     }
+
+    private Func<IQueryable<ApplicationUser>, IQueryable<ApplicationUser>> ComposeFilterBy(
+        UserFilters? userFilters
+    ) =>
+        query =>
+        {
+            if (userFilters == null)
+            {
+                return query;
+            }
+
+            if (userFilters.SearchTerm != null)
+            {
+                var searchTermLowerCase = userFilters.SearchTerm.ToLower();
+
+                query = query.Where(u =>
+                    (u.FirstName + " " + u.LastName).ToLower().Contains(searchTermLowerCase)
+                    || u.Email!.ToLower().Contains(searchTermLowerCase)
+                );
+            }
+
+            return query;
+        };
 }

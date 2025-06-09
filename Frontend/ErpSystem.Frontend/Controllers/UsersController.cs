@@ -15,10 +15,10 @@ public class UsersController : Controller
         _userService = userService;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 25, string searchTerm = "")
     {
         ViewBag.CurrentPage = page;
-        var users = await _userService.GetUsersAsync(page);
+        var users = await _userService.GetUsersAsync(page, pageSize, searchTerm);
         return View(users);
     }
 
@@ -43,11 +43,14 @@ public class UsersController : Controller
         var result = await _userService.RegisterUserAsync(model);
         if (result)
         {
-            TempData["SuccessMessage"] = "User created successfully.";
+            TempData["SuccessMessage"] = "Потребителят е създаден успешно.";
             return RedirectToAction(nameof(Index));
         }
 
-        ModelState.AddModelError(string.Empty, "Failed to create user. Please try again.");
+        ModelState.AddModelError(
+            string.Empty,
+            "Неуспешно създаване на потребител. Моля опитайте отново."
+        );
         var availableRoles = await _userService.GetRolesAsync();
         model.AvailableRoles = availableRoles.Items.ToList();
         return View(model);
@@ -66,7 +69,7 @@ public class UsersController : Controller
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
-            return BadRequest("Role name is required.");
+            return BadRequest("Името на ролята е задължително.");
         }
 
         var result = await _userService.CreateRoleAsync(
@@ -80,7 +83,7 @@ public class UsersController : Controller
             return Ok();
         }
 
-        return BadRequest("Failed to create role.");
+        return BadRequest("Неуспешно създаване на роля.");
     }
 
     [HttpGet]
@@ -90,30 +93,13 @@ public class UsersController : Controller
         return Json(roles);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetUserRoles(string userId)
-    {
-        var roles = await _userService.GetRolesAsync();
-        var users = await _userService.GetUsersAsync();
-        var user = users.Items.FirstOrDefault(u => u.Id == userId);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        return Json(
-            new { availableRoles = roles.Items, userRoles = user.Roles.Select(r => r.Name) }
-        );
-    }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.RoleName))
         {
-            return BadRequest("Role name is required.");
+            return BadRequest("Името на ролята е задължително.");
         }
 
         var result = await _userService.AssignRoleAsync(request.UserId, request.RoleName);
@@ -122,7 +108,7 @@ public class UsersController : Controller
             return Ok();
         }
 
-        return BadRequest("Failed to assign role.");
+        return BadRequest("Неуспешно присвояване на роля.");
     }
 
     [HttpDelete]
@@ -135,7 +121,7 @@ public class UsersController : Controller
             return Ok();
         }
 
-        return BadRequest("Failed to remove role.");
+        return BadRequest("Неуспешно премахване на роля.");
     }
 
     [HttpDelete]
@@ -148,19 +134,6 @@ public class UsersController : Controller
             return Ok();
         }
 
-        return BadRequest("Failed to delete role.");
+        return BadRequest("Неуспешно изтриване на роля.");
     }
-}
-
-public class CreateRoleRequest
-{
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public List<string> PermissionIds { get; set; } = new();
-}
-
-public class AssignRoleRequest
-{
-    public string UserId { get; set; } = string.Empty;
-    public string RoleName { get; set; } = string.Empty;
 }

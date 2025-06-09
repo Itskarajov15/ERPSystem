@@ -1,6 +1,7 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.Common;
 using ErpSystem.Frontend.Core.Models.Suppliers;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,15 @@ namespace ErpSystem.Frontend.Controllers;
 public class SuppliersController : Controller
 {
     private readonly ISupplierService _supplierService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
-    public SuppliersController(ISupplierService supplierService)
+    public SuppliersController(
+        ISupplierService supplierService,
+        ErrorTranslationService errorTranslationService
+    )
     {
         _supplierService = supplierService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index([FromQuery] SupplierFilterModel filter)
@@ -25,7 +31,8 @@ public class SuppliersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return View(new PageResult<SupplierViewModel>());
         }
     }
@@ -43,7 +50,8 @@ public class SuppliersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -68,7 +76,8 @@ public class SuppliersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return View(model);
@@ -98,7 +107,8 @@ public class SuppliersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -118,7 +128,8 @@ public class SuppliersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return View(model);
@@ -134,7 +145,8 @@ public class SuppliersController : Controller
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, message = ex.Message });
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            return Json(new { success = false, message = translatedMessage });
         }
     }
 }

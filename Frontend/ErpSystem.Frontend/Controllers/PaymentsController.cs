@@ -1,6 +1,7 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.Common;
 using ErpSystem.Frontend.Core.Models.Payments;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,17 @@ public class PaymentsController : Controller
 {
     private readonly IPaymentService _paymentService;
     private readonly ICustomerService _customerService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
-    public PaymentsController(IPaymentService paymentService, ICustomerService customerService)
+    public PaymentsController(
+        IPaymentService paymentService,
+        ICustomerService customerService,
+        ErrorTranslationService errorTranslationService
+    )
     {
         _paymentService = paymentService;
         _customerService = customerService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index([FromQuery] PaymentFilterModel filter)
@@ -29,7 +36,8 @@ public class PaymentsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return View(new PageResult<PaymentViewModel>());
         }
     }
@@ -48,7 +56,8 @@ public class PaymentsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -70,7 +79,8 @@ public class PaymentsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction("Details", "Invoices", new { id = request.InvoiceId });

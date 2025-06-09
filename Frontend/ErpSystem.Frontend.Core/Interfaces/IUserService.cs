@@ -5,9 +5,11 @@ namespace ErpSystem.Frontend.Core.Interfaces;
 
 public interface IUserService
 {
-    Task<UserViewModel?> GetUserByIdAsync(string id);
-
-    Task<PageResult<UserViewModel>> GetUsersAsync(int page = 1, int pageSize = 10);
+    Task<PageResult<UserViewModel>> GetUsersAsync(
+        int page = 1,
+        int pageSize = 25,
+        string searchTerm = ""
+    );
 
     Task<PageResult<RoleViewModel>> GetRolesAsync();
 

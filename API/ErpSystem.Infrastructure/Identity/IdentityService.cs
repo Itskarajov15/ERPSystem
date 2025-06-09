@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using ErpSystem.Application.Authentication.DTOs;
+using ErpSystem.Application.Common.Constants;
 using ErpSystem.Application.Common.Exceptions;
 using ErpSystem.Application.Common.Interfaces;
 using ErpSystem.Application.Common.Models;
@@ -43,7 +44,7 @@ public class IdentityService : IIdentityService
 
         if (user == null)
         {
-            throw new NotFoundException("User", userId);
+            throw new NotFoundException(RoleErrorKeys.UserNotFound);
         }
 
         if (!await _roleManager.RoleExistsAsync(role))
@@ -55,7 +56,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            throw new Exception("Failed to add user to role");
+            throw new Exception(RoleErrorKeys.FailedToAddRoleToUser);
         }
     }
 
@@ -92,7 +93,7 @@ public class IdentityService : IIdentityService
     {
         if (await _roleManager.RoleExistsAsync(name))
         {
-            throw new Exception("Role already exists");
+            throw new Exception(RoleErrorKeys.RoleAlreadyExists);
         }
 
         var role = new ApplicationRole { Name = name, Description = description };
@@ -101,7 +102,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            throw new Exception("Role creation failed");
+            throw new Exception(RoleErrorKeys.RoleCreationFailed);
         }
 
         return new RoleDto
@@ -136,7 +137,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            throw new Exception("User creation failed");
+            throw new Exception(RoleErrorKeys.UserCreationFailed);
         }
 
         return user.Id.ToString();
@@ -148,14 +149,20 @@ public class IdentityService : IIdentityService
 
         if (role == null)
         {
-            throw new NotFoundException("Role", id);
+            throw new NotFoundException(RoleErrorKeys.RoleNotFound);
+        }
+
+        var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
+        if (usersInRole.Any())
+        {
+            throw new ArgumentException(RoleErrorKeys.RoleInUseCannotDelete);
         }
 
         var result = await _roleManager.DeleteAsync(role);
 
         if (!result.Succeeded)
         {
-            throw new Exception("Failed to delete role");
+            throw new Exception(RoleErrorKeys.RoleDeleteFailed);
         }
     }
 
@@ -165,7 +172,7 @@ public class IdentityService : IIdentityService
 
         if (role == null)
         {
-            throw new ArgumentException("Role with this name does not exist.");
+            throw new ArgumentException(RoleErrorKeys.RoleWithNameNotExists);
         }
 
         return _repository
@@ -190,7 +197,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            throw new Exception("Failed to delete user");
+            throw new Exception(RoleErrorKeys.UserDeleteFailed);
         }
     }
 
@@ -212,7 +219,7 @@ public class IdentityService : IIdentityService
 
         if (user == null)
         {
-            throw new Exception("User not found");
+            throw new Exception(RoleErrorKeys.UserNotFound);
         }
 
         return user.UserName;
@@ -224,7 +231,7 @@ public class IdentityService : IIdentityService
 
         if (user == null)
         {
-            throw new NotFoundException("User", userId);
+            throw new NotFoundException(RoleErrorKeys.UserNotFound);
         }
 
         return await _userManager.IsInRoleAsync(user, role);
@@ -236,14 +243,14 @@ public class IdentityService : IIdentityService
 
         if (user == null)
         {
-            throw new NotFoundException("User", userId);
+            throw new NotFoundException(RoleErrorKeys.UserNotFound);
         }
 
         var result = await _userManager.RemoveFromRoleAsync(user, roleName);
 
         if (!result.Succeeded)
         {
-            throw new Exception("Failed to remove role from user");
+            throw new Exception(RoleErrorKeys.FailedToRemoveRoleFromUser);
         }
     }
 

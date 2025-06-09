@@ -1,5 +1,7 @@
 using ErpSystem.Frontend.Core.Interfaces;
+using ErpSystem.Frontend.Core.Models.Common;
 using ErpSystem.Frontend.Core.Models.UnitsOfMeasure;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +11,15 @@ namespace ErpSystem.Frontend.Controllers;
 public class UnitsOfMeasureController : Controller
 {
     private readonly IUnitOfMeasureService _unitOfMeasureService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
-    public UnitsOfMeasureController(IUnitOfMeasureService unitOfMeasureService)
+    public UnitsOfMeasureController(
+        IUnitOfMeasureService unitOfMeasureService,
+        ErrorTranslationService errorTranslationService
+    )
     {
         _unitOfMeasureService = unitOfMeasureService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index(int page = 1)
@@ -25,12 +32,12 @@ public class UnitsOfMeasureController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
-            return View(null);
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
+            return View(new PageResult<UnitOfMeasureViewModel>());
         }
     }
 
-    [HttpGet]
     public IActionResult Create()
     {
         return View(new UnitOfMeasureEditModel());
@@ -40,25 +47,24 @@ public class UnitsOfMeasureController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(UnitOfMeasureEditModel model)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
         try
         {
-            await _unitOfMeasureService.CreateUnitOfMeasureAsync(model);
-            TempData["SuccessMessage"] = "Мерната единица е създадена успешно.";
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                await _unitOfMeasureService.CreateUnitOfMeasureAsync(model);
+                TempData["SuccessMessage"] = "Мерната единица беше създадена успешно.";
+                return RedirectToAction(nameof(Index));
+            }
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError("", ex.Message);
-            return View(model);
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
+
+        return View(model);
     }
 
-    [HttpGet]
     public async Task<IActionResult> Edit(Guid id)
     {
         try
@@ -75,7 +81,8 @@ public class UnitsOfMeasureController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -84,22 +91,22 @@ public class UnitsOfMeasureController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(UnitOfMeasureEditModel model)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
         try
         {
-            await _unitOfMeasureService.UpdateUnitOfMeasureAsync(model);
-            TempData["SuccessMessage"] = "Мерната единица е обновена успешно.";
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                await _unitOfMeasureService.UpdateUnitOfMeasureAsync(model);
+                TempData["SuccessMessage"] = "Мерната единица беше обновена успешно.";
+                return RedirectToAction(nameof(Index));
+            }
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError("", ex.Message);
-            return View(model);
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
+
+        return View(model);
     }
 
     [HttpPost]
@@ -109,11 +116,12 @@ public class UnitsOfMeasureController : Controller
         try
         {
             await _unitOfMeasureService.DeleteUnitOfMeasureAsync(id);
-            TempData["SuccessMessage"] = "Мерната единица е изтрита успешно.";
+            TempData["SuccessMessage"] = "Мерната единица беше изтрита успешно.";
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));

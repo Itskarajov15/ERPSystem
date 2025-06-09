@@ -1,327 +1,112 @@
 @using ErpSystem.Frontend.Core.Models.Common
 @using ErpSystem.Frontend.Core.Models.Users
-@using ErpSystem.Frontend.Services
-@inject ILocalizationService Localizer
 @model PageResult<UserViewModel>
 
 @{
-    ViewData["Title"] = "Users";
+    ViewData["Title"] = "Потребители";
 }
 
-<div class="container-fluid px-4">
-    <h1 class="mt-4">@Localizer.Translate("User Management")</h1>
-    
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-users me-1"></i>
-                @Localizer.Translate("Users")
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Управление на потребители</h1>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Нов потребител
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-4" id="searchForm">
+            <input type="hidden" id="pageSize" name="pageSize" value="@Model.PageSize" />
+            <div class="col-md-4">
+                <label class="form-label">Търсене</label>
+                <input type="text" class="form-control" name="SearchTerm" value="@Context.Request.Query["SearchTerm"]"
+                       placeholder="Търси по име или имейл...">
             </div>
-            <div>
-                <a asp-action="Create" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus me-1"></i> @Localizer.Translate("Create New User")
-                </a>
-                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createRoleModal">
-                    <i class="fas fa-plus me-1"></i> @Localizer.Translate("Create New Role")
+            <div class="col-md-8 d-flex align-items-end justify-content-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Търси
                 </button>
             </div>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>@Localizer.Translate("Name")</th>
-                            <th>@Localizer.Translate("Email")</th>
-                            <th>@Localizer.Translate("Status")</th>
-                            <th>@Localizer.Translate("Roles")</th>
-                            <th>@Localizer.Translate("Created")</th>
-                            <th>@Localizer.Translate("Last Login")</th>
-                            <th>@Localizer.Translate("Actions")</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var user in Model.Items)
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Име</th>
+                        <th>Имейл</th>
+                        <th>Роля</th>
+                        <th>Създаден</th>
+                        <th>Последен вход</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model?.Items != null && Model.Items.Any())
+                    {
+                        foreach (var user in Model.Items)
                         {
                             <tr>
                                 <td>@user.FullName</td>
                                 <td>@user.Email</td>
                                 <td>
-                                    <span class="badge bg-@(user.IsActive ? "success" : "danger")">
-                                        @Localizer.Translate(user.Status)
-                                    </span>
+                                    <span class="badge bg-primary">@(string.IsNullOrEmpty(user.RoleName) ? "Няма роля" : user.RoleName)</span>
                                 </td>
-                                <td>
-                                    @foreach (var role in user.Roles)
-                                    {
-                                        <span class="badge bg-primary me-1">@role.Name</span>
-                                    }
-                                    <button class="btn btn-outline-primary btn-sm" 
-                                            onclick="manageRoles('@user.Id', '@user.FullName')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                                <td>@user.CreatedAt.ToString("g")</td>
-                                <td>@user.LastLoginDisplay</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-danger btn-sm" onclick="deleteUser('@user.Id', '@user.FullName')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
+                                <td>@user.CreatedAt.ToString("dd.MM.yyyy")</td>
+                                <td>@(user.LastLoginDisplay ?? "Никога")</td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
-
-            @if (Model.TotalCount > 0)
-            {
-                var totalPages = Math.Ceiling((double)Model.TotalCount / 10);
-                <nav>
-                    <ul class="pagination justify-content-center">
-                        @for (int i = 1; i <= totalPages; i++)
-                        {
-                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
-                            </li>
-                        }
-                    </ul>
-                </nav>
-            }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">Няма намерени потребители.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-    </div>
-</div>
 
-<!-- Create Role Modal -->
-<div class="modal fade" id="createRoleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@Localizer.Translate("Create New Role")</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="createRoleForm">
-                    <div class="mb-3">
-                        <label for="roleName" class="form-label">@Localizer.Translate("Role Name")</label>
-                        <input type="text" class="form-control" id="roleName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="roleDescription" class="form-label">@Localizer.Translate("Description")</label>
-                        <textarea class="form-control" id="roleDescription" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">@Localizer.Translate("Endpoint Permissions")</label>
-                        <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
-                            <div id="endpointsList">
-                                <!-- Endpoints will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer.Translate("Cancel")</button>
-                <button type="button" class="btn btn-primary" onclick="createRole()">@Localizer.Translate("Create")</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Manage Roles Modal -->
-<div class="modal fade" id="manageRolesModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@Localizer.Translate("Manage User Roles")</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="rolesList">
-                    <!-- Roles will be loaded here -->
+        <div class="d-flex justify-content-end align-items-center mt-3">
+            <div class="d-flex align-items-center">
+                <span class="me-2">Редове на страница:</span>
+                <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this)">
+                    <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                    <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                    <option value="100" selected="@(Model.PageSize == 100)">100</option>
+                </select>
+                <span class="mx-4">@(((Model?.CurrentPage ?? 1) - 1) * (Model?.PageSize ?? 25) + 1) - @(Math.Min((Model?.CurrentPage ?? 1) * (Model?.PageSize ?? 25), Model?.TotalCount ?? 0)) от @(Model?.TotalCount ?? 0)</span>
+                <div class="btn-group">
+                    <a href="@Url.Action("Index", new { page = Math.Max(1, (Model?.CurrentPage ?? 1) - 1), pageSize = Model?.PageSize ?? 25, searchTerm = Context.Request.Query["SearchTerm"] })" 
+                       class="btn btn-sm btn-outline-secondary @(Model?.CurrentPage <= 1 ? "disabled" : "")"
+                       aria-label="Previous">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    <a href="@Url.Action("Index", new { page = Math.Min(Model?.TotalPages ?? 1, (Model?.CurrentPage ?? 1) + 1), pageSize = Model?.PageSize ?? 25, searchTerm = Context.Request.Query["SearchTerm"] })" 
+                       class="btn btn-sm btn-outline-secondary @(Model?.CurrentPage >= (Model?.TotalPages ?? 1) ? "disabled" : "")"
+                       aria-label="Next">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer.Translate("Close")</button>
-                <button type="button" class="btn btn-primary" onclick="saveUserRoles()">@Localizer.Translate("Save Changes")</button>
-            </div>
         </div>
     </div>
 </div>
+
+
 
 @section Scripts {
     <script>
-        let currentUserId = '';
-        let availableRoles = [];
-        let userRoles = [];
-        let availableEndpoints = [];
-        let localizationService = {
-            translate: function(key) {
-                return '@Localizer.Translate("PLACEHOLDER")'.replace('PLACEHOLDER', key);
-            },
-            translateEndpoint: function(controllerName, actionName) {
-                return '@Localizer.TranslateEndpoint("CONTROLLER", "ACTION")'
-                    .replace('CONTROLLER', controllerName)
-                    .replace('ACTION', actionName);
-            }
-        };
-
-        // Load endpoints when the create role modal is shown
-        document.getElementById('createRoleModal').addEventListener('show.bs.modal', loadEndpoints);
-
-        async function loadEndpoints() {
-            try {
-                const response = await fetch('/Users/GetAvailableEndpoints');
-                availableEndpoints = await response.json();
-                
-                const endpointsList = document.getElementById('endpointsList');
-                endpointsList.innerHTML = availableEndpoints.map(endpoint => `
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="${endpoint.id}" 
-                               id="endpoint_${endpoint.id}">
-                        <label class="form-check-label" for="endpoint_${endpoint.id}">
-                            ${localizationService.translateEndpoint(endpoint.controllerName, endpoint.actionName)}
-                            <small class="text-muted">
-                                (${endpoint.endpoint})
-                            </small>
-                        </label>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading endpoints:', error);
-                alert(localizationService.translate('Failed to load endpoints. Please try again.'));
-            }
-        }
-
-        async function createRole() {
-            const name = document.getElementById('roleName').value;
-            const description = document.getElementById('roleDescription').value;
-            const selectedEndpoints = Array.from(document.querySelectorAll('#endpointsList input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
-
-            if (!name) {
-                alert('Role name is required');
-                return;
-            }
-
-            if (selectedEndpoints.length === 0) {
-                alert('Please select at least one endpoint permission');
-                return;
-            }
-
-            try {
-                const response = await fetch('/Users/CreateRole', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: JSON.stringify({
-                        name,
-                        description,
-                        permissionIds: selectedEndpoints
-                    })
-                });
-
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    throw new Error('Failed to create role');
-                }
-            } catch (error) {
-                console.error('Error creating role:', error);
-                alert('Failed to create role. Please try again.');
-            }
-        }
-
-        async function manageRoles(userId, userName) {
-            currentUserId = userId;
-            const modal = new bootstrap.Modal(document.getElementById('manageRolesModal'));
-            
-            try {
-                const [rolesResponse, userRolesResponse] = await Promise.all([
-                    fetch('/Users/GetRoles'),
-                    fetch(`/Users/GetUserRoles/${userId}`)
-                ]);
-                
-                if (!rolesResponse.ok || !userRolesResponse.ok) {
-                    throw new Error('Failed to fetch roles data');
-                }
-
-                const roles = await rolesResponse.json();
-                const userRoles = await userRolesResponse.json();
-                
-                availableRoles = roles.items;
-                userRoles = userRoles.map(r => r.name);
-                
-                const rolesList = document.getElementById('rolesList');
-                rolesList.innerHTML = availableRoles.map(role => `
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="${role.name}" 
-                               id="role_${role.id}" ${userRoles.includes(role.name) ? 'checked' : ''}>
-                        <label class="form-check-label" for="role_${role.id}">
-                            ${role.name}
-                            <small class="text-muted d-block">${role.description || ''}</small>
-                        </label>
-                    </div>
-                `).join('');
-                
-                modal.show();
-            } catch (error) {
-                console.error('Error loading roles:', error);
-                alert(localizationService.translate('Failed to load roles. Please try again.'));
-            }
-        }
-
-        async function saveUserRoles() {
-            const checkboxes = document.querySelectorAll('#rolesList input[type="checkbox"]');
-            const selectedRoles = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-
-            try {
-                const response = await fetch(`/Users/UpdateUserRoles/${currentUserId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: JSON.stringify(selectedRoles)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to update roles');
-                }
-
-                location.reload();
-            } catch (error) {
-                console.error('Error updating roles:', error);
-                alert(localizationService.translate('Failed to update roles. Please try again.'));
-            }
-        }
-
-        async function deleteUser(userId, userName) {
-            if (confirm(localizationService.translate('Are you sure you want to delete user {0}?').replace('{0}', userName))) {
-                try {
-                    const response = await fetch(`/Users/Delete/${userId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to delete user');
-                    }
-
-                    location.reload();
-                } catch (error) {
-                    console.error('Error deleting user:', error);
-                    alert(localizationService.translate('Failed to delete user. Please try again.'));
-                }
-            }
+        function changePageSize(select) {
+            document.getElementById('pageSize').value = select.value;
+            document.getElementById('searchForm').submit();
         }
     </script>
 } 

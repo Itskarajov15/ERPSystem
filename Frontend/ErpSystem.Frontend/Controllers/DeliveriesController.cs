@@ -1,6 +1,7 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.Common;
 using ErpSystem.Frontend.Core.Models.Deliveries;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,16 +14,19 @@ public class DeliveriesController : Controller
     private readonly IDeliveryService _deliveryService;
     private readonly ISupplierService _supplierService;
     private readonly IProductService _productService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
     public DeliveriesController(
         IDeliveryService deliveryService,
         ISupplierService supplierService,
-        IProductService productService
+        IProductService productService,
+        ErrorTranslationService errorTranslationService
     )
     {
         _deliveryService = deliveryService;
         _supplierService = supplierService;
         _productService = productService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index([FromQuery] DeliveryFilterModel filter)
@@ -35,7 +39,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             await LoadSuppliersDropdown();
             return View(new PageResult<DeliveryViewModel>());
         }
@@ -56,7 +61,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -71,7 +77,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -94,7 +101,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             await LoadViewBagData();
             return View(model);
         }
@@ -111,7 +119,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));
@@ -128,7 +137,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));
@@ -145,7 +155,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));
@@ -162,7 +173,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));
@@ -189,7 +201,8 @@ public class DeliveriesController : Controller
         }
         catch (Exception ex)
         {
-            return Json(new { error = ex.Message });
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            return Json(new { error = translatedMessage });
         }
     }
 

@@ -7,6 +7,11 @@ public class ErrorTranslationService
 {
     public string Translate(string errorMessage)
     {
+        if (errorMessage.Contains("Error: Forbidden"))
+        {
+            return "Забранен достъп";
+        }
+
         var errorKey = ExtractErrorKey(errorMessage);
 
         var translation = OrderErrorKeys.Translate(errorKey);
@@ -38,6 +43,10 @@ public class ErrorTranslationService
             return translation;
 
         translation = InvoiceErrorKeys.Translate(errorKey);
+        if (translation != errorKey)
+            return translation;
+
+        translation = RoleErrorKeys.Translate(errorKey);
         if (translation != errorKey)
             return translation;
 

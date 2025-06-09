@@ -1,5 +1,6 @@
 using ErpSystem.Frontend.Core.Interfaces;
 using ErpSystem.Frontend.Core.Models.Orders;
+using ErpSystem.Frontend.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,18 +14,21 @@ public class OrdersController : Controller
     private readonly ICustomerService _customerService;
     private readonly IProductService _productService;
     private readonly IPaymentMethodService _paymentMethodService;
+    private readonly ErrorTranslationService _errorTranslationService;
 
     public OrdersController(
         IOrderService orderService,
         ICustomerService customerService,
         IProductService productService,
-        IPaymentMethodService paymentMethodService
+        IPaymentMethodService paymentMethodService,
+        ErrorTranslationService errorTranslationService
     )
     {
         _orderService = orderService;
         _customerService = customerService;
         _productService = productService;
         _paymentMethodService = paymentMethodService;
+        _errorTranslationService = errorTranslationService;
     }
 
     public async Task<IActionResult> Index([FromQuery] OrderFilterModel filter)
@@ -37,7 +41,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return View(new Core.Models.Common.PageResult<OrderViewModel>());
         }
     }
@@ -56,7 +61,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -70,7 +76,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -90,7 +97,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         await PopulateDropdowns();
@@ -108,7 +116,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));
@@ -125,7 +134,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));
@@ -142,7 +152,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = ex.Message;
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            TempData["ErrorMessage"] = translatedMessage;
         }
 
         return RedirectToAction(nameof(Index));
@@ -169,7 +180,8 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            return Json(new { error = ex.Message });
+            var translatedMessage = _errorTranslationService.Translate(ex.Message);
+            return Json(new { error = translatedMessage });
         }
     }
 
