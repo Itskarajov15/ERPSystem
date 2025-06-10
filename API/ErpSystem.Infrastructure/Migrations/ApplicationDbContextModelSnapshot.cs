@@ -641,9 +641,10 @@ namespace ErpSystem.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<decimal>("ReorderLevel")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("ReorderLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("ReservedQuantity")
                         .ValueGeneratedOnAdd()
@@ -675,7 +676,7 @@ namespace ErpSystem.Infrastructure.Migrations
                             Name = "Офис стол ергономичен",
                             Price = 289.50m,
                             Quantity = 50,
-                            ReorderLevel = 15m,
+                            ReorderLevel = 15,
                             ReservedQuantity = 0,
                             Sku = "CHAIR-ERG-001",
                             UnitOfMeasureId = new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040")
@@ -690,7 +691,7 @@ namespace ErpSystem.Infrastructure.Migrations
                             Name = "Копирна хартия А4 80g",
                             Price = 12.99m,
                             Quantity = 200,
-                            ReorderLevel = 50m,
+                            ReorderLevel = 50,
                             ReservedQuantity = 0,
                             Sku = "PAPER-A4-80G",
                             UnitOfMeasureId = new Guid("e7d01a65-7f41-4560-90a8-7140c5fe3f6f")
@@ -705,7 +706,7 @@ namespace ErpSystem.Infrastructure.Migrations
                             Name = "Химикалки сини комплект",
                             Price = 8.50m,
                             Quantity = 120,
-                            ReorderLevel = 30m,
+                            ReorderLevel = 30,
                             ReservedQuantity = 0,
                             Sku = "PEN-BLUE-SET10",
                             UnitOfMeasureId = new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040")
@@ -720,25 +721,10 @@ namespace ErpSystem.Infrastructure.Migrations
                             Name = "Папки класьори А4",
                             Price = 4.75m,
                             Quantity = 80,
-                            ReorderLevel = 25m,
+                            ReorderLevel = 25,
                             ReservedQuantity = 0,
                             Sku = "FOLDER-A4-ARCH",
                             UnitOfMeasureId = new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040")
-                        },
-                        new
-                        {
-                            Id = new Guid("40fce498-755d-4a95-9777-c910ab0306f5"),
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            Description = "Специализиран почистващ препарат за офисни повърхности и техника",
-                            IsDeleted = false,
-                            Name = "Офис почистващ препарат",
-                            Price = 15.90m,
-                            Quantity = 60,
-                            ReorderLevel = 20m,
-                            ReservedQuantity = 0,
-                            Sku = "CLEAN-OFFICE-1L",
-                            UnitOfMeasureId = new Guid("9ef4bc25-3700-40c8-a290-d23fab4c4e12")
                         });
                 });
 
@@ -791,14 +777,6 @@ namespace ErpSystem.Infrastructure.Migrations
                             CreatedBy = "system",
                             IsDeleted = false,
                             Name = "кг"
-                        },
-                        new
-                        {
-                            Id = new Guid("9ef4bc25-3700-40c8-a290-d23fab4c4e12"),
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsDeleted = false,
-                            Name = "л"
                         });
                 });
 

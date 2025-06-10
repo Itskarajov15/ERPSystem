@@ -37,6 +37,7 @@ internal class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, PageR
                     TotalAmount = i.TotalAmount,
                     Notes = i.Notes,
                     CreatedAt = i.CreatedAt,
+                    OrderId = i.OrderId,
                 }),
             filterBy
         );

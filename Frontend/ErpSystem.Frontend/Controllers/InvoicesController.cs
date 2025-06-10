@@ -98,7 +98,14 @@ public class InvoicesController : Controller
             TempData["ErrorMessage"] = translatedMessage;
         }
 
-        return RedirectToAction(nameof(Details), new { id });
+        if (status == InvoiceStatus.Cancelled)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+        else
+        {
+            return RedirectToAction(nameof(Details), new { id });
+        }
     }
 
     public async Task<IActionResult> GetPdf(Guid id)

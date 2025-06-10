@@ -74,7 +74,7 @@
                             <th>Клиент</th>
                             <th>Статус</th>
                             <th>Обща сума</th>
-                            <th width="150">Действия</th>
+                            <th width="220">Действия</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,6 +111,11 @@
                                 <td>@invoice.TotalAmount.ToString("F2") лв.</td>
                                 <td>
                                     <div class="d-flex gap-1" role="group">
+                                        <a asp-controller="Orders" asp-action="Details" asp-route-id="@invoice.OrderId" 
+                                           class="btn btn-sm btn-outline-secondary" title="Виж поръчката">
+                                            <i class="bi bi-box-seam me-1"></i>Виж поръчката
+                                        </a>
+                                        
                                         <a asp-action="Details" asp-route-id="@invoice.Id" 
                                            class="btn btn-sm btn-outline-info" title="Детайли">
                                             <i class="bi bi-eye"></i>

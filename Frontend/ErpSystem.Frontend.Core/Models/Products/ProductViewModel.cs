@@ -19,10 +19,13 @@ public class ProductViewModel
     public decimal UnitPrice { get; set; }
 
     [Display(Name = "Количество")]
-    public decimal Quantity { get; set; }
+    public int Quantity { get; set; }
+
+    [Display(Name = "Резервирано количество")]
+    public int ReservedQuantity { get; set; }
 
     [Display(Name = "Минимално количество")]
-    public decimal ReorderLevel { get; set; }
+    public int ReorderLevel { get; set; }
 
     public Guid UnitOfMeasureId { get; set; }
 

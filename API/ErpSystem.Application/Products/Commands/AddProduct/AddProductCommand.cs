@@ -7,6 +7,6 @@ public record AddProductCommand(
     string Sku,
     string Description,
     decimal UnitPrice,
-    decimal ReorderLevel,
+    int ReorderLevel,
     Guid UnitOfMeasureId
 ) : IRequest<Guid>;

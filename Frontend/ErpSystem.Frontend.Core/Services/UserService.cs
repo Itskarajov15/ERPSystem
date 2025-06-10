@@ -53,7 +53,21 @@ public class UserService : IUserService
         var token = GetToken();
         try
         {
-            await _apiService.PostAsync<object>("/api/authentication/register", model, token);
+            var registerRequest = new RegisterUserDto
+            {
+                UserName = model.Username,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Password = model.Password,
+                RoleName = model.SelectedRole,
+            };
+
+            await _apiService.PostAsync<object>(
+                "/api/authentication/register",
+                registerRequest,
+                token
+            );
             return true;
         }
         catch

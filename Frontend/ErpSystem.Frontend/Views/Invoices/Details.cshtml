@@ -36,6 +36,11 @@
             </button>
         }
         
+        <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.OrderId" 
+           class="btn btn-outline-secondary">
+            <i class="bi bi-box-seam me-2"></i>Виж поръчката
+        </a>
+        
         <a href="@Url.Action("GetPdf", "Invoices", new { id = Model.Id })" 
            class="btn btn-outline-primary" target="_blank">
             <i class="bi bi-file-earmark-pdf me-2"></i>Изтегли PDF

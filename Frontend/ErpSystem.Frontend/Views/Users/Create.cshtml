@@ -20,14 +20,14 @@
                         <div class="row">
                             <div class="col-md-6">
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Имейл адрес</label>
+                        <label asp-for="Email" class="form-label"></label>
                         <input asp-for="Email" class="form-control" placeholder="user@domain.com" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                     <div class="mb-3">
-                        <label asp-for="Username" class="form-label">Потребителско име</label>
+                        <label asp-for="Username" class="form-label"></label>
                         <input asp-for="Username" class="form-control" placeholder="Потребителско име" />
                                     <span asp-validation-for="Username" class="text-danger"></span>
                                 </div>
@@ -37,14 +37,14 @@
                         <div class="row">
                             <div class="col-md-6">
                     <div class="mb-3">
-                        <label asp-for="FirstName" class="form-label">Име</label>
+                        <label asp-for="FirstName" class="form-label"></label>
                         <input asp-for="FirstName" class="form-control" placeholder="Име" />
                                     <span asp-validation-for="FirstName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                     <div class="mb-3">
-                        <label asp-for="LastName" class="form-label">Фамилия</label>
+                        <label asp-for="LastName" class="form-label"></label>
                         <input asp-for="LastName" class="form-control" placeholder="Фамилия" />
                                     <span asp-validation-for="LastName" class="text-danger"></span>
                                 </div>
@@ -54,7 +54,7 @@
             <div class="row">
                             <div class="col-md-6">
                     <div class="mb-4">
-                        <label asp-for="Password" class="form-label">Парола</label>
+                        <label asp-for="Password" class="form-label"></label>
                         <input asp-for="Password" type="password" class="form-control" placeholder="Парола" />
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
@@ -62,8 +62,8 @@
                         </div>
 
                         <div class="mb-4">
-                <label class="form-label">Роли</label>
-                            <span asp-validation-for="SelectedRoles" class="text-danger d-block mb-2"></span>
+                <label asp-for="SelectedRole" class="form-label">Роля</label>
+                            <span asp-validation-for="SelectedRole" class="text-danger d-block mb-2"></span>
                             <div class="row">
                     @if (Model.AvailableRoles != null && Model.AvailableRoles.Any())
                     {
@@ -71,8 +71,8 @@
                                 {
                             <div class="col-md-6 col-lg-4 mb-2">
                                         <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" 
-                                                   name="SelectedRoles" value="@role.Name" 
+                                            <input type="radio" class="form-check-input" 
+                                                   asp-for="SelectedRole" value="@role.Name" 
                                                    id="role_@role.Id" />
                                             <label class="form-check-label" for="role_@role.Id">
                                                 @role.Name

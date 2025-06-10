@@ -10,7 +10,14 @@
     <h2>@ViewData["Title"]</h2>
 </div>
 
-<!-- Filters -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="card-title mb-0">Филтри</h5>
@@ -79,7 +86,6 @@
     </div>
 </div>
 
-<!-- Payments Table -->
 <div class="card">
     <div class="card-body">
         @if (Model.Items.Any())

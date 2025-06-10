@@ -27,8 +27,8 @@ public class ProductEditModel
 
     [Required(ErrorMessage = "Минималното количество е задължително")]
     [Display(Name = "Минимално количество")]
-    [Range(0, double.MaxValue, ErrorMessage = "Минималното количество не може да бъде отрицателно")]
-    public decimal ReorderLevel { get; set; }
+    [Range(0, int.MaxValue, ErrorMessage = "Минималното количество не може да бъде отрицателно")]
+    public int ReorderLevel { get; set; }
 
     [Required(ErrorMessage = "Мерната единица е задължителна")]
     [Display(Name = "Мерна единица")]

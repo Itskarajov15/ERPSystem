@@ -35,6 +35,7 @@ internal class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, PageR
                     Description = p.Description,
                     UnitOfMeasureName = p.UnitOfMeasure.Name,
                     Quantity = p.Quantity - p.ReservedQuantity,
+                    ReservedQuantity = p.ReservedQuantity,
                     ReorderLevel = p.ReorderLevel,
                     UnitPrice = p.Price,
                     UnitOfMeasureId = p.UnitOfMeasureId,
@@ -72,7 +73,7 @@ internal class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, PageR
             {
                 if (filters.OnlyLowStock.Value)
                 {
-                    query = query.Where(p => p.Quantity <= p.ReorderLevel);
+                    query = query.Where(p => p.Quantity - p.ReservedQuantity <= p.ReorderLevel);
                 }
                 else
                 {

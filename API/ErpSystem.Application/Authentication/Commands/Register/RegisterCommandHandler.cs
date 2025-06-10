@@ -19,7 +19,8 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand>
             request.Password,
             request.Email,
             request.FirstName,
-            request.LastName
+            request.LastName,
+            request.RoleName
         );
 
         if (userId == null)

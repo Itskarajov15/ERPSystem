@@ -51,6 +51,8 @@ public class InvoiceDetailViewModel
 
     public DateTime CreatedAt { get; set; }
 
+    public Guid OrderId { get; set; }
+
     public bool CanRecordPayment => StatusName == "Issued" && Payment == null;
     public bool IsFullyPaid => Payment != null && Payment.Amount >= TotalAmount;
 }

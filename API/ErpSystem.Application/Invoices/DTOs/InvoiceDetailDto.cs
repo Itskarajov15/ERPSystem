@@ -14,6 +14,8 @@ public class InvoiceDetailDto
 
     public DateTime CreatedAt { get; set; }
 
+    public Guid OrderId { get; set; }
+
     public Guid CustomerId { get; set; }
 
     public string CustomerName { get; set; } = string.Empty;

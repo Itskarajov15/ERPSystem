@@ -10,6 +10,7 @@ using ErpSystem.Domain.Entities.Identity;
 using ErpSystem.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -118,7 +119,8 @@ public class IdentityService : IIdentityService
         string password,
         string email,
         string firstName,
-        string lastName
+        string lastName,
+        string roleName
     )
     {
         var user = new ApplicationUser
@@ -139,6 +141,8 @@ public class IdentityService : IIdentityService
         {
             throw new Exception(RoleErrorKeys.UserCreationFailed);
         }
+
+        await AddToRoleAsync(user.Id, roleName);
 
         return user.Id.ToString();
     }

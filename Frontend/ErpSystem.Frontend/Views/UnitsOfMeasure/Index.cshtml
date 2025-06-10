@@ -45,10 +45,10 @@
                                     <td class="align-middle">@item.Name</td>
                                     <td class="text-end">
                                         <div class="d-inline-flex gap-2">
-                                            <button class="btn btn-sm btn-primary" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">
+                                            <button class="btn btn-sm btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">
                                                 <i class="bi bi-pencil"></i> Редактирай
                                             </button>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('@item.Id', '@item.Name')">
+                                            <button type="button" class="btn btn-sm btn-danger" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="confirmDelete('@item.Id', '@item.Name')">
                                                 <i class="bi bi-trash"></i> Изтрий
                                             </button>
                                         </div>
@@ -68,20 +68,13 @@
 
             <div class="d-flex justify-content-end align-items-center mt-3">
                 <div class="d-flex align-items-center">
-                    <span class="me-2">Редове на страница:</span>
-                    <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this)">
-                        <option value="25" selected="@(Model.PageSize == 25)">25</option>
-                        <option value="50" selected="@(Model.PageSize == 50)">50</option>
-                        <option value="100" selected="@(Model.PageSize == 100)">100</option>
-                    </select>
-                    <span class="mx-4">@(((Model?.CurrentPage ?? 1) - 1) * (Model?.PageSize ?? 25) + 1) - @(Math.Min((Model?.CurrentPage ?? 1) * (Model?.PageSize ?? 25), Model?.TotalCount ?? 0)) от @(Model?.TotalCount ?? 0)</span>
                     <div class="btn-group">
-                        <a href="@Url.Action("Index", new { page = Math.Max(1, (Model?.CurrentPage ?? 1) - 1), pageSize = Model?.PageSize ?? 25 })" 
+                        <a href="@Url.Action("Index", new { page = Math.Max(1, (Model?.CurrentPage ?? 1) - 1) })" 
                            class="btn btn-sm btn-outline-secondary @(Model?.CurrentPage <= 1 ? "disabled" : "")"
                            aria-label="Previous">
                             <i class="bi bi-chevron-left"></i>
                         </a>
-                        <a href="@Url.Action("Index", new { page = Math.Min(Model?.TotalPages ?? 1, (Model?.CurrentPage ?? 1) + 1), pageSize = Model?.PageSize ?? 25 })" 
+                        <a href="@Url.Action("Index", new { page = Math.Min(Model?.TotalPages ?? 1, (Model?.CurrentPage ?? 1) + 1) })" 
                            class="btn btn-sm btn-outline-secondary @(Model?.CurrentPage >= (Model?.TotalPages ?? 1) ? "disabled" : "")"
                            aria-label="Next">
                             <i class="bi bi-chevron-right"></i>
@@ -123,11 +116,6 @@
             document.getElementById('deleteItemId').value = id;
             document.getElementById('deleteItemName').textContent = name;
             deleteModal.show();
-        }
-
-        function changePageSize(select) {
-            const pageSize = select.value;
-            window.location.href = '@Url.Action("Index")?page=1&pageSize=' + pageSize;
         }
     </script>
 } 

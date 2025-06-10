@@ -12,7 +12,8 @@ public interface IIdentityService
         string password,
         string email,
         string firstName,
-        string lastName
+        string lastName,
+        string roleName
     );
 
     Task<bool> IsInRoleAsync(Guid userId, string role);

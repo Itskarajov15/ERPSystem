@@ -16,9 +16,11 @@ public class ProductDto
 
     public string UnitOfMeasureName { get; set; } = string.Empty;
 
-    public decimal Quantity { get; set; }
+    public int Quantity { get; set; }
 
-    public decimal ReorderLevel { get; set; }
+    public int ReservedQuantity { get; set; }
+
+    public int ReorderLevel { get; set; }
 
     public bool IsLowStock => Quantity < ReorderLevel;
 }

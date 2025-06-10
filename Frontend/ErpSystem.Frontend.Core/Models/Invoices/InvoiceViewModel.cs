@@ -24,4 +24,6 @@ public class InvoiceViewModel
     public string? Notes { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public Guid OrderId { get; set; }
 }

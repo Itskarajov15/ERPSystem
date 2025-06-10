@@ -22,7 +22,7 @@ public class ProductConfigurations : BaseEntityConfiguration<Product>
 
         builder.Property(p => p.Price).HasPrecision(18, 2).IsRequired();
 
-        builder.Property(p => p.ReorderLevel).HasPrecision(18, 2).IsRequired();
+        builder.Property(p => p.ReorderLevel).IsRequired().HasDefaultValue(0);
 
         builder
             .HasOne(p => p.UnitOfMeasure)
@@ -96,21 +96,6 @@ public class ProductConfigurations : BaseEntityConfiguration<Product>
                 Price = 4.75m,
                 ReorderLevel = 25,
                 UnitOfMeasureId = Guid.Parse("FC720443-B659-4A2D-94B7-1CD4778B1040"), // бр.
-                CreatedBy = "system",
-                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                IsDeleted = false,
-            },
-            new Product
-            {
-                Id = Guid.Parse("40FCE498-755D-4A95-9777-C910AB0306F5"),
-                Name = "Офис почистващ препарат",
-                Sku = "CLEAN-OFFICE-1L",
-                Description = "Специализиран почистващ препарат за офисни повърхности и техника",
-                Quantity = 60,
-                ReservedQuantity = 0,
-                Price = 15.90m,
-                ReorderLevel = 20,
-                UnitOfMeasureId = Guid.Parse("9EF4BC25-3700-40C8-A290-D23FAB4C4E12"), // л
                 CreatedBy = "system",
                 CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 IsDeleted = false,

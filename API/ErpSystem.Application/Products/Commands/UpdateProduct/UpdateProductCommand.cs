@@ -8,6 +8,6 @@ public record UpdateProductCommand(
     string Description,
     decimal UnitPrice,
     string Sku,
-    decimal ReorderLevel,
+    int ReorderLevel,
     Guid UnitOfMeasureId
 ) : IRequest;

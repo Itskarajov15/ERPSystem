@@ -63,7 +63,14 @@ internal class UpdateInvoiceStatusCommandHandler : IRequestHandler<UpdateInvoice
                 break;
         }
 
-        invoice.Status = request.Status;
+        if (request.Status == InvoiceStatus.Cancelled)
+        {
+            _repository.Delete(invoice);
+        }
+        else
+        {
+            invoice.Status = request.Status;
+        }
 
         await _repository.SaveChangesAsync();
     }

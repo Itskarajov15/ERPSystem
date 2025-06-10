@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ErpSystem.Application.Authentication.Commands.CreateRole;
 
-internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, string>
+internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Guid>
 {
     private readonly IIdentityService _identityService;
     private readonly RoleManager<ApplicationRole> _roleManager;
@@ -25,7 +25,7 @@ internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, str
         _repository = repository;
     }
 
-    public async Task<string> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
         var role = await _identityService.CreateRoleAsync(request.Name, request.Description);
 
@@ -56,6 +56,6 @@ internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, str
             }
         }
 
-        return role.Id;
+        return Guid.Parse(role.Id);
     }
 }

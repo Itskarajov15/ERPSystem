@@ -589,12 +589,7 @@ namespace ErpSystem.Infrastructure.Migrations
                         scale: 2,
                         nullable: false
                     ),
-                    ReorderLevel = table.Column<decimal>(
-                        type: "decimal(18,2)",
-                        precision: 18,
-                        scale: 2,
-                        nullable: false
-                    ),
+                    ReorderLevel = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     UnitOfMeasureId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(
@@ -1148,15 +1143,6 @@ namespace ErpSystem.Infrastructure.Migrations
                 values: new object[,]
                 {
                     {
-                        new Guid("9ef4bc25-3700-40c8-a290-d23fab4c4e12"),
-                        new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                        "system",
-                        false,
-                        null,
-                        null,
-                        "л",
-                    },
-                    {
                         new Guid("e7d01a65-7f41-4560-90a8-7140c5fe3f6f"),
                         new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                         "system",
@@ -1208,7 +1194,7 @@ namespace ErpSystem.Infrastructure.Migrations
                         "Папки класьори А4",
                         4.75m,
                         80,
-                        25m,
+                        25,
                         "FOLDER-A4-ARCH",
                         new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040"),
                     },
@@ -1223,24 +1209,9 @@ namespace ErpSystem.Infrastructure.Migrations
                         "Химикалки сини комплект",
                         8.50m,
                         120,
-                        30m,
+                        30,
                         "PEN-BLUE-SET10",
                         new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040"),
-                    },
-                    {
-                        new Guid("40fce498-755d-4a95-9777-c910ab0306f5"),
-                        new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                        "system",
-                        "Специализиран почистващ препарат за офисни повърхности и техника",
-                        false,
-                        null,
-                        null,
-                        "Офис почистващ препарат",
-                        15.90m,
-                        60,
-                        20m,
-                        "CLEAN-OFFICE-1L",
-                        new Guid("9ef4bc25-3700-40c8-a290-d23fab4c4e12"),
                     },
                     {
                         new Guid("6ee1718f-a1ee-4bff-8ab1-9ce688d14e4a"),
@@ -1253,7 +1224,7 @@ namespace ErpSystem.Infrastructure.Migrations
                         "Офис стол ергономичен",
                         289.50m,
                         50,
-                        15m,
+                        15,
                         "CHAIR-ERG-001",
                         new Guid("fc720443-b659-4a2d-94b7-1cd4778b1040"),
                     },
@@ -1268,7 +1239,7 @@ namespace ErpSystem.Infrastructure.Migrations
                         "Копирна хартия А4 80g",
                         12.99m,
                         200,
-                        50m,
+                        50,
                         "PAPER-A4-80G",
                         new Guid("e7d01a65-7f41-4560-90a8-7140c5fe3f6f"),
                     },

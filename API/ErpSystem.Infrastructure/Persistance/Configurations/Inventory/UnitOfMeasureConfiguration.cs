@@ -36,14 +36,6 @@ public class UnitOfMeasureConfiguration : BaseEntityConfiguration<UnitOfMeasure>
                 CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 IsDeleted = false,
             },
-            new UnitOfMeasure
-            {
-                Id = Guid.Parse("9EF4BC25-3700-40C8-A290-D23FAB4C4E12"),
-                Name = "л",
-                CreatedBy = "system",
-                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                IsDeleted = false,
-            },
         };
     }
 }
