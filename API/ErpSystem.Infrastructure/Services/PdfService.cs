@@ -44,10 +44,10 @@ public class PdfService : IPdfService
             infoTable.SetWidths(new float[] { 1f, 1f });
 
             var leftCell = new PdfPCell { Border = Rectangle.NO_BORDER };
-            leftCell.AddElement(new Paragraph("ИТ ГРУП ЕООД", headerFont));
+            leftCell.AddElement(new Paragraph("ERP", headerFont));
             leftCell.AddElement(new Paragraph("ЕИК: 123456789", normalFont));
-            leftCell.AddElement(new Paragraph("Адрес: гр. София, ул. Централна 1", normalFont));
-            leftCell.AddElement(new Paragraph("Тел: +359 888 123 456", normalFont));
+            leftCell.AddElement(new Paragraph("Адрес: гр. София", normalFont));
+            leftCell.AddElement(new Paragraph("Тел: +359 988 750 054", normalFont));
             infoTable.AddCell(leftCell);
 
             var rightCell = new PdfPCell

@@ -43,7 +43,7 @@ public class AccountController : Controller
                 : RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        ModelState.AddModelError(string.Empty, "Невалиден опит за вход.");
         return View(model);
     }
 
