@@ -11,6 +11,7 @@ public class RoleEditModel
     [StringLength(100, ErrorMessage = "Името на ролята не може да бъде по-дълго от 100 символа")]
     public string Name { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Описанието на ролята е задължително")]
     [StringLength(500, ErrorMessage = "Описанието не може да бъде по-дълго от 500 символа")]
     public string? Description { get; set; }
 

@@ -7,6 +7,8 @@ public static class SupplierErrorKeys
         {
             ["SupplierNotFound"] = "Доставчикът не е намерен",
             ["SupplierRequired"] = "Доставчикът е задължителен",
+            ["SupplierExistsInDelivery"] =
+                "Не можете да изтриете доставчик, който участва в доставка",
         };
 
     public static string Translate(string errorKey)

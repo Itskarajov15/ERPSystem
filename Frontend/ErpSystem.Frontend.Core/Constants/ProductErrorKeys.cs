@@ -13,6 +13,10 @@ public static class ProductErrorKeys
             ["QuantityInvalid"] = "Количеството трябва да бъде по-голямо от 0",
             ["UnitPriceRequired"] = "Единичната цена е задължителна",
             ["UnitPriceInvalid"] = "Единичната цена трябва да бъде по-голяма от 0",
+            ["ProductExistsInOrders"] =
+                "Не можете да изтриете продукт, който се използва в поръчка",
+            ["ProductExistsInDeliveries"] =
+                "Не можете да изтриете продукт, който се използва в доставка",
         };
 
     public static string Translate(string errorKey)

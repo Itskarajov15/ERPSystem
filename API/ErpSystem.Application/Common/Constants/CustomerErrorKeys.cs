@@ -4,4 +4,5 @@ public static class CustomerErrorKeys
 {
     public const string CustomerNotFound = "CustomerNotFound";
     public const string CustomerRequired = "CustomerRequired";
+    public const string CustomerExistsInOrder = "CustomerExistsInOrder";
 }

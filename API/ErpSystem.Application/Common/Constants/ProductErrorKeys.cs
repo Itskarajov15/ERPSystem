@@ -10,4 +10,6 @@ public static class ProductErrorKeys
     public const string QuantityInvalid = "QuantityInvalid";
     public const string UnitPriceRequired = "UnitPriceRequired";
     public const string UnitPriceInvalid = "UnitPriceInvalid";
+    public const string ProductExistsInOrders = "ProductExistsInOrders";
+    public const string ProductExistsInDeliveries = "ProductExistsInDeliveries";
 }

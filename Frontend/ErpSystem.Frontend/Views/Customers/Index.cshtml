@@ -66,7 +66,7 @@
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><a class="dropdown-item" asp-action="Details" asp-route-id="@customer.Id">Детайли</a></li>
                                         <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@customer.Id">Редактирай</a></li>
-                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteCustomer('@customer.Id')">Изтрий</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="confirmDelete('@customer.Id', '@customer.Name')">Изтрий</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -106,15 +106,19 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Потвърждение</h5>
+                <h5 class="modal-title">Потвърждение за изтриване</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Сигурни ли сте, че искате да изтриете този клиент?</p>
+                Сигурни ли сте, че искате да изтриете клиента "<span id="deleteItemName"></span>"?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Изтрий</button>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" id="deleteItemId" name="id" />
+                    @Html.AntiForgeryToken()
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                    <button type="submit" class="btn btn-danger">Изтрий</button>
+                </form>
             </div>
         </div>
     </div>
@@ -122,41 +126,12 @@
 
 @section Scripts {
     <script>
-        let deleteModal;
-        let deleteId;
-        let currentPage = @Model.CurrentPage;
-        let pageSize = @Model.PageSize;
-        let totalItems = @Model.TotalCount;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 
-        document.addEventListener('DOMContentLoaded', function() {
-            deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        });
-
-        function deleteCustomer(id) {
-            deleteId = id;
+        function confirmDelete(id, name) {
+            document.getElementById('deleteItemId').value = id;
+            document.getElementById('deleteItemName').textContent = name;
             deleteModal.show();
-        }
-
-        async function confirmDelete() {
-            try {
-                showLoading();
-                const response = await fetch(`@Url.Action("Delete")/${deleteId}`, {
-                    method: 'DELETE'
-                });
-                
-                await handleFetchError(response);
-                const result = await response.json();
-                
-                if (result.success) {
-                    toastr.success('Клиентът е изтрит успешно');
-                    setTimeout(() => window.location.reload(), 1000);
-                }
-            } catch (error) {
-                toastr.error(error.message);
-            } finally {
-                hideLoading();
-                deleteModal.hide();
-            }
         }
 
         function changePageSize(select) {
@@ -165,8 +140,8 @@
         }
 
         function changePage(delta) {
-            const newPage = currentPage + delta;
-            if (newPage < 1 || (newPage - 1) * pageSize >= totalItems) return;
+            const newPage = @Model.CurrentPage + delta;
+            if (newPage < 1 || (newPage - 1) * @Model.PageSize >= @Model.TotalCount) return;
             
             const url = new URL(window.location.href);
             url.searchParams.set('page', newPage);

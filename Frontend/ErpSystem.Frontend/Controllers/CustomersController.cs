@@ -135,18 +135,20 @@ public class CustomersController : Controller
         return View(model);
     }
 
-    [HttpDelete]
+    [HttpPost]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
             await _customerService.DeleteCustomerAsync(id);
-            return Json(new { success = true });
+            TempData["SuccessMessage"] = "Клиентът беше изтрит успешно.";
         }
         catch (Exception ex)
         {
             var translatedMessage = _errorTranslationService.Translate(ex.Message);
-            return Json(new { success = false, message = translatedMessage });
+            TempData["ErrorMessage"] = translatedMessage;
         }
+
+        return RedirectToAction(nameof(Index));
     }
 }
