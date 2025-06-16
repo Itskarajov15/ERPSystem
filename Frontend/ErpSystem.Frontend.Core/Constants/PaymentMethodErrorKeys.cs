@@ -7,6 +7,10 @@ public static class PaymentMethodErrorKeys
         {
             ["PaymentMethodNotFound"] = "Начинът на плащане не е намерен",
             ["PaymentMethodRequired"] = "Начинът на плащане е задължителен",
+            ["PaymentMethodIsUsedByOrders"] =
+                "Не можете да изтриете метод на плащане, който се използва от поръчки",
+            ["PaymentMethodIsUsedByPayments"] =
+                "Не можете да изтриете метод на плащане, който се използва от плащания",
         };
 
     public static string Translate(string errorKey)

@@ -17,6 +17,8 @@ public static class ProductErrorKeys
                 "Не можете да изтриете продукт, който се използва в поръчка",
             ["ProductExistsInDeliveries"] =
                 "Не можете да изтриете продукт, който се използва в доставка",
+            ["ProductUsesUnitOfMeasure"] =
+                "Не можете да изтриете мерна единица, която се използва от продукт",
         };
 
     public static string Translate(string errorKey)
