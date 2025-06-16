@@ -1,4 +1,5 @@
 @using ErpSystem.Frontend.Core.Models.Roles
+@using ErpSystem.Frontend.Resources
 @model RoleEditModel
 
 @{
@@ -44,23 +45,44 @@
                 <div class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
                     @if (Model.AvailableEndpoints != null && Model.AvailableEndpoints.Any())
                     {
-                        <div class="row">
-                            @foreach (var endpoint in Model.AvailableEndpoints)
-                            {
-                                <div class="col-md-6 col-lg-4 mb-2">
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" 
-                                               name="SelectedPermissionIds" value="@endpoint.Id" 
-                                               id="endpoint_@endpoint.Id"
-                                               @(Model.SelectedPermissionIds?.Select(x => x.ToUpper()).Contains(endpoint.Id.ToUpper()) == true ? "checked" : "") />
-                                        <label class="form-check-label" for="endpoint_@endpoint.Id">
-                                            @endpoint.ControllerName - @endpoint.ActionName
-                                            <small class="text-muted d-block">@endpoint.Endpoint</small>
-                                        </label>
+                        var grouped = Model.AvailableEndpoints
+                            .GroupBy(e => e.ControllerName)
+                            .OrderBy(g => g.Key);
+                        foreach (var group in grouped)
+                        {
+                            <div class="mb-2">
+                                @{
+                                    var controllerKey = group.Key;
+                                    var controllerTranslated = LocalizationResources.BulgarianTranslations.ContainsKey(controllerKey)
+                                        ? LocalizationResources.BulgarianTranslations[controllerKey]
+                                        : controllerKey;
+                                }
+                                <strong>@controllerTranslated</strong>
+                            </div>
+                            <div class="row">
+                                @foreach (var endpoint in group)
+                                {
+                                    <div class="col-md-6 col-lg-4 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                   name="SelectedPermissionIds" value="@endpoint.Id"
+                                                   id="endpoint_@endpoint.Id"
+                                                   @(Model.SelectedPermissionIds?.Select(x => x.ToUpper()).Contains(endpoint.Id.ToUpper()) == true ? "checked" : "") />
+                                            <label class="form-check-label" for="endpoint_@endpoint.Id">
+                                                @{
+                                                    var permissionKey = $"{endpoint.ControllerName}.{endpoint.ActionName}";
+                                                    var translated = LocalizationResources.BulgarianTranslations.ContainsKey(permissionKey)
+                                                        ? LocalizationResources.BulgarianTranslations[permissionKey]
+                                                        : $"{endpoint.ControllerName} - {endpoint.ActionName}";
+                                                }
+                                                @translated
+                                                <small class="text-muted d-block">@endpoint.Endpoint</small>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                        </div>
+                                }
+                            </div>
+                        }
                     }
                     else
                     {

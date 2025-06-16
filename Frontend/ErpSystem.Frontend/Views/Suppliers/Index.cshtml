@@ -1,4 +1,6 @@
-@model ErpSystem.Frontend.Core.Models.Common.PageResult<ErpSystem.Frontend.Core.Models.Suppliers.SupplierViewModel>
+@using ErpSystem.Frontend.Core.Models.Common
+@using ErpSystem.Frontend.Core.Models.Suppliers
+@model PageResult<SupplierViewModel>
 
 @{
     ViewData["Title"] = "Доставчици";
@@ -100,7 +102,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
