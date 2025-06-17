@@ -45,7 +45,6 @@
                         <th>Име</th>
                         <th>Описание</th>
                         <th>Брой права</th>
-                        <th>Създадена</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -60,7 +59,6 @@
                                 <td>
                                     <span class="badge bg-info">@(role.Permissions?.Count() ?? 0) права</span>
                                 </td>
-                                <td>@role.CreatedAt.ToString("dd.MM.yyyy")</td>
                                 <td>
                                     <div class="dropdown">
                                         <button class="btn btn-link text-dark p-0" data-bs-toggle="dropdown">
@@ -83,7 +81,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center">Няма намерени роли.</td>
+                            <td colspan="4" class="text-center">Няма намерени роли.</td>
                         </tr>
                     }
                 </tbody>
