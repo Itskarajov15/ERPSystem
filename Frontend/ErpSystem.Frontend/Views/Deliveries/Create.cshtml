@@ -272,6 +272,99 @@
                 toastr.error('Моля добавете поне един артикул в доставката');
                 return false;
             }
+
+            $('.delivery-item').each(function() {
+                const productSelect = $(this).find('.product-select');
+                if (!productSelect.val()) {
+                    $(this).remove();
+                }
+            });
+
+            const productMap = new Map();
+            $('.delivery-item').each(function() {
+                const productId = $(this).find('.product-select').val();
+                const quantity = parseInt($(this).find('.quantity-input').val()) || 0;
+                const unitPrice = parseFloat($(this).find('.price-input').val()) || 0;
+                const productName = $(this).find('.product-name-hidden').val();
+                const productSku = $(this).find('.product-sku-hidden').val();
+
+                if (productId) {
+                    if (productMap.has(productId)) {
+                        const existing = productMap.get(productId);
+                        existing.quantity += quantity;
+                        existing.totalPrice = existing.quantity * unitPrice;
+                    } else {
+                        productMap.set(productId, {
+                            quantity: quantity,
+                            unitPrice: unitPrice,
+                            productName: productName,
+                            productSku: productSku,
+                            totalPrice: quantity * unitPrice
+                        });
+                    }
+                }
+            });
+
+            $('#deliveryItems').empty();
+            let index = 0;
+            productMap.forEach((value, productId) => {
+                const itemHtml = `
+                    <div class="delivery-item border rounded p-3 mb-3" data-index="${index}">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h6 class="mb-0">Артикул #${index + 1}</h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDeliveryItem(${index})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Продукт</label>
+                                    <select name="Items[${index}].ProductId" class="form-select product-select" data-index="${index}" onchange="onProductChange(${index})">
+                                        <option value="">Изберете продукт</option>
+                                        ${products.map(p => `<option value="${p.id}" data-price="${p.price}" data-name="${p.name}" data-sku="${p.sku}" ${p.id === productId ? 'selected' : ''}>${p.name} (${p.sku})</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Количество</label>
+                                    <input type="number" name="Items[${index}].Quantity" class="form-control quantity-input" data-index="${index}" min="1" value="${value.quantity}" onchange="calculateItemTotal(${index})" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Единична цена</label>
+                                    <input type="number" name="Items[${index}].UnitPrice" class="form-control price-input" data-index="${index}" step="0.01" min="0.01" value="${value.unitPrice}" onchange="calculateItemTotal(${index})" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted">Продукт: <span class="product-info" data-index="${index}">${value.productName} (${value.productSku})</span></small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <strong>Обща цена: <span class="item-total" data-index="${index}">${value.totalPrice.toFixed(2)} лв.</span></strong>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="Items[${index}].ProductName" class="product-name-hidden" data-index="${index}" value="${value.productName}" />
+                        <input type="hidden" name="Items[${index}].ProductSku" class="product-sku-hidden" data-index="${index}" value="${value.productSku}" />
+                    </div>
+                `;
+                $('#deliveryItems').append(itemHtml);
+                index++;
+            });
+
+            if (index === 0) {
+                $('#noItemsMessage').show();
+            } else {
+                $('#noItemsMessage').hide();
+            }
+
+            updateDeliverySummary();
         });
     </script>
 } 

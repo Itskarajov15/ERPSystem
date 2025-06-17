@@ -5,9 +5,6 @@ namespace ErpSystem.Frontend.Core.Models.Orders;
 
 public class OrderFilterModel : PaginationParams
 {
-    [Display(Name = "Търсене")]
-    public string? SearchTerm { get; set; }
-
     [Display(Name = "Статус")]
     public string? Status { get; set; }
 

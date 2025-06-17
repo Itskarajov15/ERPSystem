@@ -1,5 +1,6 @@
 ﻿using ErpSystem.Application.Common.Interfaces;
 using MediatR;
+using ErpSystem.Application.Common.Constants;
 
 namespace ErpSystem.Application.Authentication.Commands.Register;
 
@@ -25,7 +26,7 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand>
 
         if (userId == null)
         {
-            throw new Exception("User registration failed");
+            throw new Exception(AuthenticationErrorKeys.UserRegistrationFailed);
         }
     }
 }

@@ -31,10 +31,6 @@ public class OrderService : IOrderService
         {
             var queryParams = new List<string>();
 
-            if (!string.IsNullOrEmpty(filter.SearchTerm))
-            {
-                queryParams.Add($"SearchTerm={Uri.EscapeDataString(filter.SearchTerm)}");
-            }
             if (!string.IsNullOrEmpty(filter.Status))
             {
                 queryParams.Add($"Status={Uri.EscapeDataString(filter.Status)}");

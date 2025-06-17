@@ -61,9 +61,12 @@
                 <input type="date" class="form-control" name="ToDate" value="@Context.Request.Query["ToDate"]">
             </div>
             <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search me-2"></i>Филтрирай
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-search"></i>
                 </button>
+                <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i>
+                </a>
             </div>
         </form>
     </div>

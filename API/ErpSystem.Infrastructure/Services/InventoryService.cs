@@ -1,4 +1,5 @@
-﻿using ErpSystem.Domain.Entities.Inventory;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Domain.Entities.Inventory;
 using ErpSystem.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -7,12 +8,10 @@ namespace ErpSystem.Infrastructure.Services;
 public class InventoryService : IInventoryService
 {
     private readonly IRepository _repository;
-    private readonly ILogger<InventoryService> _logger;
 
-    public InventoryService(IRepository repository, ILogger<InventoryService> logger)
+    public InventoryService(IRepository repository)
     {
         _repository = repository;
-        _logger = logger;
     }
 
     public async Task IncreaseStockAsync(Guid productId, decimal quantity)
@@ -21,25 +20,17 @@ public class InventoryService : IInventoryService
 
         if (product == null)
         {
-            _logger.LogWarning("Cannot increase stock: Product {ProductId} not found", productId);
-            throw new KeyNotFoundException($"Product with ID {productId} not found");
+            throw new KeyNotFoundException(ProductErrorKeys.ProductNotFound);
         }
 
         if (quantity <= 0)
         {
-            _logger.LogWarning("Cannot increase stock: Quantity must be greater than zero");
-            throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
+            throw new ArgumentException(ProductErrorKeys.QuantityInvalid);
         }
 
         product.Quantity += (int)quantity;
 
         await _repository.SaveChangesAsync();
-
-        _logger.LogInformation(
-            "Increased stock for product {ProductId} by {Quantity}",
-            productId,
-            quantity
-        );
     }
 
     public async Task IncreaseStockOfMultipleItemsAsync(
@@ -48,7 +39,6 @@ public class InventoryService : IInventoryService
     {
         if (!items.Any())
         {
-            _logger.LogWarning("Cannot increase stock: No items provided");
             return;
         }
 
@@ -58,20 +48,12 @@ public class InventoryService : IInventoryService
         if (products.Count() != productIds.Count)
         {
             var missingProductIds = productIds.Except(products.Select(p => p.Id)).ToList();
-            _logger.LogWarning(
-                "Some products were not found: {MissingProductIds}",
-                string.Join(", ", missingProductIds)
-            );
         }
 
         foreach (var (productId, quantity) in items)
         {
             if (quantity <= 0)
             {
-                _logger.LogWarning(
-                    "Skipping product {ProductId}: Quantity must be greater than zero",
-                    productId
-                );
                 continue;
             }
 
@@ -80,19 +62,6 @@ public class InventoryService : IInventoryService
             if (product != null)
             {
                 product.Quantity += quantity;
-
-                _logger.LogInformation(
-                    "Increased stock for product {ProductId} by {Quantity}",
-                    productId,
-                    quantity
-                );
-            }
-            else
-            {
-                _logger.LogWarning(
-                    "Cannot increase stock: Product {ProductId} not found",
-                    productId
-                );
             }
         }
 
@@ -105,66 +74,42 @@ public class InventoryService : IInventoryService
 
         if (product == null)
         {
-            _logger.LogWarning("Cannot decrease stock: Product {ProductId} not found", productId);
-            throw new KeyNotFoundException($"Product with ID {productId} not found");
+            throw new KeyNotFoundException(ProductErrorKeys.ProductNotFound);
         }
 
         if (quantity <= 0)
         {
-            _logger.LogWarning("Cannot decrease stock: Quantity must be greater than zero");
-            throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
+            throw new ArgumentException(ProductErrorKeys.QuantityInvalid);
         }
 
         var quantityInt = (int)quantity;
 
         if (product.Quantity < quantityInt)
         {
-            _logger.LogWarning(
-                "Cannot decrease stock: Insufficient stock for product {ProductId}",
-                productId
-            );
-            throw new InvalidOperationException(
-                $"Insufficient stock for product {productId}. Available: {product.Quantity}, Requested: {quantityInt}"
-            );
+            throw new InvalidOperationException(ProductErrorKeys.InsufficientStock);
         }
 
         product.Quantity -= quantityInt;
 
         await _repository.SaveChangesAsync();
-
-        _logger.LogInformation(
-            "Decreased stock for product {ProductId} by {Quantity}",
-            productId,
-            quantity
-        );
     }
 
     public async Task<bool> HasSufficientStockAsync(Guid productId, decimal quantity)
     {
         if (quantity <= 0)
         {
-            _logger.LogWarning("Invalid quantity check: Quantity must be greater than zero");
-            throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
+            throw new ArgumentException(ProductErrorKeys.QuantityInvalid);
         }
 
         var product = await _repository.GetByIdAsync<Product>(productId);
 
         if (product == null)
         {
-            _logger.LogWarning("Stock check failed: Product {ProductId} not found", productId);
             return false;
         }
 
         var available = product.Quantity - product.ReservedQuantity;
         var hasStock = available >= (int)quantity;
-
-        _logger.LogInformation(
-            "Stock check for product {ProductId}: Available={Available}, Required={Required}, Sufficient={HasStock}",
-            productId,
-            available,
-            quantity,
-            hasStock
-        );
 
         return hasStock;
     }

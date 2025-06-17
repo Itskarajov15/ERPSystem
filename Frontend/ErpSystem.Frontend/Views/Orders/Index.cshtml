@@ -27,11 +27,6 @@
         <form method="get" asp-action="Index" id="searchForm">
             <input type="hidden" id="pageSize" name="pageSize" value="@Model.PageSize" />
             <div class="row g-3">
-                <div class="col-md-3">
-                    <label for="SearchTerm" class="form-label">Търсене</label>
-                    <input type="text" class="form-control" id="SearchTerm" name="SearchTerm" 
-                           value="@Context.Request.Query["SearchTerm"]" placeholder="Търсене...">
-                </div>
                 <div class="col-md-2">
                     <label for="Status" class="form-label">Статус</label>
                     <select class="form-select" id="Status" name="Status">
