@@ -1,7 +1,15 @@
 using ErpSystem.API.Extensions;
 using ErpSystem.API.Middlewares;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/erpsystem-.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddServices(builder.Configuration);
 
