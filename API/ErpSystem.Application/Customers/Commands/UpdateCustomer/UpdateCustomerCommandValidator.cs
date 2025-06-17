@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ErpSystem.Application.Common.Constants;
+using FluentValidation;
 
 namespace ErpSystem.Application.Customers.Commands.UpdateCustomer;
 
@@ -8,28 +9,28 @@ public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCo
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("Name is required.")
+            .WithMessage(CustomerErrorKeys.NameRequired)
             .MaximumLength(100)
-            .WithMessage("Name must not exceed 100 characters.");
+            .WithMessage(CustomerErrorKeys.NameTooLong);
         RuleFor(x => x.Address)
             .NotEmpty()
-            .WithMessage("Address is required.")
+            .WithMessage(CustomerErrorKeys.AddressRequired)
             .MaximumLength(200)
-            .WithMessage("Address must not exceed 200 characters.");
+            .WithMessage(CustomerErrorKeys.AddressTooLong);
         RuleFor(x => x.Phone)
             .NotEmpty()
-            .WithMessage("Phone is required.")
+            .WithMessage(CustomerErrorKeys.PhoneRequired)
             .MaximumLength(15)
-            .WithMessage("Phone must not exceed 15 characters.");
+            .WithMessage(CustomerErrorKeys.PhoneTooLong);
         RuleFor(x => x.Email)
             .EmailAddress()
-            .WithMessage("Invalid email format.")
+            .WithMessage(CustomerErrorKeys.EmailInvalid)
             .MaximumLength(100)
-            .WithMessage("Email must not exceed 100 characters.");
+            .WithMessage(CustomerErrorKeys.EmailRequired);
         RuleFor(x => x.ContactName)
             .NotEmpty()
-            .WithMessage("Contact name is required.")
+            .WithMessage(CustomerErrorKeys.ContactNameRequired)
             .MaximumLength(100)
-            .WithMessage("Contact name must not exceed 100 characters.");
+            .WithMessage(CustomerErrorKeys.ContactNameTooLong);
     }
 }

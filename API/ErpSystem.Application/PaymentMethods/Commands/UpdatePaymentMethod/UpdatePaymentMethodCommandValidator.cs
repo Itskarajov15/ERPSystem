@@ -1,4 +1,5 @@
-﻿using ErpSystem.Domain.Entities.Sales;
+﻿using ErpSystem.Application.Common.Constants;
+using ErpSystem.Domain.Entities.Sales;
 using FluentValidation;
 
 namespace ErpSystem.Application.PaymentMethods.Commands.UpdatePaymentMethod;
@@ -9,8 +10,8 @@ public class UpdatePaymentMethodCommandValidator : AbstractValidator<PaymentMeth
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("Payment method name is required.")
+            .WithMessage(PaymentMethodErrorKeys.NameRequired)
             .MaximumLength(50)
-            .WithMessage("Payment method name must not exceed 50 characters.");
+            .WithMessage(PaymentMethodErrorKeys.NameTooLong);
     }
 }

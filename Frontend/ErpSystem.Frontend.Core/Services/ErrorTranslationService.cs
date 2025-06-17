@@ -50,6 +50,10 @@ public class ErrorTranslationService
         if (translation != errorKey)
             return translation;
 
+        translation = UnitOfMeasureErrorKeys.Translate(errorKey);
+        if (translation != errorKey)
+            return translation;
+
         return errorKey;
     }
 

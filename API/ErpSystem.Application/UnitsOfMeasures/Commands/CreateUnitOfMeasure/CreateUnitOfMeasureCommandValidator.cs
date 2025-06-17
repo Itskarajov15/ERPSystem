@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ErpSystem.Application.Common.Constants;
+using FluentValidation;
 
 namespace ErpSystem.Application.UnitsOfMeasures.Commands.CreateUnitOfMeasure;
 
@@ -8,8 +9,8 @@ public class CreateUnitOfMeasureCommandValidator : AbstractValidator<CreateUnitO
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("Name is required.")
+            .WithMessage(UnitOfMeasureErrorKeys.NameRequired)
             .MaximumLength(50)
-            .WithMessage("Name must not exceed 50 characters.");
+            .WithMessage(UnitOfMeasureErrorKeys.NameTooLong);
     }
 }

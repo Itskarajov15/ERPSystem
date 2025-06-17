@@ -15,4 +15,13 @@ public static class ProductErrorKeys
     public const string ProductExistsInOrders = "ProductExistsInOrders";
     public const string ProductExistsInDeliveries = "ProductExistsInDeliveries";
     public const string ProductUsesUnitOfMeasure = "ProductUsesUnitOfMeasure";
+    public const string NameRequired = "NameRequired";
+    public const string NameTooLong = "NameTooLong";
+    public const string SkuRequired = "SkuRequired";
+    public const string SkuTooLong = "SkuTooLong";
+    public const string DescriptionRequired = "DescriptionRequired";
+    public const string DescriptionTooLong = "DescriptionTooLong";
+    public const string UnitPriceGreaterThanZero = "UnitPriceGreaterThanZero";
+    public const string ReorderLevelGreaterThanOrEqualToZero = "ReorderLevelGreaterThanOrEqualToZero";
+    public const string UnitOfMeasureRequired = "UnitOfMeasureRequired";
 }

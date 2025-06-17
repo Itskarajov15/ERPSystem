@@ -11,6 +11,8 @@ public static class PaymentMethodErrorKeys
                 "Не можете да изтриете метод на плащане, който се използва от поръчки",
             ["PaymentMethodIsUsedByPayments"] =
                 "Не можете да изтриете метод на плащане, който се използва от плащания",
+            ["NameRequired"] = "Името на начина на плащане е задължително",
+            ["NameTooLong"] = "Името на начина на плащане не може да бъде по-дълго от 50 символа"
         };
 
     public static string Translate(string errorKey)
